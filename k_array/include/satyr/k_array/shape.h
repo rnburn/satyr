@@ -13,8 +13,13 @@ class shape {
  public:
   // constructor
   shape() : extents_{} {}
-  shape(std::initializer_list<index_t> extents)
-    : extents_{extents} {}
+
+  template <class... Extents>
+    requires sizeof...(Extents) == K && 
+             (std::is_convertible_v<Extents, index_t> && ...)
+  shape(Extents... extents) :
+    extents_{extents...}
+  {}
 
   // accessors
   const std::array<index_t, K> extents() const { return extents_; }

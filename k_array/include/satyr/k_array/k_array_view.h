@@ -48,7 +48,7 @@ class k_array_view<T, K> : public k_array_view<const T, K>
   // constructor
    k_array_view() = default;
 
-   k_array_view(T* data, std::array<index_t, K> shape)
+   k_array_view(T* data, satyr::shape<K> shape)
      : base{data, shape}
    {}
 
@@ -59,4 +59,10 @@ class k_array_view<T, K> : public k_array_view<const T, K>
 
    using detail::k_array_const_accessor<k_array_view<T, K>, K>::operator();
 };
+
+//------------------------------------------------------------------------------
+// k_array_const_view
+//------------------------------------------------------------------------------
+template <class T, size_t K>
+using k_array_const_view = k_array_view<const T, K>;
 } // namespace satyr

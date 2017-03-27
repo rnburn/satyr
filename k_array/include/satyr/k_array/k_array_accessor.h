@@ -16,7 +16,7 @@ struct k_array_const_accessor_impl;
 template <size_t... Indexes, class Derived>
 struct k_array_const_accessor_impl<std::index_sequence<Indexes...>, Derived> {
   decltype(auto) operator()(
-      std::enable_if<(Indexes,true),index_t>... indexes) const {
+      std::enable_if_t<(Indexes,true),index_t>... indexes) const {
     const Derived& derived = static_cast<const Derived&>(*this);
     return *(derived.data() + get_1d_index(derived.shape(), indexes...));
   }
@@ -36,7 +36,7 @@ struct k_array_accessor_impl;
 template <size_t... Indexes, class Derived>
 struct k_array_accessor_impl<std::index_sequence<Indexes...>, Derived> {
   decltype(auto) operator()(
-      std::enable_if<(Indexes,true),index_t>... indexes) {
+      std::enable_if_t<(Indexes,true),index_t>... indexes) {
     Derived& derived = static_cast<Derived&>(*this);
     return *(derived.data() + get_1d_index(derived.shape(), indexes...));
   }

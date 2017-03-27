@@ -10,6 +10,7 @@ set(MODULE_LIST
 k_array")
 
 
+include_directories(include)
 foreach(MODULE ${MODULE_LIST})
   include_directories(${MODULE}/include)
   install(DIRECTORY ${MODULE}/include/satyr/ DESTINATION include/satyr
