@@ -11,6 +11,8 @@ k_array")
 
 
 include_directories(include)
+add_subdirectory(test)
+
 foreach(MODULE ${MODULE_LIST})
   include_directories(${MODULE}/include)
   install(DIRECTORY ${MODULE}/include/satyr/ DESTINATION include/satyr
