@@ -12,12 +12,12 @@ struct simd_policy_group : policy<simd_policy_group> {};
 //------------------------------------------------------------------------------
 // simd
 //------------------------------------------------------------------------------
-struct simd : simd_policy_group {} simd_v{};
+const struct simd : simd_policy_group {} simd_v{};
 
 //------------------------------------------------------------------------------
 // nosimd
 //------------------------------------------------------------------------------
-struct nosimd : simd_policy_group {} nosimd_v{};
+const struct nosimd : simd_policy_group {} nosimd_v{};
 
 //------------------------------------------------------------------------------
 // temporal_policy_group
@@ -27,12 +27,12 @@ struct temporal_policy_group : policy<temporal_policy_group> {};
 //------------------------------------------------------------------------------
 // nontemporal
 //------------------------------------------------------------------------------
-struct nontemporal : temporal_policy_group {} nontemporal_v{};
+const struct nontemporal : temporal_policy_group {} nontemporal_v{};
 
 //------------------------------------------------------------------------------
 // temporal
 //------------------------------------------------------------------------------
-struct temporal : temporal_policy_group {} temporal_v{};
+const struct temporal : temporal_policy_group {} temporal_v{};
 
 ///------------------------------------------------------------------------------/
 // parallel_policy_group
@@ -40,14 +40,9 @@ struct temporal : temporal_policy_group {} temporal_v{};
 struct parallel_policy_group : policy<parallel_policy_group> {};
 
 //------------------------------------------------------------------------------
-// parallel
-//------------------------------------------------------------------------------
-struct parallel : parallel_policy_group {} parallel_v{};
-
-//------------------------------------------------------------------------------
 // serial
 //------------------------------------------------------------------------------
-struct serial : parallel_policy_group {} serial_v{};
+const struct serial : parallel_policy_group {} serial_v{};
 
 //------------------------------------------------------------------------------
 // grainularity
@@ -57,4 +52,19 @@ struct grainularity : parallel_policy_group {
   explicit grainularity(index_t value) : value{value} {}
   index_t value;
 };
+
+//------------------------------------------------------------------------------
+// parallel
+//------------------------------------------------------------------------------
+const grainularity parallel_v{1};
+
+//------------------------------------------------------------------------------
+// inline_policy_group
+//------------------------------------------------------------------------------
+struct inline_policy_group : policy<inline_policy_group> {};
+
+//------------------------------------------------------------------------------
+// suggest_inline
+//------------------------------------------------------------------------------
+const struct suggest_inline : inline_policy_group {} suggest_inline_v{};
 } // namespace satyr
