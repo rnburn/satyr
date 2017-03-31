@@ -11,6 +11,8 @@ k_array")
 
 
 include_directories(include)
+install(DIRECTORY include/satyr/ DESTINATION include/satyr
+  FILES_MATCHING PATTERN "*.h")
 add_subdirectory(test)
 
 foreach(MODULE ${MODULE_LIST})
