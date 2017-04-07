@@ -6,6 +6,7 @@
 namespace satyr {
 template <Policy Policy, size_t K, class Functor>
   requires !has_policy_v<grainularity, Policy>
+       && (IndexFunctor<Functor, void, K> || IndexFunctor<Functor, bool, K>)
 void for_each_index(Policy policy, std::array<index_t, K> extents,
     Functor f) {
   if constexpr(K == 1) { for_(policy, 0, extents[0], f); }
@@ -45,7 +46,8 @@ void parallel_for_each_index_impl(Policy policy,
 }
 
 template <Policy Policy, size_t K, class Functor>
-  requires has_policy_v<grainularity, Policy>
+  requires has_policy_v<grainularity, Policy> 
+       && (IndexFunctor<Functor, void, K> || IndexFunctor<Functor, bool, K>)
 void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
   std::array<index_t, K - 1> cardinalities;
   index_t cardinality = 1;
