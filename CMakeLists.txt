@@ -3,6 +3,7 @@ enable_testing()
 
 project(satyr)
 
+find_library(TBB_LIB tbb)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts")
 
 set(MODULE_LIST
