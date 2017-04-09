@@ -53,9 +53,7 @@ class k_array_view<T, K> : public k_array_view<const T, K>
    {}
 
    // accessors
-   T* data() const {
-     return const_cast<T*>(base::data());
-   }
+   T* data() const { return const_cast<T*>(base::data()); }
 
    using detail::k_array_const_accessor<k_array_view<T, K>, K>::operator();
 };
