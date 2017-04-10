@@ -20,6 +20,7 @@ class n_array_impl<
  public:
    using structure = Structure;
 
+  // constructors
   explicit n_array_impl(shape<K> shape)
    : array_{shape}
   {}
@@ -32,13 +33,21 @@ class n_array_impl<
     requires is_equal_dimensional_v<Structure>
    : n_array_impl{shape<K>{(Indexes,extent)...}}
   {}
+
+  // accessors
+  k_array<T, K, scalar_allocator<T>>& as_k_array() { return array_; }
+  const k_array<T, K, scalar_allocator<T>>& as_k_array() const {
+    return array_;
+  }
+
+  const shape<K>& shape() const { return array_.shape(); }
+
  private:
    k_array<T, K, scalar_allocator<T>> array_;
 };
 }
 
-template <class T, size_t K, class Structure>
-  requires std::is_base_of_v<structure, Structure>
+template <class T, size_t K, Structure Structure>
 class n_array : public detail::n_array_impl<std::make_index_sequence<K>, T, K,
                                             Structure> {
  public:

@@ -15,4 +15,7 @@ template <class T>
     T::is_equal_dimensional;
   }
 constexpr bool is_equal_dimensional_v<T> = true;
+
+template <class T>
+concept bool Structure = std::is_base_of_v<structure, T>;
 } // namespace satyr

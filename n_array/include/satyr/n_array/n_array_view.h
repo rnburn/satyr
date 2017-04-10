@@ -26,13 +26,16 @@ class n_array_view<T, K, Structure> {
    T* data() const { return array_.data(); }
    T* cdata() const { return array_.cdata(); }
 
+   const k_array_view<T, K>& as_k_array() const { return array_; }
+
    const satyr::shape<K>& shape() const { return array_.shape(); }
+
  private:
   k_array_view<T, K> array_;
 };
 
-template <class T, size_t K, class Structure>
-  requires !std::is_const_v<T> && std::is_base_of_v<structure, Structure>
+template <class T, size_t K, Structure Structure>
+  requires !std::is_const_v<T>
 class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure> {
   using base = n_array_view<const T, K, Structure>;
  public:
