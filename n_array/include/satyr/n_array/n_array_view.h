@@ -1,6 +1,7 @@
 #pragma once
 
 #include <satyr/n_array/structure.h>
+#include <satyr/n_array/n_array_accessor.h>
 #include <satyr/k_array.h>
 
 namespace satyr {
@@ -13,7 +14,9 @@ class n_array_view;
 
 template <class T, size_t K, class Structure>
   requires std::is_const_v<T> && std::is_base_of_v<structure, Structure>
-class n_array_view<T, K, Structure> {
+class n_array_view<T, K, Structure> :
+    public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
+{
  public:
    // constructor
    n_array_view() = default;
@@ -36,7 +39,9 @@ class n_array_view<T, K, Structure> {
 
 template <class T, size_t K, Structure Structure>
   requires !std::is_const_v<T>
-class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure> {
+class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure>, 
+      public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
+{
   using base = n_array_view<const T, K, Structure>;
  public:
    // constructor
@@ -47,6 +52,10 @@ class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure> {
 
    // accessors
    T* data() const { return const_cast<T*>(base::data()); }
+
+   const k_array_view<T, K>& as_k_array() const {
+     return reinterpret_cast<const k_array_view<T, K>&>(base::as_k_array());
+   }
 };
 
 //------------------------------------------------------------------------------

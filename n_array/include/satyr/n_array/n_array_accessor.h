@@ -88,7 +88,7 @@ struct n_array_accessor_impl<std::index_sequence<Indexes...>, Derived,
   auto& operator()(access_mode::readwrite, 
       std::enable_if_t<(Indexes,true), index_t>... indexes) {
     return deconstify_result(
-        this->base::operator()(acccess_mode::readwrite_v, indexes...);
+        this->base::operator()(access_mode::readwrite_v, indexes...));
   }
 
   auto& operator()(access_mode::raw, 
@@ -103,4 +103,11 @@ struct n_array_accessor_impl<std::index_sequence<Indexes...>, Derived,
   }
 };
 } // namespace detail
+
+template <class Derived, size_t K, Structure Structure>
+struct n_array_accessor :
+  detail::n_array_accessor_impl<
+    std::make_index_sequence<K>,
+    Derived, Structure>
+{};
 } // namespace satyr

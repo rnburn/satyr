@@ -7,10 +7,11 @@ find_path(TBB_INCLUDE_DIR NAMES tbb/parallel_for.h)
 find_library(TBB_LIB tbb)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts")
 
-include_directories(SYSTEM ${TBB_INCLUDE_DIR})
+include_directories(${TBB_INCLUDE_DIR})
 set(MODULE_LIST
-  "\
-k_array")
+k_array
+n_array
+)
 
 
 include_directories(include)

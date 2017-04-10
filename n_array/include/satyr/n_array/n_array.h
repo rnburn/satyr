@@ -1,49 +1,109 @@
 #pragma once
 
+#include <satyr/for.h>
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/scalar_allocator.h>
+#include <satyr/n_array/n_array_accessor.h>
+#include <satyr/n_array/n_array_view.h>
 #include <satyr/k_array.h>
 
 namespace satyr {
-namespace detail {
 //------------------------------------------------------------------------------
 // n_array
 //------------------------------------------------------------------------------
+namespace detail {
 template <class, class T, size_t K, class Structure>
-class n_array_impl {};
+class n_array_impl;
 
 template <size_t... Indexes, class T, size_t K, class Structure>
-class n_array_impl<
-  std::index_sequence<Indexes...>,
-  T, K, Structure>
-{
+class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
+    : scalar_allocator<T>,
+  public n_array_const_view<T, K, Structure>,
+  public n_array_accessor<
+          n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>, K,
+          Structure> {
+  using base = n_array_const_view<T, K, Structure>;
  public:
    using structure = Structure;
 
   // constructors
-  explicit n_array_impl(shape<K> shape)
-   : array_{shape}
-  {}
+  n_array_impl() = default;
+
+  template <class OtherT>
+  n_array_impl(const n_array_impl<std::index_sequence<Indexes...>, OtherT, K,
+                                  Structure>& other) {
+    copy_assign(other);
+  }
+
+  n_array_impl(n_array_impl&& other) {
+    move_assign(other);
+  }
+
+  explicit n_array_impl(satyr::shape<K> shape)
+  {
+    T* data;
+    if (get_num_elements(shape))
+      data = this->allocate(get_num_elements(shape));
+    else
+      data = nullptr;
+    static_cast<base&>(*this) = {data, shape};
+  }
 
   explicit n_array_impl(std::enable_if_t<(Indexes, true), index_t>... extents) 
-    : n_array_impl{shape<K>{extents...}}
+    : n_array_impl{satyr::shape<K>{extents...}}
   {}
 
   explicit n_array_impl(index_t extent)
     requires is_equal_dimensional_v<Structure>
-   : n_array_impl{shape<K>{(Indexes,extent)...}}
+   : n_array_impl{satyr::shape<K>{(Indexes,extent)...}}
   {}
 
-  // accessors
-  k_array<T, K, scalar_allocator<T>>& as_k_array() { return array_; }
-  const k_array<T, K, scalar_allocator<T>>& as_k_array() const {
-    return array_;
+  // destructor
+  ~n_array_impl() {
+    if (this->data())
+      this->deallocate(this->data(), get_num_elements(this->shape()));
   }
 
-  const shape<K>& shape() const { return array_.shape(); }
+  // accessors
+  using base::data;
+  T* data() { return const_cast<T*>(base::data()); }
+
+  using base::as_k_array;
+  const k_array_view<T, K>& as_k_array() {
+    return reinterpret_cast<const k_array_view<T, K>&>(
+        *static_cast<base*>(this));
+  }
+
+  // reshape
+  void reshape(const shape<K>& shape_new) {
+    auto num_elements = get_num_elements(this->shape());
+    auto num_elements_new = get_num_elements(shape_new);
+    if (num_elements == num_elements_new)
+      return;
+    this->deallocate(num_elements);
+    auto data_new = this->allocate(num_elements_new);
+    static_cast<base&>(*this) = {data_new, shape_new};
+  }
+
+  // operator=
+  using n_array_accessor<n_array_impl,  K, Structure>::operator();
 
  private:
-   k_array<T, K, scalar_allocator<T>> array_;
+  void move_assign(n_array_impl& other) noexcept {
+    static_cast<base&>(*this) = static_cast<base&>(other);
+    static_cast<base&>(other) = {nullptr, shape<K>{}};
+  }
+
+  template <class OtherT>
+  void copy_assign(n_array_impl<std::index_sequence<Indexes...>, OtherT, K,
+                                Structure>& other) {
+    reshape(other.shape());
+    auto num_elements = get_num_elements(this->shape());
+    auto data = this->data();
+    auto other_data = other.data();
+    for_(simd_v, 0, num_elements,
+         [data, other_data](index_t i) { *(data + i) = *(other_data + i); });
+  }
 };
 }
 

@@ -60,9 +60,7 @@ class k_array : public k_array_const_view<T, K>,
 
   // data
   using base::data;
-  T* data() {
-    return const_cast<T*>(static_cast<base&>(*this).data());
-  }
+  T* data() { return const_cast<T*>(base::data()); }
 
   // reshape
   void reshape(const shape<K>& shape_new) {
@@ -72,7 +70,7 @@ class k_array : public k_array_const_view<T, K>,
       return;
     this->deallocate(num_elements);
     auto data_new = this->allocate(num_elements_new);
-    static_cast<base&>(*this) = {data_new, num_elements_new};
+    static_cast<base&>(*this) = {data_new, shape_new};
   }
 
  private:
