@@ -32,15 +32,22 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   template <class OtherT>
   n_array_impl(const n_array_impl<std::index_sequence<Indexes...>, OtherT, K,
                                   Structure>& other) {
-    copy_assign(other);
+    if constexpr (std::is_same_v<T, OtherT>) {
+      if (data == other.data()) return;
+    }
+    copy_assign(other.data(), other.shape());
   }
 
-  n_array_impl(n_array_impl&& other) {
+  n_array_impl(n_array_impl&& other) noexcept {
     move_assign(other);
   }
 
-  explicit n_array_impl(satyr::shape<K> shape)
-  {
+  template <class OtherT>
+  n_array_impl(const n_array_view<OtherT, K, Structure>& other) {
+    copy_assign(other.data(), other.shape());
+  }
+
+  explicit n_array_impl(satyr::shape<K> shape) {
     T* data;
     if (get_num_elements(shape))
       data = this->allocate(get_num_elements(shape));
@@ -49,19 +56,39 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     static_cast<base&>(*this) = {data, shape};
   }
 
-  explicit n_array_impl(std::enable_if_t<(Indexes, true), index_t>... extents) 
-    : n_array_impl{satyr::shape<K>{extents...}}
-  {}
+  explicit n_array_impl(std::enable_if_t<(Indexes, true), index_t>... extents)
+      : n_array_impl{satyr::shape<K>{extents...}} {}
 
-  explicit n_array_impl(index_t extent)
+  explicit n_array_impl(index_t extent) 
     requires is_equal_dimensional_v<Structure>
-   : n_array_impl{satyr::shape<K>{(Indexes,extent)...}}
-  {}
+      : n_array_impl{satyr::shape<K>{(Indexes, extent)...}} {}
 
   // destructor
   ~n_array_impl() {
     if (this->data())
       this->deallocate(this->data(), get_num_elements(this->shape()));
+  }
+
+  // operator=
+  n_array_impl& operator=(n_array_impl&& other) noexcept {
+    move_assign(other);
+    return *this;
+  }
+
+  template <class OtherT>
+  n_array_impl& operator=(const n_array_impl<std::index_sequence<Indexes...>,
+                                             OtherT, K, Structure>& other) {
+    if constexpr (std::is_same_v<T, OtherT>) {
+      if (data == other.data()) return *this;
+    }
+    copy_assign(other.data(), other.shape());
+    return *this;
+  }
+
+  template <class OtherT>
+  n_array_impl& operator=(const n_array_view<OtherT, K, Structure>& other) {
+    copy_assign(other.data(), other.shape());
+    return *this;
   }
 
   // accessors
@@ -85,22 +112,21 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     static_cast<base&>(*this) = {data_new, shape_new};
   }
 
-  // operator=
+  // operator()
   using n_array_accessor<n_array_impl,  K, Structure>::operator();
 
  private:
   void move_assign(n_array_impl& other) noexcept {
+    if (data == other.data()) return;
     static_cast<base&>(*this) = static_cast<base&>(other);
     static_cast<base&>(other) = {nullptr, shape<K>{}};
   }
 
   template <class OtherT>
-  void copy_assign(n_array_impl<std::index_sequence<Indexes...>, OtherT, K,
-                                Structure>& other) {
-    reshape(other.shape());
+  void copy_assign(const OtherT* other_data, const shape<K>& other_shape) {
+    reshape(other_shape);
     auto num_elements = get_num_elements(this->shape());
     auto data = this->data();
-    auto other_data = other.data();
     for_(simd_v, 0, num_elements,
          [data, other_data](index_t i) { *(data + i) = *(other_data + i); });
   }
