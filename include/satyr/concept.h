@@ -6,6 +6,13 @@
 
 namespace satyr {
 //------------------------------------------------------------------------------
+// Scalar
+//------------------------------------------------------------------------------
+template <class T>
+concept bool Scalar = std::is_integral_v<T> || std::is_same_v<T, double> ||
+                      std::is_same_v<T, float>;
+
+//------------------------------------------------------------------------------
 // Functor
 //------------------------------------------------------------------------------
 namespace detail {
@@ -23,6 +30,9 @@ constexpr bool is_functor_impl<Return(Args...), F> = true;
 template <class F, class T>
 concept bool Functor = detail::is_functor_impl<T, F>;
 
+//------------------------------------------------------------------------------
+// IndexFunctor
+//------------------------------------------------------------------------------
 namespace detail {
 template <class, class Return, class F>
 constexpr bool is_index_functor_impl = false;
