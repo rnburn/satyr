@@ -30,7 +30,13 @@ template <size_t... Indexes, class T>
 constexpr bool is_k_evaluator_impl<std::index_sequence<Indexes...>, T> = true;
 }
 
-template <size_t K, class T>
+template <class T, size_t K>
 concept bool KEvaluator =
-    detail::is_k_evaluator_impl<std::make_index_sequence<K>, T>;
+    detail::is_k_evaluator_impl<std::make_index_sequence<2*K>, T>;
+
+//------------------------------------------------------------------------------
+// Evaluator
+//------------------------------------------------------------------------------
+template <class T, size_t K>
+concept bool Evaluator = FlatEvaluator<T> || KEvaluator<T, K>;
 }  // namespace satyr
