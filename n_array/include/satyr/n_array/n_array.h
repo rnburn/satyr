@@ -133,7 +133,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 };
 }
 
-template <class T, size_t K, Structure Structure>
+template <Scalar T, size_t K, Structure Structure>
 class n_array : public detail::n_array_impl<std::make_index_sequence<K>, T, K,
                                             Structure> {
  public:

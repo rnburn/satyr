@@ -3,16 +3,17 @@
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/n_array_accessor.h>
 #include <satyr/k_array.h>
+#include <satyr/concept.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
 // n_array_view
 //------------------------------------------------------------------------------
-template <class T, size_t K, class Structure>
+template <Scalar T, size_t K, Structure Structure>
   requires std::is_base_of_v<structure, Structure>
 class n_array_view;
 
-template <class T, size_t K, class Structure>
+template <Scalar T, size_t K, Structure Structure>
   requires std::is_const_v<T> && std::is_base_of_v<structure, Structure>
 class n_array_view<T, K, Structure> :
     public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
@@ -37,7 +38,7 @@ class n_array_view<T, K, Structure> :
   k_array_view<T, K> array_;
 };
 
-template <class T, size_t K, Structure Structure>
+template <Scalar T, size_t K, Structure Structure>
   requires !std::is_const_v<T>
 class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure>, 
       public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
@@ -61,6 +62,6 @@ class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure>,
 //------------------------------------------------------------------------------
 // n_array_const_view
 //------------------------------------------------------------------------------
-template <class T, size_t K, class Structure>
+template <Scalar T, size_t K, Structure Structure>
 using n_array_const_view = n_array_view<const T, K, Structure>;
 } // namespace satyr

@@ -9,8 +9,9 @@ namespace satyr {
 // Scalar
 //------------------------------------------------------------------------------
 template <class T>
-concept bool Scalar = std::is_integral_v<T> || std::is_same_v<T, double> ||
-                      std::is_same_v<T, float>;
+concept bool Scalar = std::is_integral_v<std::remove_cv_t<T>> ||
+                      std::is_same_v<std::remove_cv_t<T>, double> ||
+                      std::is_same_v<std::remove_cv_t<T>, float>;
 
 //------------------------------------------------------------------------------
 // Functor
