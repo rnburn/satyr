@@ -80,7 +80,8 @@ index_t get_1d_index_impl(const shape<K>& shape, IndexFirst index_first,
 }
 
 template <size_t K, class... Indexes>
-  requires K == sizeof...(Indexes) && (std::is_convertible_v<Indexes, index_t> && ...)
+  requires K == sizeof...(Indexes) && 
+           (std::is_convertible_v<Indexes, index_t> && ...)
 index_t get_1d_index(const shape<K>& shape, Indexes... indexes) {
   return detail::get_1d_index_impl<0>(shape, indexes...);
 }
