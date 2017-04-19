@@ -22,4 +22,13 @@ template <class T>
   }
 constexpr size_t num_dimensions_v<T> = 
   num_dimensions_v<std::decay_t<decltype(std::declval<const T&>().shape())>>;
+
+//------------------------------------------------------------------------------
+// shape_t
+//------------------------------------------------------------------------------
+template <class T>
+  requires requires(const T& t) {
+    t.shape();
+  }
+using shape_t = std::decay_t<decltype(std::declval<const T&>().shape())>;
 } // namespace satyr

@@ -13,15 +13,17 @@ constexpr size_t first_num_dimensions_v = 0;
 
 template <class TFirst, class... TRest>
   requires requires {
-    num_dimensions_v<TFirst>;
+    typename shape_t<TFirst>;
   }
-constexpr size_t first_num_dimensions_v = num_dimensions_v<TFirst>;
+constexpr size_t first_num_dimensions_v<TFirst, TRest...> = 
+                        num_dimensions_v<TFirst>;
 
 template <class TFirst, class... TRest>
   requires !requires {
-    num_dimensions_v<TFirst>;
+    typename shape_t<TFirst>;
   }
-constexpr size_t first_num_dimensions_v = first_num_dimensions_v<TRest...>;
+constexpr size_t first_num_dimensions_v<TFirst, TRest...> = 
+                        first_num_dimensions_v<TRest...>;
 } // namespace detail
 
 //------------------------------------------------------------------------------
@@ -36,17 +38,18 @@ constexpr size_t match_num_dimensions_v<K> = true;
 
 template <size_t K, class TFirst, class... TRest>
   requires requires {
-    num_dimensions_v<TFirst> == K;
+    typename shape_t<TFirst>;
+    requires num_dimensions_v<TFirst> == K;
   }
 constexpr size_t match_num_dimensions_v<K, TFirst, TRest...> = 
-                      match_num_dimenions_v<K, TRest...>
+                      match_num_dimensions_v<K, TRest...>;
 
 template <size_t K, class TFirst, class... TRest>
   requires !requires {
-    num_dimensions_v<TFirst>;
+    typename shape_t<TFirst>;
   }
 constexpr size_t match_num_dimensions_v<K, TFirst, TRest...> = 
-                      match_num_dimenions_v<K, TRest...>
+                      match_num_dimensions_v<K, TRest...>;
 } // namespace detail
 
 //------------------------------------------------------------------------------
@@ -55,7 +58,7 @@ constexpr size_t match_num_dimensions_v<K, TFirst, TRest...> =
 namespace detail {
 template <class TFirst, class... TRest>
   requires requires {
-    num_dimensions_v<TFirst>;
+    typename shape_t<TFirst>;
   }
 auto get_common_shape_impl(const TFirst& t_first, const TRest&... t_rest) {
   return t_first.shape();
@@ -63,7 +66,7 @@ auto get_common_shape_impl(const TFirst& t_first, const TRest&... t_rest) {
 
 template <class TFirst, class... TRest>
   requires !requires {
-    num_dimensions_v<TFirst>;
+    typename shape_t<TFirst>;
   }
 auto get_common_shape_impl(const TFirst& t_first, const TRest&... t_rest) {
   return get_common_shape_impl(t_rest...);
@@ -72,7 +75,8 @@ auto get_common_shape_impl(const TFirst& t_first, const TRest&... t_rest) {
 
 template <class... Tx>
   requires detail::first_num_dimensions_v<Tx...> > 0 &&
-           detail::match_num_dimensions_v<first_num_dimensions_v<Tx...>, Tx...>
+           detail::match_num_dimensions_v<
+                      detail::first_num_dimensions_v<Tx...>, Tx...>
 auto get_common_shape(const Tx&... tx) {
   return detail::get_common_shape_impl(tx...);
 }
