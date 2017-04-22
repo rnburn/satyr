@@ -1,6 +1,6 @@
 #pragma once
 
-#include <type_traits>
+#include <satyr/traits.h>
 
 namespace satyr { 
 struct structure {};
@@ -20,11 +20,14 @@ template <class T>
 concept bool Structure = std::is_base_of_v<structure, T>;
 
 template <class T>
+using structure_t = typename uncvref_t<T>::structure;
+
+template <class T>
 constexpr bool has_structure_v = false;
 
 template <class T>
    requires requires {
-     typename T::structure;
+     typename structure_t<T>;
    }
 constexpr bool has_structure_v<T> = true;
 } // namespace satyr

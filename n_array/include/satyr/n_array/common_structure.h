@@ -49,19 +49,11 @@ struct common_structure_impl<null_structure, Rest...>
 template <class T, class... Rest>
 struct common_structure_impl<T, null_structure, Rest...> :
   common_structure_impl<T, Rest...> {};
-
-template <class T> struct structure_or_null {
-  using type = null_structure;
-};
-
-template <Structure T> struct structure_or_null<T> {
-  using type = typename T::structure;
-};
+} // namespace detail
 
 template <class... Tx>
   requires ((has_structure_v<Tx> || Scalar<Tx>) && ...) &&
            (has_structure_v<Tx> + ... ) > 0
 using common_structure_t =
   typename detail::common_structure_impl<Tx...>::type;
-} // namespace detail
 } // namespace satyr

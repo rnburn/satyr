@@ -265,4 +265,10 @@ template <class T>
   requires requires { typename size_type<std::remove_cv_t<T>>::type; }
 using size_type_t = typename size_type<std::remove_cv_t<T>>::type;
 // clang-format on
+
+//------------------------------------------------------------------------------
+// uncvref_t
+//------------------------------------------------------------------------------
+template <class T>
+using uncvref_t = typename std::remove_cv_t<std::remove_reference_t<T>>;
 } // namespace traits

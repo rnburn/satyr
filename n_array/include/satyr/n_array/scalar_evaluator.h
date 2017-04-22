@@ -15,4 +15,12 @@ class scalar_evaluator {
  private:
    T value_;
 };
+
+//------------------------------------------------------------------------------
+// make_evaluator
+//------------------------------------------------------------------------------
+template <Scalar T>
+scalar_evaluator<T> make_evaluator(T value) {
+  return scalar_evaluator{value};
+}
 } // namespace satyr

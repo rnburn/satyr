@@ -5,11 +5,10 @@
 #include <satyr/n_array/concept.h>
 #include <satyr/n_array/k_evaluator.h>
 
-namespace satyr {
+namespace satyr::detail {
 //------------------------------------------------------------------------------
 // map_evaluator
 //------------------------------------------------------------------------------
-namespace detail {
 template <class, class, class Functor, class... Evaluators>
 class map_evaluator_impl;
 
@@ -39,19 +38,18 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
   Functor functor_;
   std::tuple<Evaluators...> evaluators_;
 };
-}
 
 template <size_t K, class Functor, class... Evaluators>
     requires (FlatEvaluator<Evaluators> && ...) || 
              (KEvaluator<Evaluators, K> && ...)
 class map_evaluator
-    : public detail::map_evaluator_impl<std::make_index_sequence<K>,
-                                        std::make_index_sequence<2 * K>,
-                                        Functor, Evaluators...> {
+    : public map_evaluator_impl<std::make_index_sequence<K>,
+                                std::make_index_sequence<2 * K>,
+                                Functor, Evaluators...> {
  public:
-  using detail::map_evaluator_impl<std::make_index_sequence<K>,
-                                   std::make_index_sequence<2 * K>, Functor,
-                                   Evaluators...>::map_evaluator_impl;
+  using map_evaluator_impl<std::make_index_sequence<K>,
+                           std::make_index_sequence<2 * K>, Functor,
+                           Evaluators...>::map_evaluator_impl;
 };
 
 template <size_t K, class Functor, class... Evaluators>
@@ -67,4 +65,4 @@ template <size_t K, class Functor, class... Evaluators>
 auto make_map_evaluator(Functor functor, const Evaluators&... evaluators) {
   return make_map_evaluator<K>(functor, make_k_evaluator<K>(evaluators)...);
 }
-} // namespace satyr
+} // namespace satyr::detail
