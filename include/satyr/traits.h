@@ -1,5 +1,6 @@
 #pragma once
 
+#include <satyr/type_list.h>
 #include <type_traits>
 #include <memory>
 
@@ -271,4 +272,209 @@ using size_type_t = typename size_type<std::remove_cv_t<T>>::type;
 //------------------------------------------------------------------------------
 template <class T>
 using uncvref_t = typename std::remove_cv_t<std::remove_reference_t<T>>;
+
+//------------------------------------------------------------------------------
+// arity_v
+//------------------------------------------------------------------------------
+namespace detail {
+template <class> struct arity_impl {};
+
+template <class Return, class... Args> struct arity_impl<Return(Args...)> {
+  static constexpr size_t value = sizeof...(Args);
+};
+
+template <class Return, class... Args> struct arity_impl<Return (*)(Args...)> {
+  static constexpr size_t value = sizeof...(Args);
+};
+
+template <class Return, class... Args> struct arity_impl<Return (&)(Args...)> {
+  static constexpr size_t value = sizeof...(Args);
+};
+
+#define CVREF_QUALIFY(CV_QUALIFER, REF_QUALIFER)                       \
+  template <class Return, class Record, class... Args>                 \
+  struct arity_impl<Return (Record::*)(Args...) CV_QUALIFER REF_QUALIFER> { \
+    static constexpr size_t value = sizeof...(Args);                   \
+  };
+#include <satyr/cvref_qualifer.def>
+#undef CVREF_QUALIFY
+
+// clang-format off
+template <class T> 
+  requires requires {
+    { &T::operator() } -> auto&&;
+  }
+struct arity_impl<T> {
+  static constexpr size_t value = arity_impl<decltype(&T::operator())>::value;
+  // clang-format on
+};
+} // namespace detail
+
+// clang-format off
+template <class T>
+  requires requires {
+    detail::arity_impl<std::remove_cv_t<T>>::value;
+  }
+static constexpr size_t arity_v = 
+                          detail::arity_impl<std::remove_cv_t<T>>::value;
+// clang-format on
+
+//------------------------------------------------------------------------------
+// argument_t
+//------------------------------------------------------------------------------
+template <size_t, class> struct argument_type {};
+
+// clang-format off
+template <size_t I, class Return, class... Args>
+  requires I < sizeof...(Args)
+struct argument_type<I, Return (Args...)> {
+  // clang-format on
+  using type = detail::type_list_element_t<I, detail::type_list<Args...>>;
+};
+
+// clang-format off
+template <size_t I, class Return, class... Args>
+  requires I < sizeof...(Args)
+struct argument_type<I, Return (*)(Args...)> {
+  // clang-format on
+  using type = detail::type_list_element_t<I, detail::type_list<Args...>>;
+};
+
+// clang-format off
+template <size_t I, class Return, class... Args>
+  requires I < sizeof...(Args)
+struct argument_type<I, Return (&)(Args...)> {
+  // clang-format on
+  using type = detail::type_list_element_t<I, detail::type_list<Args...>>;
+};
+
+// clang-format off
+#define CVREF_QUALIFY(CV_QUALIFER, REF_QUALIFER)                               \
+  template <size_t I, class Return, class Record, class... Args>               \
+    requires I < sizeof...(Args)                                               \
+  struct argument_type<I,                                                      \
+                       Return (Record::*)(Args...) CV_QUALIFER REF_QUALIFER> { \
+    using type = detail::type_list_element_t<I, detail::type_list<Args...>>;                    \
+  };
+#include <satyr/cvref_qualifer.def>
+#undef CVREF_QUALIFY
+// clang-format on
+
+// clang-format off
+template <size_t I, class T>
+  requires requires { { &T::operator() } -> auto&&; } && I < arity_v<T>
+struct argument_type<I, T> {
+  // clang-format on
+  using type = typename argument_type<I, decltype(&T::operator())>::type;
+};
+
+// clang-format off
+template <size_t I, class T>
+  requires I < arity_v<T>
+using argument_t = typename argument_type<I, std::remove_cv_t<T>>::type;
+// clang-format on
+
+//------------------------------------------------------------------------------
+// codomain_t
+//------------------------------------------------------------------------------
+template <class> struct codomain_type {};
+
+template <class Return, class... Args> struct codomain_type<Return(Args...)> {
+  using type = Return;
+};
+
+template <class Return, class... Args>
+struct codomain_type<Return (*)(Args...)> {
+  using type = Return;
+};
+
+template <class Return, class... Args>
+struct codomain_type<Return (&)(Args...)> {
+  using type = Return;
+};
+
+#define CVREF_QUALIFY(CV_QUALIFER, REF_QUALIFER)                               \
+  template <class Return, class Record, class... Args>                         \
+  struct codomain_type<Return (Record::*)(Args...) CV_QUALIFER REF_QUALIFER> { \
+    using type = Return;                                                       \
+  };
+#include <satyr/cvref_qualifer.def>
+#undef CVREF_QUALIFY
+
+template <class T> requires requires {
+  { &T::operator() }
+  ->auto&&;
+}
+struct codomain_type<T> {
+  using type = typename codomain_type<decltype(&T::operator())>::type;
+};
+
+template <class T>
+using codomain_t = typename codomain_type<std::remove_cv_t<T>>::type;
+
+//------------------------------------------------------------------------------
+// domain_t
+//------------------------------------------------------------------------------
+template <class> struct domain_type {};
+
+// clang-format off
+template <class Return, class ArgFirst, class... ArgsRest>
+  requires (std::is_same_v<ArgFirst, ArgsRest> && ...)
+struct domain_type<Return (ArgFirst, ArgsRest...)> {
+  // clang-format on
+  using type = ArgFirst;
+};
+
+// clang-format off
+template <class Return, class ArgFirst, class... ArgsRest>
+  requires (std::is_same_v<ArgFirst, ArgsRest> && ...)
+struct domain_type<Return (*)(ArgFirst, ArgsRest...)> {
+  // clang-format on
+  using type = ArgFirst;
+};
+
+// clang-format off
+template <class Return, class ArgFirst, class... ArgsRest>
+  requires (std::is_same_v<ArgFirst, ArgsRest> && ...)
+struct domain_type<Return (&)(ArgFirst, ArgsRest...)> {
+  // clang-format on
+  using type = ArgFirst;
+};
+
+// clang-format off
+#define CVREF_QUALIFY(CV_QUALIFER, REF_QUALIFER)                           \
+  template <class Return, class Record, class ArgFirst, class... ArgsRest> \
+    requires (std::is_same_v<ArgFirst, ArgsRest> && ...) \
+  struct domain_type<Return (Record::*)(ArgFirst, ArgsRest...)             \
+                         CV_QUALIFER REF_QUALIFER> {                       \
+    using type = ArgFirst;                                                 \
+  };
+#include <satyr/cvref_qualifer.def>
+#undef CVREF_QUALIFY
+// clang-format on
+
+template <class T> 
+  requires requires {
+    { &T::operator() } ->auto&&;
+  }
+struct domain_type<T> {
+  using type = typename domain_type<decltype(&T::operator())>::type;
+};
+
+template <class T>
+using domain_t = typename domain_type<std::remove_cv_t<T>>::type;
+
+//------------------------------------------------------------------------------
+// codomain_value_type_t
+//------------------------------------------------------------------------------
+template <class T>
+using codomain_value_type_t =
+    std::remove_cv_t<std::remove_reference_t<codomain_t<T>>>;
+
+//------------------------------------------------------------------------------
+// domain_value_type_t
+//------------------------------------------------------------------------------
+template <class T>
+using domain_value_type_t =
+    std::remove_cv_t<std::remove_reference_t<domain_t<T>>>;
 } // namespace traits
