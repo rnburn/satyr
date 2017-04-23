@@ -124,9 +124,20 @@ template <class... Expressibles>
 constexpr bool have_common_evaluator_v<Expressibles...> = true;
 
 template <class Structure, class Expressible>
-using expressible_value_type_t = codomain_t<decltype(convert_evaluator<Structure>(
+using expressible_codomain_t = codomain_t<decltype(convert_evaluator<Structure>(
     make_expression(std::declval<Expressible>())))>;
 
+template <class Functor, class... Expressibles>
+constexpr bool is_mappable_v = false;
+
+template <class Functor, class... Expressibles>
+  requires requires(Functor f, 
+                    expressible_codomain_t<
+                      common_structure_t<Expressibles...>,
+                      Expressibles>... values) {
+             requires Scalar<uncvref_t<decltype(f(values...))>>;
+  }
+constexpr bool is_mappable_v<Functor, Expressibles...> = true;
 } // namespace detail
 
 template <class Functor, class... Expressibles>
@@ -135,12 +146,7 @@ template <class Functor, class... Expressibles>
            detail::have_common_structure_v<Expressibles...> && 
            detail::have_common_shape_v<Expressibles...> &&
            detail::have_common_evaluator_v<Expressibles...> &&
-           requires (Functor f,
-                     detail::expressible_value_type_t<
-                        common_structure_t<Expressibles...>,
-                        Expressibles>... values) {
-             requires Scalar<uncvref_t<decltype(f(values...))>>;
-           }
+           detail::is_mappable_v<Functor, Expressibles...>
 auto map(Functor f, Expressibles&&... expressibles) {
   using Structure = common_structure_t<Expressibles...>;
   auto shape = get_common_shape(expressibles...);
