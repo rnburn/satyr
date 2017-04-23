@@ -45,6 +45,10 @@ class k_evaluator
     : public detail::k_evaluator_impl<std::make_index_sequence<2 * K>,
                                       Evaluator> {
  public:
+  explicit k_evaluator(const Evaluator& evaluator)
+      : detail::k_evaluator_impl<std::make_index_sequence<2 * K>, Evaluator>{
+            evaluator} {}
+
   using detail::k_evaluator_impl<std::make_index_sequence<2 * K>,
                                  Evaluator>::k_evaluator_impl;
 };

@@ -402,8 +402,7 @@ struct codomain_type<Return (&)(Args...)> {
 #undef CVREF_QUALIFY
 
 template <class T> requires requires {
-  { &T::operator() }
-  ->auto&&;
+  { &T::operator() } ->auto&&;
 }
 struct codomain_type<T> {
   using type = typename codomain_type<decltype(&T::operator())>::type;

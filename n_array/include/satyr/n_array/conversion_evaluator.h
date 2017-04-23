@@ -11,7 +11,7 @@ namespace satyr {
 //------------------------------------------------------------------------------
 template <size_t K, Structure FromStructure, Structure ToStructure,
          Evaluator<K> Evaluator>
-  requires std::is_base_of_v<ToStructure, FromStructure>
+  requires std::is_same_v<ToStructure, FromStructure>
 auto make_conversion_evaluator(FromStructure, ToStructure,
     const Evaluator& evaluator) {
   return evaluator;
@@ -24,10 +24,10 @@ template <Structure ToStructure, size_t K, Structure FromStructure,
           Evaluator<K> Evaluator>
     requires requires (FromStructure from_structure, ToStructure to_structure,
         const n_array_expression<K, FromStructure, Evaluator>& expression) {
-      { 
+      /* { */ 
         make_conversion_evaluator<K>(from_structure, to_structure, 
-                                     expression.evaluator()) 
-      } -> satyr::Evaluator<K>;
+                                     expression.evaluator()) ;
+      /* } -> satyr::Evaluator<K>; */
     }
 auto convert_evaluator(
     const n_array_expression<K, FromStructure, Evaluator>& expression) {

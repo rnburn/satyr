@@ -32,13 +32,4 @@ n_array_expression<K, Structure, Evaluator> make_n_array_expression(
     const shape<K>& shape, const Evaluator& evaluator) {
   return {shape, evaluator};
 }
-
-//------------------------------------------------------------------------------
-// make_evaluator
-//------------------------------------------------------------------------------
-template <size_t K, Structure Structure, Evaluator<K> Evaluator>
-Evaluator make_evaluator(
-    const n_array_expression<K, Structure, Evaluator>& expression) {
-  return expression.evaluator();
-}
 } // namespace satyr

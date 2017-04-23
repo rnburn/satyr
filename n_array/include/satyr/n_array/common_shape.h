@@ -31,24 +31,24 @@ constexpr size_t first_num_dimensions_v<TFirst, TRest...> =
 //------------------------------------------------------------------------------
 namespace detail {
 template <size_t K, class...>
-constexpr size_t match_num_dimensions_v = false;
+constexpr bool match_num_dimensions_v = false;
 
 template <size_t K>
-constexpr size_t match_num_dimensions_v<K> = true;
+constexpr bool match_num_dimensions_v<K> = true;
 
 template <size_t K, class TFirst, class... TRest>
   requires requires {
     typename shape_t<TFirst>;
     requires num_dimensions_v<TFirst> == K;
   }
-constexpr size_t match_num_dimensions_v<K, TFirst, TRest...> = 
+constexpr bool match_num_dimensions_v<K, TFirst, TRest...> = 
                       match_num_dimensions_v<K, TRest...>;
 
 template <size_t K, class TFirst, class... TRest>
   requires !requires {
     typename shape_t<TFirst>;
   }
-constexpr size_t match_num_dimensions_v<K, TFirst, TRest...> = 
+constexpr bool match_num_dimensions_v<K, TFirst, TRest...> = 
                       match_num_dimensions_v<K, TRest...>;
 } // namespace detail
 
