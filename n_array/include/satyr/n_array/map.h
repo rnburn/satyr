@@ -86,15 +86,6 @@ auto make_map_evaluator(Functor functor, const Evaluators&... evaluators) {
 // map
 //------------------------------------------------------------------------------
 namespace detail {
-template <class Expressible>
-constexpr bool is_expressible_v = false;
-
-template <class Expressible>
-  requires requires(Expressible expressible) {
-    make_expression(expressible);
-  }
-constexpr bool is_expressible_v<Expressible> = true;
-
 template <class... Expressibles>
 constexpr bool have_common_structure_v = false;
 
@@ -140,9 +131,8 @@ template <class Functor, class... Expressibles>
 constexpr bool is_mappable_v<Functor, Expressibles...> = true;
 } // namespace detail
 
-template <class Functor, class... Expressibles>
+template <class Functor, Expressible... Expressibles>
   requires std::is_copy_constructible_v<Functor> &&
-           (detail::is_expressible_v<Expressibles> && ...) &&
            detail::have_common_structure_v<Expressibles...> && 
            detail::have_common_shape_v<Expressibles...> &&
            detail::have_common_evaluator_v<Expressibles...> &&

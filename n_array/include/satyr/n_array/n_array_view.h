@@ -10,7 +10,6 @@ namespace satyr {
 // n_array_view
 //------------------------------------------------------------------------------
 template <Scalar T, size_t K, Structure Structure>
-  requires std::is_base_of_v<structure, Structure>
 class n_array_view;
 
 template <Scalar T, size_t K, Structure Structure>

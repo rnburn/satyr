@@ -2,16 +2,26 @@
 
 #include <type_traits>
 #include <utility>
+#include <complex>
 #include <satyr/index.h>
+#include <satyr/traits.h>
 
 namespace satyr {
+//------------------------------------------------------------------------------
+// RealScalar
+//------------------------------------------------------------------------------
+template <class T>
+concept bool RealScalar = std::is_integral_v<uncvref_t<T>> ||
+                          std::is_same_v<uncvref_t<T>, double> ||
+                          std::is_same_v<uncvref_t<T>, float>;
+
 //------------------------------------------------------------------------------
 // Scalar
 //------------------------------------------------------------------------------
 template <class T>
-concept bool Scalar = std::is_integral_v<std::remove_cv_t<T>> ||
-                      std::is_same_v<std::remove_cv_t<T>, double> ||
-                      std::is_same_v<std::remove_cv_t<T>, float>;
+concept bool Scalar =
+    RealScalar<T> || std::is_same_v<uncvref_t<T>, std::complex<float>> ||
+    std::is_same_v<uncvref_t<T>, std::complex<double>>;
 
 //------------------------------------------------------------------------------
 // Functor

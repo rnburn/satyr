@@ -64,9 +64,8 @@ template <class T>
 using structure_or_null_t = typename structure_or_null_impl<T>::type;
 } // namespace detail
 
-template <class... Tx>
-  requires ((has_structure_v<Tx> || Scalar<Tx>) && ...) &&
-           (has_structure_v<Tx> + ... ) > 0
+template <Expressible... Tx>
+  requires (has_structure_v<Tx> + ... ) > 0
 using common_structure_t =
   typename detail::common_structure_impl<
                 detail::structure_or_null_t<Tx>...>::type;

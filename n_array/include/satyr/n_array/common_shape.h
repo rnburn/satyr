@@ -2,6 +2,7 @@
 
 #include <satyr/concept.h>
 #include <satyr/k_array.h>
+#include <satyr/n_array/concept.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -73,7 +74,7 @@ auto get_common_shape_impl(const TFirst& t_first, const TRest&... t_rest) {
 }
 } // namespace detail
 
-template <class... Tx>
+template <Expressible... Tx>
   requires detail::first_num_dimensions_v<Tx...> > 0 &&
            detail::match_num_dimensions_v<
                       detail::first_num_dimensions_v<Tx...>, Tx...>
