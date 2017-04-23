@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <satyr/index.h>
 #include <satyr/concept.h>
+#include <satyr/traits.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -13,6 +14,7 @@ template <class T>
 concept bool FlatEvaluator = 
   requires (T f, index_t i) {
     { f(i) } -> Scalar;
+    &T::operator();
   } && std::is_copy_constructible_v<T>;
 
 //------------------------------------------------------------------------------
@@ -28,6 +30,7 @@ template <size_t... Indexes, class T>
   requires requires (T f, 
                      std::enable_if_t<(Indexes,true), index_t>... indexes) {
     { f(indexes...) } -> Scalar;
+    &T::operator();
   }
 struct is_k_evaluator_impl<std::index_sequence<Indexes...>, T> {
   static constexpr bool value = true;
