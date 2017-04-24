@@ -13,6 +13,8 @@ int main() {
   auto expr4 = map(f, array1, array2);
   auto expr5 = map(f, array1, 5.0);
 
-  // auto expr5 = map(f, array1, array3); // won't compile
+  // auto expr6 = map(f, array1, array3); // won't compile
+
+  auto expr7 = array1 + array2;
   return 0;
 }
