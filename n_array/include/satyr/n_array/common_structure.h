@@ -14,13 +14,13 @@ template <Structure T> struct common_structure_type<T, T> {
 };
 
 template <Structure X, Structure Y>
-  requires std::is_base_of_v<X, Y>
+  requires refines_structure_v<Y, X>
 struct common_structure_type<X, Y> {
   using type = X;
 };
 
 template <Structure X, Structure Y>
-  requires std::is_base_of_v<Y, X>
+  requires refines_structure_v<X, Y>
 struct common_structure_type<X, Y> {
   using type = Y;
 };

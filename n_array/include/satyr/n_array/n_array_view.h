@@ -13,7 +13,7 @@ template <Scalar T, size_t K, Structure Structure>
 class n_array_view;
 
 template <Scalar T, size_t K, Structure Structure>
-  requires std::is_const_v<T> && std::is_base_of_v<structure, Structure>
+  requires std::is_const_v<T>
 class n_array_view<T, K, Structure> :
     public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
 {
