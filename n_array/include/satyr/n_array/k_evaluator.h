@@ -1,22 +1,9 @@
 #pragma once
 
 #include <satyr/n_array/concept.h>
+#include <satyr/k_array.h>
 
 namespace satyr {
-//------------------------------------------------------------------------------
-// flatten_indexes
-//------------------------------------------------------------------------------
-namespace detail {
-template <class... IndexesRest>
-index_t flatten_indexes(index_t index, index_t size,
-                        IndexesRest... indexes_rest) {
-  if constexpr(sizeof...(IndexesRest)) 
-    return index + size * flatten_indexes(indexes_rest...);
-  else
-    return index;
-}
-}
-
 //------------------------------------------------------------------------------
 // k_evaluator
 //------------------------------------------------------------------------------
@@ -32,8 +19,9 @@ class k_evaluator_impl<std::index_sequence<Indexes...>, Evaluator> {
    {}
 
    decltype(auto) operator()(
+       const satyr::shape<sizeof...(Indexes)>& shape,
        std::enable_if_t<(Indexes, true), index_t>... indexes) const {
-     return evaluator_(flatten_indexes(indexes...));
+     return evaluator_(get_1d_index(shape, indexes...));
    }
  private:
    Evaluator evaluator_;
@@ -42,15 +30,15 @@ class k_evaluator_impl<std::index_sequence<Indexes...>, Evaluator> {
 
 template <size_t K, FlatEvaluator Evaluator>
 class k_evaluator
-    : public detail::k_evaluator_impl<std::make_index_sequence<2 * K>,
+    : public detail::k_evaluator_impl<std::make_index_sequence<K>,
                                       Evaluator> {
+  using base = detail::k_evaluator_impl<std::make_index_sequence<K>, Evaluator>;
+
  public:
   explicit k_evaluator(const Evaluator& evaluator)
-      : detail::k_evaluator_impl<std::make_index_sequence<2 * K>, Evaluator>{
-            evaluator} {}
+      : base{evaluator} {}
 
-  using detail::k_evaluator_impl<std::make_index_sequence<2 * K>,
-                                 Evaluator>::k_evaluator_impl;
+  using base::base;
 };
 
 //------------------------------------------------------------------------------

@@ -4,6 +4,9 @@
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/scalar_allocator.h>
 #include <satyr/n_array/n_array_accessor.h>
+#include <satyr/n_array/n_array_assignment.h>
+#include <satyr/n_array/n_array_expression.h>
+#include <satyr/n_array/n_array_evaluator.h>
 #include <satyr/n_array/n_array_view.h>
 #include <satyr/k_array.h>
 
@@ -18,11 +21,12 @@ class n_array_impl;
 template <size_t... Indexes, class T, size_t K, class Structure>
 class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     : scalar_allocator<T>,
-  public n_array_const_view<T, K, Structure>,
-  public n_array_accessor<
+      public n_array_const_view<T, K, Structure>,
+      public n_array_accessor<
           n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>, K,
           Structure> {
   using base = n_array_const_view<T, K, Structure>;
+
  public:
    using structure = Structure;
 
@@ -134,10 +138,20 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 }
 
 template <Scalar T, size_t K, Structure Structure>
-class n_array : public detail::n_array_impl<std::make_index_sequence<K>, T, K,
-                                            Structure> {
+class n_array
+    : public detail::n_array_impl<std::make_index_sequence<K>, T, K, Structure>,
+      public n_array_assignment<
+          n_array<T, K, Structure>,
+          n_array_expression<K, Structure, contiguous_n_array_evaluator<T>>> {
+  using base =
+      detail::n_array_impl<std::make_index_sequence<K>, T, K, Structure>;
+
  public:
-  using detail::n_array_impl<std::make_index_sequence<K>, T, K,
-                             Structure>::n_array_impl;
+  using base::base;
+  using base::operator=;
+  using n_array_assignment<
+      n_array,
+      n_array_expression<K, Structure, contiguous_n_array_evaluator<T>>>::
+  operator=;
 };
 } // namespace satyr

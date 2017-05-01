@@ -5,6 +5,7 @@
 #include <satyr/n_array/n_array_expression.h>
 #include <satyr/n_array/conversion_evaluator.h>
 #include <satyr/n_array/k_evaluator.h>
+#include <satyr/n_array/expression.h>
 #include <satyr/traits.h>
 
 namespace satyr {
@@ -31,10 +32,11 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
   }
 
   decltype(auto) operator()(
+      const satyr::shape<sizeof...(Indexes2)>& shape,
       std::enable_if_t<(Indexes2, true), index_t>... indexes) const 
       requires (KEvaluator<Evaluators, sizeof...(Indexes1)> && ...)
   {
-    return functor_(std::get<Indexes1>(evaluators_)(indexes...)...);
+    return functor_(shape, std::get<Indexes1>(evaluators_)(indexes...)...);
   }
 
  private:
@@ -44,18 +46,18 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
 
 template <size_t K, class Functor, class... Evaluators>
 class map_evaluator
-    : public map_evaluator_impl<std::make_index_sequence<K>,
-                                std::make_index_sequence<2 * K>,
+    : public map_evaluator_impl<std::index_sequence_for<Evaluators...>,
+                                std::make_index_sequence<K>,
                                 Functor, Evaluators...> {
+  using base = map_evaluator_impl<std::index_sequence_for<Evaluators...>,
+                                  std::make_index_sequence<K>, Functor,
+                                  Evaluators...>;
+
  public:
   map_evaluator(Functor f, const Evaluators&... evaluators)
-      : map_evaluator_impl<std::make_index_sequence<K>,
-                           std::make_index_sequence<2 * K>, Functor,
-                           Evaluators...>{f, evaluators...} {}
+    : base{f, evaluators...} {}
 
-  using map_evaluator_impl<std::make_index_sequence<K>,
-                           std::make_index_sequence<2 * K>, Functor,
-                           Evaluators...>::map_evaluator_impl;
+  using base::base;
 };
 } // namespace detail
 
@@ -126,9 +128,20 @@ template <class Functor, class... Expressibles>
                     expressible_codomain_t<
                       common_structure_t<Expressibles...>,
                       Expressibles>... values) {
-             requires Scalar<uncvref_t<decltype(f(values...))>>;
+    requires Scalar<uncvref_t<decltype(f(values...))>>;
   }
 constexpr bool is_mappable_v<Functor, Expressibles...> = true;
+
+template <class Functor, Expressible... Expressibles>
+auto map_impl(Functor f, Expressibles&&... expressibles) {
+  using Structure = common_structure_t<Expressibles...>;
+  auto shape = get_common_shape(expressibles...);
+  constexpr size_t K = num_dimensions_v<decltype(shape)>;
+  return make_n_array_expression<Structure>(
+      shape,
+      detail::make_map_evaluator<K>(
+          f, convert_evaluator<Structure>(make_expression(expressibles))...));
+}
 } // namespace detail
 
 template <class Functor, Expressible... Expressibles>
@@ -138,12 +151,6 @@ template <class Functor, Expressible... Expressibles>
            detail::have_common_evaluator_v<Expressibles...> &&
            detail::is_mappable_v<Functor, Expressibles...>
 auto map(Functor f, Expressibles&&... expressibles) {
-  using Structure = common_structure_t<Expressibles...>;
-  auto shape = get_common_shape(expressibles...);
-  constexpr size_t K = num_dimensions_v<decltype(shape)>;
-  return make_n_array_expression<Structure>(
-      shape,
-      detail::make_map_evaluator<K>(
-          f, convert_evaluator<Structure>(make_expression(expressibles))...));
+  return detail::map_impl(f, expressibles...);
 }
 } // namespace satyr

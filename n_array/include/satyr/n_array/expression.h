@@ -3,7 +3,7 @@
 #include <satyr/concept.h>
 #include <satyr/n_array/n_array_expression.h>
 #include <satyr/n_array/n_array_evaluator.h>
-#include <satyr/n_array.h>
+#include <satyr/n_array/concept.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------

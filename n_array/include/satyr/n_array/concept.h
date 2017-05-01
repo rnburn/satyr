@@ -6,6 +6,7 @@
 #include <satyr/concept.h>
 #include <satyr/traits.h>
 #include <satyr/n_array/structure.h>
+#include <satyr/k_array.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -29,8 +30,9 @@ struct is_k_evaluator_impl {
 
 template <size_t... Indexes, class T>
   requires requires (T f, 
+                     const satyr::shape<sizeof...(Indexes)>& shape,
                      std::enable_if_t<(Indexes,true), index_t>... indexes) {
-    { f(indexes...) } -> Scalar;
+    { f(shape, indexes...) } -> Scalar;
     &T::operator();
   }
 struct is_k_evaluator_impl<std::index_sequence<Indexes...>, T> {
@@ -40,7 +42,7 @@ struct is_k_evaluator_impl<std::index_sequence<Indexes...>, T> {
 
 template <class T, size_t K>
 concept bool KEvaluator =
-    detail::is_k_evaluator_impl<std::make_index_sequence<2*K>, T>::value;
+    detail::is_k_evaluator_impl<std::make_index_sequence<K>, T>::value;
 
 //------------------------------------------------------------------------------
 // Evaluator

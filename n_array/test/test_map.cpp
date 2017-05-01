@@ -16,5 +16,9 @@ int main() {
   // auto expr6 = map(f, array1, array3); // won't compile
 
   auto expr7 = array1 + array2;
+
+  array1 = 59;
+  array1 += 51;
+  array1 += array1 + array2;
   return 0;
 }
