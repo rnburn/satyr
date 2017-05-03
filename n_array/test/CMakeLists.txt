@@ -5,3 +5,7 @@ target_link_libraries(test_n_array ${TBB_LIB})
 add_executable(test_map test_map.cpp)
 add_test(test_map test_map)
 target_link_libraries(test_map ${TBB_LIB})
+
+add_executable(test_expression test_expression.cpp)
+add_test(test_expression test_expression)
+target_link_libraries(test_expression ${TBB_LIB})
