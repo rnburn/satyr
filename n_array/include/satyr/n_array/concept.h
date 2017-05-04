@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <satyr/index.h>
 #include <satyr/concept.h>
+#include <satyr/policy.h>
 #include <satyr/traits.h>
 #include <satyr/n_array/structure.h>
 #include <satyr/k_array.h>
@@ -56,6 +57,12 @@ concept bool Evaluator = FlatEvaluator<T> || KEvaluator<T, K>;
 template <size_t K, Structure Structure, Evaluator<K> Evaluator>
 class n_array_expression;
 
+template <size_t K, Structure Structure, Evaluator<K> Evaluator, Policy Policy>
+class n_array_expression2;
+
+template <Scalar T, Policy Policy>
+class scalar_expression;
+
 template <Scalar T, size_t K, Structure Structure>
 class n_array;
 
@@ -70,6 +77,16 @@ template <size_t K, Structure Structure, Evaluator<K> Evaluator>
 constexpr bool
     match_n_array_expression<n_array_expression<K, Structure, Evaluator>> =
         true;
+
+template <size_t K, Structure Structure, Evaluator<K> Evaluator, Policy Policy>
+constexpr bool match_n_array_expression<
+    n_array_expression2<K, Structure, Evaluator, Policy>> = true;
+
+template <class>
+constexpr bool match_scalar_expression = false;
+
+template <Scalar T, Policy Policy>
+constexpr bool match_scalar_expression<scalar_expression<T, Policy>> = true;
 
 template <class>
 constexpr bool match_n_array = false;
@@ -93,6 +110,11 @@ concept bool NArrayExpressible =
 template <class T>
 concept bool RealNArrayExpressible =
     NArrayExpressible<T>&& RealScalar<value_type_t<T>>;
+
+template <class T>
+concept bool ScalarExpressible =
+  Scalar<T> ||
+  detail::match_scalar_expression<uncvref_t<T>>;
 
 template <class T>
 concept bool Expressible = NArrayExpressible<T> || Scalar<T>;

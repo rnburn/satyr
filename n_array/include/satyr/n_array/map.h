@@ -18,6 +18,7 @@ class map_evaluator_impl;
 
 template <size_t... Indexes1, size_t... Indexes2, class Functor,
           class... Evaluators>
+      requires (FlatEvaluator<Evaluators> && ...)
 class map_evaluator_impl<std::index_sequence<Indexes1...>,
                          std::index_sequence<Indexes2...>, Functor,
                          Evaluators...> {
@@ -26,10 +27,24 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
       : functor_{functor}, evaluators_{evaluators...} {}
 
   decltype(auto) operator()(index_t index) const 
-      requires (FlatEvaluator<Evaluators> && ...)
   {
     return functor_(std::get<Indexes1>(evaluators_)(index)...);
   }
+
+ private:
+  Functor functor_;
+  std::tuple<Evaluators...> evaluators_;
+};
+
+template <size_t... Indexes1, size_t... Indexes2, class Functor,
+          class... Evaluators>
+      requires (KEvaluator<Evaluators, sizeof...(Indexes1)> && ...)
+class map_evaluator_impl<std::index_sequence<Indexes1...>,
+                         std::index_sequence<Indexes2...>, Functor,
+                         Evaluators...> {
+ public:
+  map_evaluator_impl(Functor functor, const Evaluators&... evaluators)
+      : functor_{functor}, evaluators_{evaluators...} {}
 
   decltype(auto) operator()(
       const satyr::shape<sizeof...(Indexes2)>& shape,

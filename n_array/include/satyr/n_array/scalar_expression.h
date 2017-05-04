@@ -2,6 +2,7 @@
 
 #include <satyr/execution_policy.h>
 #include <satyr/concept.h>
+#include <satyr/n_array/concept.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -10,6 +11,8 @@ namespace satyr {
 template <Scalar Scalar, Policy Policy>
 class scalar_expression {
  public:
+  using value_type = Scalar;
+
   scalar_expression(Scalar value, Policy policy)
       : value_{value}, policy_{policy} {}
 

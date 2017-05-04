@@ -4,6 +4,7 @@
 #include <satyr/n_array/structure.h>
 #include <satyr/k_array.h>
 #include <satyr/execution_policy.h>
+#include <satyr/traits.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -13,6 +14,7 @@ template <size_t K, Structure Structure, Evaluator<K> Evaluator>
 class n_array_expression {
  public:
    using structure = Structure;
+   using value_type = uncvref_t<codomain_t<Evaluator>>;
 
    n_array_expression(const satyr::shape<K>& shape, const Evaluator& evaluator)
      : shape_{shape}, evaluator_{evaluator} {}
@@ -30,6 +32,7 @@ template <size_t K, Structure Structure, Evaluator<K> Evaluator,
 class n_array_expression2 {
  public:
    using structure = Structure;
+   using value_type = uncvref_t<codomain_t<Evaluator>>;
 
    n_array_expression2(const satyr::shape<K>& shape, const Evaluator& evaluator,
                       Policy policy)
