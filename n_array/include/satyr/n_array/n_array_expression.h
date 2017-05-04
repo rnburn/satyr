@@ -42,6 +42,7 @@ class n_array_expression2 {
    const Evaluator& evaluator() const { return evaluator_; }
 
    Policy policy() const { return policy_; }
+
  private:
    satyr::shape<K> shape_;
    Evaluator evaluator_;
