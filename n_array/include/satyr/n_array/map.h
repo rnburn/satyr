@@ -26,8 +26,7 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
   map_evaluator_impl(Functor functor, const Evaluators&... evaluators)
       : functor_{functor}, evaluators_{evaluators...} {}
 
-  decltype(auto) operator()(index_t index) const 
-  {
+  decltype(auto) operator()(index_t index) const {
     return functor_(std::get<Indexes1>(evaluators_)(index)...);
   }
 
@@ -48,9 +47,7 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
 
   decltype(auto) operator()(
       const satyr::shape<sizeof...(Indexes2)>& shape,
-      std::enable_if_t<(Indexes2, true), index_t>... indexes) const 
-      requires (KEvaluator<Evaluators, sizeof...(Indexes1)> && ...)
-  {
+      std::enable_if_t<(Indexes2, true), index_t>... indexes) const {
     return functor_(shape, std::get<Indexes1>(evaluators_)(indexes...)...);
   }
 
@@ -152,10 +149,13 @@ auto map_impl(Functor f, Expressibles&&... expressibles) {
   using Structure = common_structure_t<Expressibles...>;
   auto shape = get_common_shape(expressibles...);
   constexpr size_t K = num_dimensions_v<decltype(shape)>;
-  return make_n_array_expression<Structure>(
-      shape,
-      detail::make_map_evaluator<K>(
-          f, convert_evaluator<Structure>(make_expression(expressibles))...));
+  return [&](const auto&... expressions) {
+    auto policy = (expressions.policy() | ...);
+    return make_n_array_expression<Structure>(
+        shape, detail::make_map_evaluator<K>(
+                   f, convert_evaluator<Structure>(expressions)...),
+        policy);
+  }(make_expression(expressibles)...);
 }
 } // namespace detail
 

@@ -54,11 +54,8 @@ concept bool Evaluator = FlatEvaluator<T> || KEvaluator<T, K>;
 //------------------------------------------------------------------------------
 // Expressible
 //------------------------------------------------------------------------------
-template <size_t K, Structure Structure, Evaluator<K> Evaluator>
-class n_array_expression;
-
 template <size_t K, Structure Structure, Evaluator<K> Evaluator, Policy Policy>
-class n_array_expression2;
+class n_array_expression;
 
 template <Scalar T, Policy Policy>
 class scalar_expression;
@@ -73,20 +70,22 @@ namespace detail {
 template <class>
 constexpr bool match_n_array_expression = false;
 
-template <size_t K, Structure Structure, Evaluator<K> Evaluator>
-constexpr bool
-    match_n_array_expression<n_array_expression<K, Structure, Evaluator>> =
-        true;
-
 template <size_t K, Structure Structure, Evaluator<K> Evaluator, Policy Policy>
 constexpr bool match_n_array_expression<
-    n_array_expression2<K, Structure, Evaluator, Policy>> = true;
+    n_array_expression<K, Structure, Evaluator, Policy>> = true;
 
 template <class>
 constexpr bool match_scalar_expression = false;
 
 template <Scalar T, Policy Policy>
 constexpr bool match_scalar_expression<scalar_expression<T, Policy>> = true;
+
+template <class>
+constexpr bool match_real_scalar_expression = false;
+
+template <RealScalar T, Policy Policy>
+constexpr bool match_real_scalar_expression<scalar_expression<T, Policy>> =
+    true;
 
 template <class>
 constexpr bool match_n_array = false;
@@ -117,8 +116,14 @@ concept bool ScalarExpressible =
   detail::match_scalar_expression<uncvref_t<T>>;
 
 template <class T>
-concept bool Expressible = NArrayExpressible<T> || Scalar<T>;
+concept bool RealScalarExpressible =
+  RealScalar<T> ||
+  detail::match_real_scalar_expression<uncvref_t<T>>;
 
 template <class T>
-concept bool RealExpressible = RealNArrayExpressible<T> || RealScalar<T>;
+concept bool Expressible = NArrayExpressible<T> || ScalarExpressible<T>;
+
+template <class T>
+concept bool RealExpressible =
+    RealNArrayExpressible<T> || RealScalarExpressible<T>;
 }  // namespace satyr

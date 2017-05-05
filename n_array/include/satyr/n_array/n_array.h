@@ -142,7 +142,8 @@ class n_array
     : public detail::n_array_impl<std::make_index_sequence<K>, T, K, Structure>,
       public n_array_assignment<
           n_array<T, K, Structure>,
-          n_array_expression<K, Structure, contiguous_n_array_evaluator<T>>> {
+          n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+                              no_policy>> {
   using base =
       detail::n_array_impl<std::make_index_sequence<K>, T, K, Structure>;
 
@@ -151,7 +152,7 @@ class n_array
   using base::operator=;
   using n_array_assignment<
       n_array,
-      n_array_expression<K, Structure, contiguous_n_array_evaluator<T>>>::
-  operator=;
+      n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+                          no_policy>>::operator=;
 };
 } // namespace satyr

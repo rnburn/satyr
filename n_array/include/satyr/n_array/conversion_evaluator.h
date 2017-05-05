@@ -22,31 +22,16 @@ auto make_conversion_evaluator(FromStructure, ToStructure,
 // convert_evaluator
 //------------------------------------------------------------------------------
 template <Structure ToStructure, size_t K, Structure FromStructure,
-          Evaluator<K> Evaluator>
-    requires requires (FromStructure from_structure, ToStructure to_structure,
-        const n_array_expression<K, FromStructure, Evaluator>& expression) {
-      /* { */ 
-        make_conversion_evaluator<K>(from_structure, to_structure, 
-                                     expression.evaluator()) ;
-      /* } -> satyr::Evaluator<K>; */
-    }
-auto convert_evaluator(
-    const n_array_expression<K, FromStructure, Evaluator>& expression) {
-  return make_conversion_evaluator<K>(FromStructure{}, ToStructure{},
-                                      expression.evaluator());
-}
-
-template <Structure ToStructure, size_t K, Structure FromStructure,
           Evaluator<K> Evaluator, Policy Policy>
     requires requires (FromStructure from_structure, ToStructure to_structure,
-        const n_array_expression2<K, FromStructure, 
+        const n_array_expression<K, FromStructure, 
                                   Evaluator, Policy>& expression) {
       /* { */ 
         make_conversion_evaluator<K>(from_structure, to_structure, 
                                      expression.evaluator()) ;
       /* } -> satyr::Evaluator<K>; */
     }
-auto convert_evaluator(const n_array_expression2<K, FromStructure, Evaluator,
+auto convert_evaluator(const n_array_expression<K, FromStructure, Evaluator,
                                                  Policy>& expression) {
   return make_conversion_evaluator<K>(FromStructure{}, ToStructure{},
                                       expression.evaluator());
