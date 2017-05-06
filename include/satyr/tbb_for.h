@@ -6,9 +6,8 @@
 #include <tbb/parallel_for.h>
 
 namespace satyr {
-template <Policy Policy, class F>
-  requires has_policy_v<grainularity, Policy> &&
-         (Functor<F, void(index_t)> || Functor<F, bool(index_t)>)
+template <Policy Policy, IndexFunctor<1> F>
+  requires has_policy_v<grainularity, Policy>
 void for_(Policy policy, index_t first, index_t last, F f) {
   auto grainularity = get_policy<satyr::grainularity>(policy);
   tbb::parallel_for(

@@ -8,9 +8,8 @@ namespace satyr {
 //------------------------------------------------------------------------------
 // for_each_index
 //------------------------------------------------------------------------------
-template <Policy Policy, size_t K, class Functor>
+template <Policy Policy, size_t K, IndexFunctor<K> Functor>
   requires !has_policy_v<grainularity, Policy>
-       && (IndexFunctor<Functor, void, K> || IndexFunctor<Functor, bool, K>)
 void for_each_index(Policy policy, std::array<index_t, K> extents,
     Functor f) {
   if constexpr(K == 1) { for_(policy, 0, extents[0], f); }
@@ -47,11 +46,10 @@ void parallel_for_each_index_impl(Policy policy,
     });
   }
 }
-}
+} // namespace detail
 
-template <Policy Policy, size_t K, class Functor>
+template <Policy Policy, size_t K, IndexFunctor<K> Functor>
   requires has_policy_v<grainularity, Policy> 
-       && (IndexFunctor<Functor, void, K> || IndexFunctor<Functor, bool, K>)
 void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
   std::array<index_t, K - 1> cardinalities;
   index_t cardinality = 1;
@@ -65,25 +63,23 @@ void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
 //------------------------------------------------------------------------------
 // for_each_index_half
 //------------------------------------------------------------------------------
-template <uplo_t Uplo, Policy Policy, class Functor>
+template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
   requires std::is_same_v<Uplo, uplo_t::lower>
        && !has_policy_v<grainularity, Policy>
-       && (IndexFunctor<Functor, void, 2> || IndexFunctor<Functor, bool, 2>)
-auto for_each_index_half(Policy policy, std::array<index_t, 2> extents,
+void for_each_index_half(Policy policy, std::array<index_t, 2> extents,
                          Functor f) {
-  return for_(no_policy_v, 0, extents[1], [=](index_t j) {
-    return for_(policy, j, extents[0], [=](index_t i) { return f(i, j); });
+  for_(no_policy_v, 0, extents[1], [=](index_t j) {
+    for_(policy, j, extents[0], [=](index_t i) { f(i, j); });
   });
 }
 
-template <uplo_t Uplo, Policy Policy, class Functor>
+template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
   requires std::is_same_v<Uplo, uplo_t::upper>
        && !has_policy_v<grainularity, Policy>
-       && (IndexFunctor<Functor, void, 2> || IndexFunctor<Functor, bool, 2>)
-auto for_each_index_half(Policy policy, std::array<index_t, 2> extents,
+void for_each_index_half(Policy policy, std::array<index_t, 2> extents,
                          Functor f) {
-  return for_(no_policy_v, 0, extents[1], [=](index_t j) {
-    return for_(policy, 0, j+1, [=](index_t i) { return f(i, j); });
+  for_(no_policy_v, 0, extents[1], [=](index_t j) {
+    for_(policy, 0, j+1, [=](index_t i) { f(i, j); });
   });
 }
 } // namespace satyr

@@ -45,16 +45,18 @@ concept bool Functor = detail::is_functor_impl<T, F>;
 // IndexFunctor
 //------------------------------------------------------------------------------
 namespace detail {
-template <class, class Return, class F>
+template <class, class F>
 constexpr bool is_index_functor_impl = false;
 
-template <size_t... Indexes, class Return, class F>
+template <size_t... Indexes, class F>
+  requires requires(F f, std::enable_if_t<(Indexes,true), index_t>... indexes) {
+    f(indexes...);
+  }
 constexpr bool
-    is_index_functor_impl<std::index_sequence<Indexes...>, Return, F> =
-        Functor<F, Return(std::enable_if_t<(Indexes, true), index_t>...)>;
-}
+    is_index_functor_impl<std::index_sequence<Indexes...>, F> = true;
+} // namespace detail
 
-template <class F, class Return, size_t K>
+template <class F, size_t K>
 concept bool IndexFunctor =
-    detail::is_index_functor_impl<std::make_index_sequence<K>, Return, F>;
-} // namespace satyr
+    detail::is_index_functor_impl<std::make_index_sequence<K>, F>;
+}  // namespace satyr
