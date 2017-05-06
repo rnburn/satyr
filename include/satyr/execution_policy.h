@@ -2,6 +2,7 @@
 
 #include <satyr/policy.h>
 #include <satyr/index.h>
+#include <algorithm>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -57,6 +58,11 @@ struct grainularity : parallel_policy_group {
   explicit grainularity(index_t value) : value{value} {}
   index_t value;
 };
+
+inline satyr::grainularity subdivide(satyr::grainularity grainularity,
+                                     index_t n) {
+  return satyr::grainularity{std::max<index_t>(grainularity.value / n, 1)};
+}
 
 //------------------------------------------------------------------------------
 // parallel
