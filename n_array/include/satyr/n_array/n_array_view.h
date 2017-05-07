@@ -59,8 +59,8 @@ class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure>,
 };
 
 //------------------------------------------------------------------------------
-// n_array_const_view
+// n_array_cview
 //------------------------------------------------------------------------------
 template <Scalar T, size_t K, Structure Structure>
-using n_array_const_view = n_array_view<const T, K, Structure>;
+using n_array_cview = n_array_view<const T, K, Structure>;
 } // namespace satyr

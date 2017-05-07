@@ -9,10 +9,10 @@ namespace satyr {
 // k_array
 //------------------------------------------------------------------------------
 template <class T, size_t K, class Alloc = std::allocator<T>>
-class k_array : public k_array_const_view<T, K>,
+class k_array : public k_array_cview<T, K>,
                 public detail::k_array_accessor<k_array<T, K, Alloc>, K>,
                 private Alloc {
-  using base = k_array_const_view<T, K>;
+  using base = k_array_cview<T, K>;
   using accessor = detail::k_array_accessor<k_array<T, K, Alloc>, K>;
  public:
   // constructor

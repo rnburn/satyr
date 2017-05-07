@@ -8,7 +8,7 @@ namespace satyr {
 // triangular_structure
 //------------------------------------------------------------------------------
 template <uplo_t Uplo>
-struct triangular_structure : refines_structure<general_structure> {
+struct triangular_structure : structure, refines_structure<general_structure> {
   static constexpr bool is_equal_dimensional = true;
   static constexpr uplo_t uplo = Uplo;
 };
@@ -19,7 +19,7 @@ using lower_triangular_structure = triangular_structure<uplo_t::lower>;
 //------------------------------------------------------------------------------
 // symmetric_structure
 //------------------------------------------------------------------------------
-struct symmetric_structure : refines_structure<general_structure> {
+struct symmetric_structure : structure, refines_structure<general_structure> {
   static constexpr bool is_equal_dimensional = true;
   static constexpr uplo_t uplo = uplo_t::lower;
 };
@@ -27,9 +27,9 @@ struct symmetric_structure : refines_structure<general_structure> {
 //------------------------------------------------------------------------------
 // diagonal_structure
 //------------------------------------------------------------------------------
-struct diagonal_structure : refines_structure<general_structure>,
+struct diagonal_structure : structure,
+                            refines_structure<general_structure>,
                             refines_structure<upper_triangular_structure>,
                             refines_structure<lower_triangular_structure>,
-                            refines_structure<symmetric_structure> {
-};
-} // namespace satyr
+                            refines_structure<symmetric_structure> {};
+}  // namespace satyr

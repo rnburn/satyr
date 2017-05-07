@@ -21,11 +21,11 @@ class n_array_impl;
 template <size_t... Indexes, class T, size_t K, class Structure>
 class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     : scalar_allocator<T>,
-      public n_array_const_view<T, K, Structure>,
+      public n_array_cview<T, K, Structure>,
       public n_array_accessor<
           n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>, K,
           Structure> {
-  using base = n_array_const_view<T, K, Structure>;
+  using base = n_array_cview<T, K, Structure>;
 
  public:
    using structure = Structure;
@@ -61,6 +61,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   }
 
   explicit n_array_impl(std::enable_if_t<(Indexes, true), index_t>... extents)
+    requires !is_equal_dimensional_v<Structure>
       : n_array_impl{satyr::shape<K>{extents...}} {}
 
   explicit n_array_impl(index_t extent) 

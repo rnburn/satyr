@@ -11,6 +11,7 @@ include_directories(${TBB_INCLUDE_DIR})
 set(MODULE_LIST
 k_array
 n_array
+linear_algebra
 )
 
 

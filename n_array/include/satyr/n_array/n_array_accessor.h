@@ -34,9 +34,9 @@ struct n_array_const_accessor_impl<std::index_sequence<Indexes...>, Derived,
     return derived.as_k_array()(indexes...);
   }
 
-  auto operator()(std::enable_if_t<(Indexes,true), index_t>... indexes) const {
-    return this->operator()(
-        access_mode::readwrite_v, indexes...);
+  decltype(auto) operator()(
+      std::enable_if_t<(Indexes, true), index_t>... indexes) const {
+    return this->operator()(access_mode::readwrite_v, indexes...);
   }
 };
 } // namespace detail

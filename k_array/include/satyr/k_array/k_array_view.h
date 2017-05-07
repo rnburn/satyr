@@ -59,8 +59,8 @@ class k_array_view<T, K> : public k_array_view<const T, K>
 };
 
 //------------------------------------------------------------------------------
-// k_array_const_view
+// k_array_cview
 //------------------------------------------------------------------------------
 template <class T, size_t K>
-using k_array_const_view = k_array_view<const T, K>;
+using k_array_cview = k_array_view<const T, K>;
 } // namespace satyr

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <satyr/n_array.h>
+#include <satyr/linear_algebra/structure.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
