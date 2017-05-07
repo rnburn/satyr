@@ -15,6 +15,12 @@ scalar_expression<Scalar, no_policy> make_expression(Scalar value) {
   return {value, no_policy_v};
 }
 
+template <Scalar Scalar, Policy Policy>
+scalar_expression<Scalar, Policy> make_expression(
+    const scalar_expression<Scalar, Policy>& expression) {
+  return expression;
+}
+
 template <size_t K, Structure Structure, Evaluator<K> Evaluator, Policy Policy>
 n_array_expression<K, Structure, Evaluator, Policy> make_expression(
     const n_array_expression<K, Structure, Evaluator, Policy>& expression) {
