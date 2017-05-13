@@ -123,14 +123,15 @@ constexpr bool have_common_evaluator_v = false;
 
 template <class... Expressibles>
   requires requires(Expressibles... expressibles) {
-    (convert_evaluator<common_structure_t<Expressibles...>>(
+    (convert_expression<common_structure_t<Expressibles...>>(
         make_expression(expressibles)), ...);
   }
 constexpr bool have_common_evaluator_v<Expressibles...> = true;
 
 template <class Structure, class Expressible>
-using expressible_codomain_t = codomain_t<decltype(convert_evaluator<Structure>(
-    make_expression(std::declval<Expressible>())))>;
+using expressible_codomain_t =
+    codomain_t<decltype(convert_expression<Structure>(
+        make_expression(std::declval<Expressible>())))>;
 
 template <class Functor, class... Expressibles>
 constexpr bool is_mappable_v = false;
@@ -153,7 +154,7 @@ auto map_impl(Functor f, Expressibles&&... expressibles) {
     auto policy = (expressions.policy() | ...);
     return make_n_array_expression<Structure>(
         shape, detail::make_map_evaluator<K>(
-                   f, convert_evaluator<Structure>(expressions)...),
+                   f, convert_expression<Structure>(expressions)...),
         policy);
   }(make_expression(expressibles)...);
 }
