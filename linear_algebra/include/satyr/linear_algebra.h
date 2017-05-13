@@ -4,3 +4,4 @@
 #include <satyr/linear_algebra/matrix_accessor.h>
 #include <satyr/linear_algebra/vector.h>
 #include <satyr/linear_algebra/conversion_evaluator.h>
+#include <satyr/linear_algebra/common_structure.h>
