@@ -33,7 +33,7 @@ template <size_t... Indexes, class T>
   requires requires (T f, 
                      const satyr::shape<sizeof...(Indexes)>& shape,
                      std::enable_if_t<(Indexes,true), index_t>... indexes) {
-    { f(shape, indexes...) } -> Scalar;
+    requires Scalar<decltype(f(shape, indexes...))>;
     &T::operator();
   }
 struct is_k_evaluator_impl<std::index_sequence<Indexes...>, T> {

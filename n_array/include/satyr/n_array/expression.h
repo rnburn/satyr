@@ -27,17 +27,31 @@ n_array_expression<K, Structure, Evaluator, Policy> make_expression(
   return expression;
 }
 
-template <Scalar T, size_t K, Structure Structure>
-n_array_expression<K, Structure, contiguous_n_array_evaluator<T>, no_policy>
-make_expression(n_array<T, K, Structure>& array) {
+template <Scalar T, size_t K>
+n_array_expression<K, general_structure, contiguous_n_array_evaluator<T>,
+                   no_policy>
+make_expression(n_array<T, K, general_structure>& array) {
   return {array.shape(), contiguous_n_array_evaluator(array.data()),
           no_policy_v};
 }
 
 template <Scalar T, size_t K, Structure Structure>
-n_array_expression<K, Structure, contiguous_n_array_evaluator<T>, no_policy>
-make_expression(const n_array_view<T, K, Structure>& array) {
+n_array_expression<K, Structure, k_n_array_evaluator<T, K>, no_policy>
+make_expression(n_array<T, K, Structure>& array) {
+  return {array.shape(), k_n_array_evaluator<T, K>{array.data()}, no_policy_v};
+}
+
+template <Scalar T, size_t K>
+n_array_expression<K, general_structure, contiguous_n_array_evaluator<T>,
+                   no_policy>
+make_expression(const n_array_view<T, K, general_structure>& array) {
   return {array.shape(), contiguous_n_array_evaluator(array.data()),
           no_policy_v};
+}
+
+template <Scalar T, size_t K, Structure Structure>
+n_array_expression<K, Structure, k_n_array_evaluator<T, K>, no_policy>
+make_expression(const n_array_view<T, K, Structure>& array) {
+  return {array.shape(), k_n_array_evaluator<T, K>{array.data()}, no_policy_v};
 }
 } // namespace satyr
