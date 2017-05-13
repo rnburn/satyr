@@ -48,7 +48,7 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
   decltype(auto) operator()(
       const satyr::shape<sizeof...(Indexes2)>& shape,
       std::enable_if_t<(Indexes2, true), index_t>... indexes) const {
-    return functor_(shape, std::get<Indexes1>(evaluators_)(indexes...)...);
+    return functor_(std::get<Indexes1>(evaluators_)(shape, indexes...)...);
   }
 
  private:

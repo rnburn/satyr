@@ -20,11 +20,23 @@ void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
 template <size_t K, KEvaluator<K> Evaluator, Policy Policy>
 void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
                  expression) {
-  auto shape = get_shape(expression);
+  auto shape = expression.shape();
   auto evaluator = expression.evaluator();
   for_each_index(simd_v | expression.policy(), shape.extents(),
-                 [shape, evaluator](auto... indexes) -> decltype(auto) {
-                   return evaluator(shape, indexes...);
+                 [shape, evaluator](auto... indexes) {
+                    evaluator(shape, indexes...);
                  });
+}
+
+template <Structure Structure, KEvaluator<2> Evaluator, Policy Policy>
+  requires Structure::uplo == uplo_t::upper ||
+           Structure::uplo == uplo_t::lower
+void execute(const n_array_expression<2, Structure, Evaluator, Policy>&
+                 expression) {
+  auto shape = expression.shape();
+  auto evaluator = expression.evaluator();
+  for_each_index_triangular<Structure::uplo>(
+      simd_v | expression.policy(), get_extent<0>(shape),
+      [shape, evaluator](index_t i, index_t j) { evaluator(shape, i, j); });
 }
 } // namespace satyr

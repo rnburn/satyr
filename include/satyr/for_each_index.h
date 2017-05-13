@@ -81,7 +81,7 @@ template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
   requires !has_policy_v<grainularity, Policy>
 void for_each_index_triangular(Policy policy, index_t n, Functor f) {
   for_(no_policy_v, 0, n, [=](index_t j) {
-    detail::for_each_index_triangular_impl(policy, j, n, f);
+    detail::for_each_index_triangular_impl<Uplo>(policy, j, n, f);
   });
 }
 
@@ -94,10 +94,10 @@ void for_each_index_triangular(Policy policy, index_t n, Functor f) {
   for_(grainularity_outer, 0, p, [=](index_t j1) {
     auto j2 = n - j1 - 1;
     if (j1 != j2) {
-      detail::for_each_index_triangular_impl(policy, j1, n, f);
-      detail::for_each_index_triangular_impl(policy, j2, n, f);
+      detail::for_each_index_triangular_impl<Uplo>(policy, j1, n, f);
+      detail::for_each_index_triangular_impl<Uplo>(policy, j2, n, f);
     } else {
-      detail::for_each_index_triangular_impl(policy, j1, n, f);
+      detail::for_each_index_triangular_impl<Uplo>(policy, j1, n, f);
     }
   });
 }
