@@ -14,5 +14,9 @@ int main() {
   auto expr2 = m1 + l1;
   auto expr3 = m1 + u1;
   auto expr4 = u1 + l1;
+
+  m1 = s1;
+  m1 = l1;
+  m1 = u1;
   return 0;
 }
