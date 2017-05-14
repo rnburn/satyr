@@ -5,3 +5,4 @@
 #include <satyr/n_array/map.h>
 #include <satyr/n_array/arithmetic.h>
 #include <satyr/n_array/policy.h>
+#include <satyr/n_array/math.h>

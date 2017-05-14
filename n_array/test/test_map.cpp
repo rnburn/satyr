@@ -20,5 +20,7 @@ int main() {
   array1 = 59;
   array1 += 51;
   array1 += array1 + array2;
+
+  sqrt(array1);
   return 0;
 }
