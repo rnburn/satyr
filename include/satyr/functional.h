@@ -10,11 +10,11 @@ struct NAME { \
     return x OPERATOR y; \
   } \
 };
-MAKE_FUNCTIONAL(equals, =);
-MAKE_FUNCTIONAL(plus_equals, +=);
-MAKE_FUNCTIONAL(minus_equals, -=);
-MAKE_FUNCTIONAL(times_equals, *=);
-MAKE_FUNCTIONAL(divides_equals, /=);
+MAKE_FUNCTIONAL(equals_functor, =);
+MAKE_FUNCTIONAL(plus_equals_functor, +=);
+MAKE_FUNCTIONAL(minus_equals_functor, -=);
+MAKE_FUNCTIONAL(times_equals_functor, *=);
+MAKE_FUNCTIONAL(divides_equals_functor, /=);
 #undef MAKE_FUNCTIONAL
 
 #define MAKE_FUNCTIONAL(NAME, FUNCTION) \

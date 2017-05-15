@@ -18,11 +18,11 @@ struct n_array_assignment {
     apply(NAME{}, make_expression(derived), make_expression(rhs)); \
     return derived; \
   }
-MAKE_ASSIGNMENT_OPERATOR(equals, =)
-MAKE_ASSIGNMENT_OPERATOR(plus_equals, +=)
-MAKE_ASSIGNMENT_OPERATOR(minus_equals, -=)
-MAKE_ASSIGNMENT_OPERATOR(times_equals, *=)
-MAKE_ASSIGNMENT_OPERATOR(divides_equals, /=)
+MAKE_ASSIGNMENT_OPERATOR(equals_functor, =)
+MAKE_ASSIGNMENT_OPERATOR(plus_equals_functor, +=)
+MAKE_ASSIGNMENT_OPERATOR(minus_equals_functor, -=)
+MAKE_ASSIGNMENT_OPERATOR(times_equals_functor, *=)
+MAKE_ASSIGNMENT_OPERATOR(divides_equals_functor, /=)
 #undef MAKE_ASSIGNMENT_OPERATOR
 };
 
@@ -39,11 +39,11 @@ struct n_array_const_assignment {
     apply(NAME{}, make_expression(derived), make_expression(rhs)); \
     return derived; \
   }
-MAKE_ASSIGNMENT_OPERATOR(equals, =)
-MAKE_ASSIGNMENT_OPERATOR(plus_equals, +=)
-MAKE_ASSIGNMENT_OPERATOR(minus_equals, -=)
-MAKE_ASSIGNMENT_OPERATOR(times_equals, *=)
-MAKE_ASSIGNMENT_OPERATOR(divides_equals, /=)
+MAKE_ASSIGNMENT_OPERATOR(equals_functor, =)
+MAKE_ASSIGNMENT_OPERATOR(plus_equals_functor, +=)
+MAKE_ASSIGNMENT_OPERATOR(minus_equals_functor, -=)
+MAKE_ASSIGNMENT_OPERATOR(times_equals_functor, *=)
+MAKE_ASSIGNMENT_OPERATOR(divides_equals_functor, /=)
 #undef MAKE_ASSIGNMENT_OPERATOR
 };
 } // namespace satyr
