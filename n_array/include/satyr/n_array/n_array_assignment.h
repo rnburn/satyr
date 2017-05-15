@@ -34,7 +34,7 @@ struct n_array_const_assignment {
 #define MAKE_ASSIGNMENT_OPERATOR(NAME, OPERATOR) \
   template <Expressible Rhs> \
     requires is_applicable_v<NAME, Lhs, Rhs> \
-  Derived& operator OPERATOR (const Rhs& rhs) const { \
+  const Derived& operator OPERATOR (const Rhs& rhs) const { \
     auto& derived = static_cast<const Derived&>(*this); \
     apply(NAME{}, make_expression(derived), make_expression(rhs)); \
     return derived; \

@@ -2,6 +2,7 @@
 
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/n_array_accessor.h>
+#include <satyr/n_array/n_array_assignment.h>
 #include <satyr/k_array.h>
 #include <satyr/concept.h>
 
@@ -18,6 +19,8 @@ class n_array_view<T, K, Structure> :
     public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
 {
  public:
+   using structure = Structure;
+
    // constructor
    n_array_view() = default;
 
@@ -39,23 +42,33 @@ class n_array_view<T, K, Structure> :
 
 template <Scalar T, size_t K, Structure Structure>
   requires !std::is_const_v<T>
-class n_array_view<T, K, Structure> : n_array_view<const T, K, Structure>, 
-      public n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>
-{
+class n_array_view<T, K, Structure>
+    : public n_array_view<const T, K, Structure>,
+      public n_array_const_accessor<n_array_view<T, K, Structure>, K,
+                                    Structure>,
+      public n_array_const_assignment<
+          n_array_view<T, K, Structure>,
+          n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+                             no_policy>> {
   using base = n_array_view<const T, K, Structure>;
+
  public:
-   // constructor
-   n_array_view() = default;
+  // constructor
+  n_array_view() = default;
 
-   n_array_view(T* data, shape<K> shape)
-     : base{data, shape} {}
+  n_array_view(T* data, shape<K> shape) : base{data, shape} {}
 
-   // accessors
-   T* data() const { return const_cast<T*>(base::data()); }
+  // accessors
+  T* data() const { return const_cast<T*>(base::data()); }
 
-   const k_array_view<T, K>& as_k_array() const {
-     return reinterpret_cast<const k_array_view<T, K>&>(base::as_k_array());
-   }
+  const k_array_view<T, K>& as_k_array() const {
+    return reinterpret_cast<const k_array_view<T, K>&>(base::as_k_array());
+  }
+
+  using n_array_const_assignment<
+      n_array_view,
+      n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+                         no_policy>>::operator=;
 };
 
 //------------------------------------------------------------------------------

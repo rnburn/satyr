@@ -121,7 +121,7 @@ Policy2 operator|(Policy1 policy1, Policy2 policy2) {
 
 template <class... Policies, class Policy>
   requires is_policy_primitive_v<Policy> &&
-           !(has_same_policy_group_v<Policies, Policy> && ...)
+           !(has_same_policy_group_v<Policies, Policy> || ...)
 policy_aggregate<Policies..., Policy> operator|(
     policy_aggregate<Policies...> policy_aggr, Policy policy) {
   return {
