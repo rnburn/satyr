@@ -12,7 +12,9 @@ template <size_t K>
 class shape {
  public:
   // constructor
-  shape() : extents_{} {}
+  shape() {
+    extents_ = {};
+  }
 
   template <class... Extents>
     requires sizeof...(Extents) == K && 
@@ -85,5 +87,4 @@ template <size_t K, class... Indexes>
 index_t get_1d_index(const shape<K>& shape, Indexes... indexes) {
   return detail::get_1d_index_impl<0>(shape, indexes...);
 }
-
 } // namespace satyr

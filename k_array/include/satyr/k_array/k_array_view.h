@@ -40,9 +40,9 @@ class k_array_view<T, K>
 
 template <class T, size_t K>
   requires !std::is_const_v<T>
-class k_array_view<T, K> : public k_array_view<const T, K>
-  , public detail::k_array_const_accessor<k_array_view<T, K>, K>
-{
+class k_array_view<T, K>
+    : public k_array_view<const T, K>,
+      public detail::k_array_const_accessor<k_array_view<T, K>, K> {
   using base = k_array_view<const T, K>;
  public:
   // constructor
