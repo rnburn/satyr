@@ -23,15 +23,15 @@ constexpr struct all {
 // is_free_slice_v
 //------------------------------------------------------------------------------
 template <class T>
-constexpr bool is_free_slice_v =
-    std::is_convertible_v<T, index_t> || std::is_same_v<uncvref_t<T>, range>;
+constexpr bool is_free_slice_v = std::is_convertible_v<uncvref_t<T>, all> ||
+                                 std::is_same_v<uncvref_t<T>, range>;
 
 //------------------------------------------------------------------------------
 // is_slice_v
 //------------------------------------------------------------------------------
 template <class T>
 constexpr bool is_slice_v =
-    is_free_slice_v<T> || std::is_same_v<uncvref_t<T>, all>;
+    is_free_slice_v<T> || std::is_convertible_v<T, index_t>;
 
 //------------------------------------------------------------------------------
 // has_free_slices_v
@@ -65,14 +65,17 @@ index_t get_slice_extent(const std::array<index_t, K>& extents, range range) {
   return range.last - range.first;
 }
 
+template <size_t I, size_t J, size_t U, size_t V>
+void slice_impl(const std::array<index_t, U>& extents, index_t stride,
+                std::array<index_t, V>& extents_new,
+                std::array<index_t, V>& strides_new, index_t& offset) {}
+
 template <size_t I, size_t J, size_t U, size_t V, class Slice,
           class... SlicesRest>
 void slice_impl(const std::array<index_t, U>& extents, index_t stride,
                 std::array<index_t, V>& extents_new,
                 std::array<index_t, V>& strides_new, index_t& offset,
                 Slice slice, SlicesRest... slices_rest) {
-  if constexpr (I >= U)
-    return;
   offset += stride * get_slice_offset(slice);    
   auto stride_next = stride * extents[I];
   if constexpr (is_free_slice_v<Slice>) {
@@ -98,7 +101,8 @@ auto slice(const shape<K>& shape, Slices... slices) {
   index_t offset = 0;
   detail::slice_impl<0, 0>(shape.extents(), 1, subshape_extents,
                            subshape_strides, offset, slices...);
-  return std::make_tuple(subshape(shape(subshape_extents), subshape_strides),
-                         offset);
+  return std::make_tuple(
+      satyr::subshape(satyr::shape(subshape_extents), subshape_strides),
+      offset);
 }
 } // namespace satyr

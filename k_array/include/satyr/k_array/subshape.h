@@ -9,6 +9,8 @@ namespace satyr {
 template <size_t K>
 class subshape {
  public:
+  subshape() = default;
+
   subshape(const shape<K>& shape, const std::array<index_t, K>& strides)
       : shape_{shape}, strides_{strides} {}
 
