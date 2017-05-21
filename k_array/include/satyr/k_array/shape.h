@@ -23,6 +23,8 @@ class shape {
     extents_{extents...}
   {}
 
+  explicit shape(const std::array<index_t, K>& extents) : extents_{extents} {}
+
   // accessors
   const std::array<index_t, K> extents() const { return extents_; }
  private:

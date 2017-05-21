@@ -3,6 +3,7 @@
 #include <satyr/index.h>
 #include <satyr/traits.h>
 #include <satyr/k_array/subshape.h>
+#include <tuple>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -97,5 +98,7 @@ auto slice(const shape<K>& shape, Slices... slices) {
   index_t offset = 0;
   detail::slice_impl<0, 0>(shape.extents(), 1, subshape_extents,
                            subshape_strides, offset, slices...);
+  return std::make_tuple(subshape(shape(subshape_extents), subshape_strides),
+                         offset);
 }
 } // namespace satyr
