@@ -36,12 +36,18 @@ void print_impl(std::ostream& out, const std::array<index_t, K>& extents,
 // operator<<
 //------------------------------------------------------------------------------
 template <class T, size_t K>
+  requires requires (std::ostream& out, T t) {
+    out << t;
+  }
 std::ostream& operator<<(std::ostream& out, const k_array_view<T, K>& array) {
   detail::print_impl(out, array.shape().extents(), array);
   return out;
 }
 
 template <class T, size_t K>
+  requires requires (std::ostream& out, T t) {
+    out << t;
+  }
 std::ostream& operator<<(std::ostream& out, const k_array_subview<T, K>& array) {
   detail::print_impl(out, array.shape().extents(), array);
   return out;
