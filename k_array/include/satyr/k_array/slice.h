@@ -65,6 +65,7 @@ index_t get_slice_extent(const std::array<index_t, K>& extents, range range) {
   return range.last - range.first;
 }
 
+// slice_impl -- shape
 template <size_t I, size_t J, size_t U, size_t V>
 void slice_impl(const std::array<index_t, U>& extents, index_t stride,
                 std::array<index_t, V>& extents_new,
@@ -88,6 +89,33 @@ void slice_impl(const std::array<index_t, U>& extents, index_t stride,
         slices_rest...);
   }
 }
+
+// slice_impl -- subshape
+template <size_t I, size_t J, size_t U, size_t V>
+void slice_impl(const std::array<index_t, U>& extents,
+                const std::array<index_t, U>& strides,
+                std::array<index_t, V>& extents_new,
+                std::array<index_t, V>& strides_new, index_t& offset) {}
+
+template <size_t I, size_t J, size_t U, size_t V, class Slice,
+          class... SlicesRest>
+void slice_impl(const std::array<index_t, U>& extents,
+                const std::array<index_t, U>& strides,
+                std::array<index_t, V>& extents_new,
+                std::array<index_t, V>& strides_new, index_t& offset,
+                Slice slice, SlicesRest... slices_rest) {
+  auto stride = strides[I];
+  offset += stride*get_slice_offset(slice);
+  if constexpr (is_free_slice_v<Slice>) {
+    extents_new[J] = get_slice_extent<I>(extents, slice);
+    strides_new[J] = stride;
+    slice_impl<I + 1, J + 1>(extents, strides, extents_new, strides_new, offset,
+                             slices_rest...);
+  } else {
+    slice_impl<I + 1, J>(extents, strides, extents_new, strides_new, offset,
+                         slices_rest...);
+  }
+}
 } // namespace detail
 
 template <size_t K, class... Slices>
@@ -96,13 +124,29 @@ template <size_t K, class... Slices>
            has_free_slices_v<Slices...>
 auto slice(const shape<K>& shape, Slices... slices) {
   constexpr size_t num_free_dimensions = (is_free_slice_v<Slices> + ...);
-  std::array<index_t, num_free_dimensions> subshape_extents;
-  std::array<index_t, num_free_dimensions> subshape_strides;
+  std::array<index_t, num_free_dimensions> extents_new;
+  std::array<index_t, num_free_dimensions> strides_new;
   index_t offset = 0;
-  detail::slice_impl<0, 0>(shape.extents(), 1, subshape_extents,
-                           subshape_strides, offset, slices...);
+  detail::slice_impl<0, 0>(shape.extents(), 1, extents_new,
+                           strides_new, offset, slices...);
   return std::make_tuple(
-      satyr::subshape(satyr::shape(subshape_extents), subshape_strides),
+      satyr::subshape(satyr::shape(extents_new), strides_new),
       offset);
 }
+
+/* template <size_t K, class... Slices> */
+/*   requires K == sizeof...(Slices) && */
+/*            (is_slice_v<Slices> && ...) && */
+/*            has_free_slices_v<Slices...> */
+/* auto slice(const subshape<K>& subshape, Slices... slices) { */
+/*   constexpr size_t num_free_dimensions = (is_free_slice_v<Slices> + ...); */
+/*   std::array<index_t, num_free_dimensions> extents_new; */
+/*   std::array<index_t, num_free_dimensions> strides_new; */
+/*   index_t offset = 0; */
+/*   detail::slice_impl<0, 0>(subshape.extents(), 1, extents_new, */
+/*                            strides_new, offset, slices...); */
+/*   return std::make_tuple( */
+/*       satyr::subshape(satyr::shape(extents_new), strides_new), */
+/*       offset); */
+/* } */
 } // namespace satyr
