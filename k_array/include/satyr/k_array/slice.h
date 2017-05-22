@@ -134,19 +134,18 @@ auto slice(const shape<K>& shape, Slices... slices) {
       offset);
 }
 
-/* template <size_t K, class... Slices> */
-/*   requires K == sizeof...(Slices) && */
-/*            (is_slice_v<Slices> && ...) && */
-/*            has_free_slices_v<Slices...> */
-/* auto slice(const subshape<K>& subshape, Slices... slices) { */
-/*   constexpr size_t num_free_dimensions = (is_free_slice_v<Slices> + ...); */
-/*   std::array<index_t, num_free_dimensions> extents_new; */
-/*   std::array<index_t, num_free_dimensions> strides_new; */
-/*   index_t offset = 0; */
-/*   detail::slice_impl<0, 0>(subshape.extents(), 1, extents_new, */
-/*                            strides_new, offset, slices...); */
-/*   return std::make_tuple( */
-/*       satyr::subshape(satyr::shape(extents_new), strides_new), */
-/*       offset); */
-/* } */
+template <size_t K, class... Slices>
+  requires K == sizeof...(Slices) &&
+           (is_slice_v<Slices> && ...) &&
+           has_free_slices_v<Slices...>
+auto slice(const subshape<K>& subshape, Slices... slices) {
+  constexpr size_t num_free_dimensions = (is_free_slice_v<Slices> + ...);
+  std::array<index_t, num_free_dimensions> extents_new;
+  std::array<index_t, num_free_dimensions> strides_new;
+  index_t offset = 0;
+  detail::slice_impl<0, 0>(subshape.extents(), subshape.strides(), extents_new,
+                           strides_new, offset, slices...);
+  return std::make_tuple(
+      satyr::subshape(satyr::shape(extents_new), strides_new), offset);
+}
 } // namespace satyr

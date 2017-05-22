@@ -7,19 +7,16 @@ namespace satyr {
 // subshape
 //------------------------------------------------------------------------------
 template <size_t K>
-class subshape {
+class subshape : public shape<K> {
  public:
   subshape() = default;
 
   subshape(const shape<K>& shape, const std::array<index_t, K>& strides)
-      : shape_{shape}, strides_{strides} {}
-
-  operator const shape<K>&() const { return shape_; }
+      : shape<K>{shape}, strides_{strides} {}
 
   const std::array<index_t, K>& strides() const { return strides_; }
 
  private:
-  shape<K> shape_;
   std::array<index_t, K> strides_;
 };
 

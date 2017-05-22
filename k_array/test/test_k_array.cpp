@@ -24,5 +24,11 @@ int main() {
   auto subview3 = array(satyr::range{1, 3}, 1);
   assert(subview3(0) == 9);
   assert(subview3(1) == 10);
+
+  auto subview4 = array(satyr::range{1, 3}, satyr::range{0,1});
+  assert(subview4(0, 0) == 6);
+
+  auto subview5 = subview4(satyr::range{1, 2}, satyr::range{0,1});
+  assert(subview5(0, 0) == 7);
   return 0;
 }
