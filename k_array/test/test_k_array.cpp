@@ -1,9 +1,10 @@
 #include <satyr/k_array.h>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 
 int main() {
-  satyr::k_array<double, 2> array({3, 2});
+  satyr::k_array<int, 2> array({3, 2});
   array(0, 0) = 5;
   array(1, 0) = 6;
   array(2, 0) = 7;
@@ -12,10 +13,18 @@ int main() {
   array(2, 1) = 10;
   assert(array(0, 0) == 5);
 
+  std::ostringstream oss1;
+  oss1 << array;
+  assert(oss1.str() == "{{5, 8}, {6, 9}, {7, 10}}");
+
   auto subview1 = array(satyr::all_v, 0);
   assert(subview1(0) == 5);
   assert(subview1(1) == 6);
   assert(subview1(2) == 7);
+
+  std::ostringstream oss2;
+  oss2 << subview1;
+  assert(oss2.str() == "{5, 6, 7}");
 
   auto subview2 = array(0, satyr::all_v);
   assert(subview2(0) == 5);
