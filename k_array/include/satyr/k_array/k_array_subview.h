@@ -66,7 +66,8 @@ using k_array_csubview = k_array_subview<const T, K>;
 // make_k_array_subview
 //------------------------------------------------------------------------------
 template <class T, size_t K>
-k_array_subview<T, K> make_k_array_subview(T* data, subshape<K>& subshape) {
-  return k_array_subview<T, K>{data, subshape};
+k_array_subview<T, K> make_k_array_subview(T* data,
+                                           const subshape<K>& subshape) {
+  return {data, subshape};
 }
 } // namespace satyr

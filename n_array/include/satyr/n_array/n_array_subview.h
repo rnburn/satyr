@@ -76,4 +76,24 @@ class n_array_subview<T, K, Structure>
 //------------------------------------------------------------------------------
 template <Scalar T, size_t K, Structure Structure>
 using n_array_csubview = n_array_subview<const T, K, Structure>;
+
+//------------------------------------------------------------------------------
+// -make_n_array_subview
+//------------------------------------------------------------------------------
+template <Structure Structure, Scalar T, size_t K>
+n_array_subview<T, K, Structure> make_n_array_subview(
+    T* data, const subshape<K>& subshape) {
+  return {data, subshape};
+}
+
+//------------------------------------------------------------------------------
+// deconstify_n_array_subview
+//------------------------------------------------------------------------------
+namespace detail {
+template <Scalar T, size_t K, Structure Structure>
+n_array_subview<uncvref_t<T>, K, Structure> deconstify_n_array_subview(
+    const n_array_subview<T, K, Structure>& array) {
+  return {const_cast<uncvref_t<T>*>(array.data()), array.shape()};
+}
+} // namespace detail
 } // namespace satyr

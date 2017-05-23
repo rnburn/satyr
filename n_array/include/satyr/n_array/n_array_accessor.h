@@ -1,11 +1,20 @@
 #pragma once
 
-#include <satyr/n_array/structure.h>
-#include <satyr/n_array/access_mode.h>
 #include <satyr/index.h>
+#include <satyr/k_array.h>
+#include <satyr/n_array/access_mode.h>
+#include <satyr/n_array/structure.h>
 #include <utility>
 
 namespace satyr {
+// fwd
+template <class>
+auto make_n_array_subview();
+
+namespace detail {
+auto deconstify_n_array_subview();
+}
+
 //------------------------------------------------------------------------------
 // n_array_const_accessor
 //------------------------------------------------------------------------------
@@ -37,6 +46,17 @@ struct n_array_const_accessor_impl<std::index_sequence<Indexes...>, Derived,
   decltype(auto) operator()(
       std::enable_if_t<(Indexes, true), index_t>... indexes) const {
     return this->operator()(access_mode::readwrite_v, indexes...);
+  }
+
+  template <class... Slices>
+    requires sizeof...(Indexes) == sizeof...(Slices) &&
+             (is_slice_v<Slices> && ...) &&
+             has_free_slices_v<Slices...>
+  auto operator()(Slices... slices) const {
+    const Derived& derived = static_cast<const Derived&>(*this);
+    auto [shape_new, offset] = slice(derived.shape(), slices...);
+    return make_n_array_subview<general_structure>(derived.data() + offset,
+                                                   shape_new);
   }
 };
 } // namespace detail
@@ -101,13 +121,19 @@ struct n_array_accessor_impl<std::index_sequence<Indexes...>, Derived,
     return deconstify_result(
         this->base::operator()(access_mode::raw_v, indexes...));
   }
+
+  template <class... Slices>
+    requires sizeof...(Indexes) == sizeof...(Slices) &&
+             (is_slice_v<Slices> && ...) &&
+             has_free_slices_v<Slices...>
+  auto operator()(Slices... slices) {
+    return deconstify_n_array_subview(this->base::operator()(slices...));
+  }
 };
 } // namespace detail
 
 template <class Derived, size_t K, Structure Structure>
-struct n_array_accessor :
-  detail::n_array_accessor_impl<
-    std::make_index_sequence<K>,
-    Derived, Structure>
-{};
+struct n_array_accessor
+    : detail::n_array_accessor_impl<std::make_index_sequence<K>, Derived,
+                                    Structure> {};
 } // namespace satyr
