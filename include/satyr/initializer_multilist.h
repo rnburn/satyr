@@ -3,6 +3,7 @@
 #include <satyr/index.h>
 #include <initializer_list>
 #include <cstddef>
+#include <array>
 
 namespace satyr::detail {
 //------------------------------------------------------------------------------
@@ -23,16 +24,34 @@ template <class T, size_t N>
 using initializer_multilist = typename initializer_multilist_impl<T, N>::type;
 
 //------------------------------------------------------------------------------
+// get_extents
+//------------------------------------------------------------------------------
+template <class T, size_t N>
+std::array<index_t, N> get_extents(initializer_multilist<T, N> values) {
+  std::array<index_t, N> extents = {};
+  extents[0] = values.size();
+  if constexpr (N > 1) {
+    for (auto value : values) {
+      auto extents_rest = get_extents<T, N-1>(value);
+      for (index_t i=0; i<N-1; ++i)
+        extents[i+1] = std::max(extents[i+1], extents_rest[i]);
+    }
+  }
+  return extents;
+}
+
+//------------------------------------------------------------------------------
 // initialize
 //------------------------------------------------------------------------------
 template <class T, size_t N, class F>
 void initialize(initializer_multilist<T, N> values, F f) {
   if constexpr(N == 0) {
-    f(values);
+    f() = values;
   } else {
     index_t index = 0;
     for (auto value : values) {
-      initialize(values, [&](auto... args) { f(index, args...); });
+      initialize<T, N - 1>(
+          value, [&](auto... args) -> T& { return f(index, args...); });
       ++index;
     }
   }

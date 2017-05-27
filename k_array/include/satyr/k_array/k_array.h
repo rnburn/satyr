@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <satyr/k_array/k_array_view.h>
+#include <satyr/initializer_multilist.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -17,6 +18,13 @@ class k_array : public k_array_cview<T, K>,
  public:
   // constructor
   k_array() = default;
+
+  k_array(detail::initializer_multilist<T, K> values)
+      : k_array{shape<K>{detail::get_extents<T, K>(values)}} {
+    detail::initialize<T, K>(values, [=](auto... indexes) -> T& {
+      return this->operator()(indexes...);
+    });
+  }
 
   template <class OtherT, class OtherAlloc>
   k_array(const k_array<OtherT, K, OtherAlloc>& other) {
@@ -52,6 +60,14 @@ class k_array : public k_array_cview<T, K>,
   k_array& operator=(k_array&& other) noexcept {
     move_assign(other);
     return *this;
+  }
+
+  k_array& operator=(detail::initializer_multilist<T, K> values) {
+    auto shape_new = detail::get_extents<T, K>(values);
+    reshape(shape_new);
+    detail::initialize<T, K>(values, [=](auto... indexes) -> T& {
+      return this->operator()(indexes...);
+    });
   }
 
   // accessor

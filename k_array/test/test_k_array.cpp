@@ -4,13 +4,7 @@
 #include <sstream>
 
 int main() {
-  satyr::k_array<int, 2> array({3, 2});
-  array(0, 0) = 5;
-  array(1, 0) = 6;
-  array(2, 0) = 7;
-  array(0, 1) = 8;
-  array(1, 1) = 9;
-  array(2, 1) = 10;
+  satyr::k_array<int, 2> array = {{5, 8}, {6, 9}, {7, 10}};
   assert(array(0, 0) == 5);
 
   std::ostringstream oss1;
