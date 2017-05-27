@@ -32,6 +32,17 @@ class shape {
 };
 
 //------------------------------------------------------------------------------
+// is_equal_dimensional
+//------------------------------------------------------------------------------
+template <size_t K>
+bool is_equal_dimensional(const shape<K>& shape) {
+  const auto& extents = shape.extents();
+  for (index_t i = 1; i < K; ++i)
+    if (extents[0] != extents[i]) return false;
+  return true;
+}
+
+//------------------------------------------------------------------------------
 // operator==
 //------------------------------------------------------------------------------
 template <size_t K>

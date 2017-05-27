@@ -9,6 +9,7 @@
 #include <satyr/n_array/n_array_evaluator.h>
 #include <satyr/n_array/n_array_view.h>
 #include <satyr/k_array.h>
+#include <stdexcept>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -51,7 +52,10 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     copy_assign(other.data(), other.shape());
   }
 
-  explicit n_array_impl(satyr::shape<K> shape) {
+  explicit n_array_impl(const satyr::shape<K>& shape) {
+    if constexpr (is_equal_dimensional_v<Structure>)
+      if (!is_equal_dimensional(shape))
+        throw std::runtime_error{"shape must be equal dimensional"};
     T* data;
     if (get_num_elements(shape))
       data = this->allocate(get_num_elements(shape));
@@ -125,6 +129,9 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   // reshape
   void reshape(const shape<K>& shape_new) {
+    if constexpr (is_equal_dimensional_v<Structure>)
+      if (!is_equal_dimensional(shape_new))
+        throw std::runtime_error{"shape must be equal dimensional"};
     auto num_elements = get_num_elements(this->shape());
     auto num_elements_new = get_num_elements(shape_new);
     if (num_elements == num_elements_new)
