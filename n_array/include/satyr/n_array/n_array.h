@@ -68,6 +68,13 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     requires is_equal_dimensional_v<Structure>
       : n_array_impl{satyr::shape<K>{(Indexes, extent)...}} {}
 
+  n_array_impl(initializer_multilist<T, K> values)
+      : n_array_impl{shape<K>{detail::get_extents<T, K>(values)}} {
+    auto k_array = this->as_k_array();
+    detail::initialize<T, K>(
+        values, [=](auto... indexes) -> T& { return k_array(indexes...); });
+  }
+
   // destructor
   ~n_array_impl() {
     if (this->data())
@@ -94,6 +101,16 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   n_array_impl& operator=(const n_array_view<OtherT, K, Structure>& other) {
     copy_assign(other.data(), other.shape());
     return *this;
+  }
+
+  n_array_impl& operator=(detail::initializer_multilist<T, K> values) {
+    auto extents_new = detail::get_extents<T, K>(values);
+    reshape(extents_new);
+    auto k_array = this->as_k_array();
+    detail::initialize<T, K>(values, [=](auto... indexes) -> T& {
+      return k_array(indexes...);
+    });
+    return *this; 
   }
 
   // accessors
@@ -138,7 +155,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 };
 }
 
-template <Scalar T, size_t K, Structure Structure>
+template <Scalar T, size_t K, Structure Structure = general_structure>
 class n_array
     : public detail::n_array_impl<std::make_index_sequence<K>, T, K, Structure>,
       public n_array_assignment<

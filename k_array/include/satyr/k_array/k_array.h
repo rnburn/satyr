@@ -63,11 +63,12 @@ class k_array : public k_array_cview<T, K>,
   }
 
   k_array& operator=(detail::initializer_multilist<T, K> values) {
-    auto shape_new = detail::get_extents<T, K>(values);
-    reshape(shape_new);
+    auto extents_new = detail::get_extents<T, K>(values);
+    reextents(extents_new);
     detail::initialize<T, K>(values, [=](auto... indexes) -> T& {
       return this->operator()(indexes...);
     });
+    return *this;
   }
 
   // accessor
