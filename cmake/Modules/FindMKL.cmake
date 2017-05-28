@@ -12,9 +12,9 @@ if (NOT MKL_LIBRARIES)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMKL_ILP64 -m64")
   set(CMAKE_SHARED_LINKER_FLAGS 
     "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath,${MKL_ROOT}/lib")
-  find_library(MKL_LIBRARY mkl_intel_ilp64 PATHS ${MKL_ROOT}/lib)
-  find_library(MKL_SEQUENTIAL_LIBRARY mkl_sequential PATHS ${MKL_ROOT}/lib)
-  find_library(MKL_CORE_LIBRARY mkl_core PATHS ${MKL_ROOT}/lib)
+  find_library(MKL_LIBRARY libmkl_intel_ilp64.a PATHS ${MKL_ROOT}/lib)
+  find_library(MKL_SEQUENTIAL_LIBRARY libmkl_sequential.a PATHS ${MKL_ROOT}/lib)
+  find_library(MKL_CORE_LIBRARY libmkl_core.a PATHS ${MKL_ROOT}/lib)
   set(MKL_LIBRARIES
     "${MKL_LIBRARY} ${MKL_SEQUENTIAL_LIBRARY} ${MKL_CORE_LIBRARY}")
 endif()

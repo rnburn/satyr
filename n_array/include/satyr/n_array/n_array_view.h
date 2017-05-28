@@ -54,7 +54,7 @@ class n_array_view<T, K, Structure>
                                     Structure>,
       public n_array_const_assignment<
           n_array_view<T, K, Structure>,
-          n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+          n_array_expression<K, Structure, flat_n_array_evaluator<T>,
                              no_policy>> {
   using base = n_array_view<const T, K, Structure>;
 
@@ -73,7 +73,7 @@ class n_array_view<T, K, Structure>
 
   using n_array_const_assignment<
       n_array_view,
-      n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+      n_array_expression<K, Structure, flat_n_array_evaluator<T>,
                          no_policy>>::operator=;
 
   // conversion

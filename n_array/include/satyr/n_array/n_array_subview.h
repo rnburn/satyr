@@ -3,6 +3,7 @@
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/n_array_accessor.h>
 #include <satyr/n_array/n_array_assignment.h>
+#include <satyr/n_array/concept.h>
 #include <satyr/k_array.h>
 #include <satyr/concept.h>
 
@@ -48,7 +49,7 @@ class n_array_subview<T, K, Structure>
                                     Structure>,
       public n_array_const_assignment<
           n_array_subview<T, K, Structure>,
-          n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+          n_array_expression<K, Structure, n_array_subview_evaluator<T, K>,
                              no_policy>> {
   using base = n_array_subview<const T, K, Structure>;
 
@@ -67,7 +68,7 @@ class n_array_subview<T, K, Structure>
 
   using n_array_const_assignment<
       n_array_subview,
-      n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
+      n_array_expression<K, Structure, n_array_subview_evaluator<T, K>,
                          no_policy>>::operator=;
 };
 

@@ -66,6 +66,9 @@ class n_array;
 template <Scalar T, size_t K, Structure Structure>
 class n_array_view;
 
+template <Scalar T, size_t K, Structure Structure>
+class n_array_subview;
+
 namespace detail {
 template <class>
 constexpr bool match_n_array_expression = false;
@@ -98,13 +101,20 @@ constexpr bool match_n_array_view = false;
 
 template <Scalar T, size_t K, Structure Structure>
 constexpr bool match_n_array_view<n_array_view<T, K, Structure>> = true;
+
+template <class>
+constexpr bool match_n_array_subview = false;
+
+template <Scalar T, size_t K, Structure Structure>
+constexpr bool match_n_array_subview<n_array_subview<T, K, Structure>> = true;
 } // namespace detail
 
 template <class T>
 concept bool NArrayExpressible = 
   detail::match_n_array_expression<uncvref_t<T>> ||
   detail::match_n_array<uncvref_t<T>> ||
-  detail::match_n_array_view<uncvref_t<T>>;
+  detail::match_n_array_view<uncvref_t<T>> ||
+  detail::match_n_array_subview<uncvref_t<T>>;
 
 template <class T>
 concept bool RealNArrayExpressible =
