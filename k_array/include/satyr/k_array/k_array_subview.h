@@ -60,7 +60,7 @@ class k_array_subview<T, K>
 // k_array_csubview
 //------------------------------------------------------------------------------
 template <class T, size_t K>
-using k_array_csubview = k_array_subview<const T, K>;
+using k_array_subcview = k_array_subview<const T, K>;
 
 //------------------------------------------------------------------------------
 // make_k_array_subview

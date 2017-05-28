@@ -72,10 +72,10 @@ class n_array_subview<T, K, Structure>
 };
 
 //------------------------------------------------------------------------------
-// n_array_csubview
+// n_array_subcview
 //------------------------------------------------------------------------------
 template <Scalar T, size_t K, Structure Structure>
-using n_array_csubview = n_array_subview<const T, K, Structure>;
+using n_array_subcview = n_array_subview<const T, K, Structure>;
 
 //------------------------------------------------------------------------------
 // -make_n_array_subview

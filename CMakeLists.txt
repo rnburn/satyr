@@ -3,9 +3,18 @@ enable_testing()
 
 project(satyr)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts -fopenmp-simd")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+option(SATYR_WITH_MKL "Use MKL as backend for BLAS and LAPACK calls" OFF)
+
 find_path(TBB_INCLUDE_DIR NAMES tbb/parallel_for.h)
 find_library(TBB_LIB tbb)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts -fopenmp-simd")
+
+if (SATYR_WITH_MKL)
+  find_package(MKL REQUIRED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSATYR_WITH_MKL")
+  include_directories(${MKL_INCLUDE_DIR})
+endif()
 
 include_directories(${TBB_INCLUDE_DIR})
 set(MODULE_LIST

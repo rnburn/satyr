@@ -6,3 +6,4 @@
 #include <satyr/linear_algebra/conversion_evaluator.h>
 #include <satyr/linear_algebra/common_structure.h>
 #include <satyr/linear_algebra/apply.h>
+#include <satyr/linear_algebra/product.h>
