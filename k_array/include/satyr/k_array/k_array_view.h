@@ -6,6 +6,7 @@
 
 #include <satyr/k_array/shape.h>
 #include <satyr/k_array/k_array_accessor.h>
+#include <satyr/k_array/k_array_subview.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -33,6 +34,11 @@ class k_array_view<T, K>
    T* cdata() const { return data_; }
 
    const satyr::shape<K>& shape() const { return shape_; }
+
+   // conversion
+  operator k_array_subcview<T, K>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
  private:
    T* data_;
    satyr::shape<K> shape_;
@@ -56,6 +62,15 @@ class k_array_view<T, K>
    T* data() const { return const_cast<T*>(base::data()); }
 
    using detail::k_array_const_accessor<k_array_view<T, K>, K>::operator();
+
+   // conversion
+  operator k_array_subcview<T, K>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
+
+  operator k_array_subview<T, K>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
 };
 
 //------------------------------------------------------------------------------

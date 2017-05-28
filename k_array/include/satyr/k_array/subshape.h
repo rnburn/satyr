@@ -4,12 +4,29 @@
 
 namespace satyr {
 //------------------------------------------------------------------------------
+// get_strides
+//------------------------------------------------------------------------------
+namespace detail {
+template <size_t K>
+std::array<index_t, K> get_strides(const shape<K>& shape) {
+  auto& extents = shape.extents();
+  std::array<index_t, K> result;
+  result[0] = 1;
+  for (index_t i = 1; i < K; ++i) result[i] = result[i - 1] * extents[i - 1];
+  return result;
+}
+} // namespace detail
+
+//------------------------------------------------------------------------------
 // subshape
 //------------------------------------------------------------------------------
 template <size_t K>
 class subshape : public shape<K> {
  public:
   subshape() = default;
+
+  subshape(const shape<K>& shape)
+      : shape<K>{shape}, strides_{detail::get_strides(shape)} {}
 
   subshape(const shape<K>& shape, const std::array<index_t, K>& strides)
       : shape<K>{shape}, strides_{strides} {}

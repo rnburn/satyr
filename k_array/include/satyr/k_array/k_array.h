@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <satyr/k_array/k_array_view.h>
+#include <satyr/k_array/k_array_subview.h>
 #include <satyr/initializer_multilist.h>
 
 namespace satyr {
@@ -90,6 +91,18 @@ class k_array : public k_array_cview<T, K>,
     static_cast<base&>(*this) = {data_new, shape_new};
   }
 
+  // conversion
+  operator k_array_subcview<T, K>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
+
+  operator k_array_subview<T, K>() {
+    return {data(), subshape<K>{this->shape()}};
+  }
+
+  operator k_array_view<T, K>() {
+    return {data(), this->shape()};
+  }
  private:
   template <class OtherAlloc>
   void move_assign(k_array<T, K, OtherAlloc>& other) noexcept {

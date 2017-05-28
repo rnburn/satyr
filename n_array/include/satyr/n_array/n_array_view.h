@@ -3,6 +3,7 @@
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/n_array_accessor.h>
 #include <satyr/n_array/n_array_assignment.h>
+#include <satyr/n_array/n_array_subview.h>
 #include <satyr/k_array.h>
 #include <satyr/concept.h>
 
@@ -35,6 +36,11 @@ class n_array_view<T, K, Structure> :
    const k_array_view<T, K>& as_k_array() const { return array_; }
 
    const satyr::shape<K>& shape() const { return array_.shape(); }
+
+  // conversion
+  operator n_array_subcview<T, K, Structure>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
 
  private:
   k_array_view<T, K> array_;
@@ -69,6 +75,15 @@ class n_array_view<T, K, Structure>
       n_array_view,
       n_array_expression<K, Structure, contiguous_n_array_evaluator<T>,
                          no_policy>>::operator=;
+
+  // conversion
+  operator n_array_subcview<T, K, Structure>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
+
+  operator n_array_subview<T, K, Structure>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
 };
 
 //------------------------------------------------------------------------------

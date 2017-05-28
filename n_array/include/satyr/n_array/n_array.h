@@ -8,6 +8,7 @@
 #include <satyr/n_array/n_array_expression.h>
 #include <satyr/n_array/n_array_evaluator.h>
 #include <satyr/n_array/n_array_view.h>
+#include <satyr/n_array/n_array_subview.h>
 #include <satyr/k_array.h>
 #include <stdexcept>
 
@@ -143,6 +144,15 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   // operator()
   using n_array_accessor<n_array_impl,  K, Structure>::operator();
+
+  // conversion
+  operator n_array_subcview<T, K, Structure>() const {
+    return {data(), subshape<K>{this->shape()}};
+  }
+
+  operator n_array_subview<T, K, Structure>() {
+    return {data(), subshape<K>{this->shape()}};
+  }
 
  private:
   void move_assign(n_array_impl& other) noexcept {
