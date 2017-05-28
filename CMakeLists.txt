@@ -9,11 +9,13 @@ option(SATYR_WITH_MKL "Use MKL as backend for BLAS and LAPACK calls" OFF)
 
 find_path(TBB_INCLUDE_DIR NAMES tbb/parallel_for.h)
 find_library(TBB_LIB tbb)
+set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${TBB_LIB}")
 
 if (SATYR_WITH_MKL)
   find_package(MKL REQUIRED)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSATYR_WITH_MKL")
   include_directories(${MKL_INCLUDE_DIR})
+  set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${MKL_LIBRARIES}")
 endif()
 
 include_directories(${TBB_INCLUDE_DIR})
