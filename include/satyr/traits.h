@@ -6,6 +6,12 @@
 
 namespace satyr {
 //------------------------------------------------------------------------------
+// uncvref_t
+//------------------------------------------------------------------------------
+template <class T>
+using uncvref_t = typename std::remove_cv_t<std::remove_reference_t<T>>;
+
+//------------------------------------------------------------------------------
 // reference_t
 //------------------------------------------------------------------------------
 template <class T> struct reference_type {};
@@ -28,11 +34,21 @@ struct reference_type<T*> {
 
 // clang-format off
 template <class T>
+  requires requires(T x) { { x.data() } -> auto*; } &&
+           !requires { typename T::reference; }
+struct reference_type<T> {
+  // clang-format on
+  using type =
+      typename reference_type<decltype(std::declval<T>().data())>::type;
+};
+
+// clang-format off
+template <class T>
   requires requires(
-      typename reference_type<std::remove_cv_t<T>>::type reference) {
+      typename reference_type<uncvref_t<T>>::type reference) {
     { reference } -> auto&&;
   }
-using reference_t = typename reference_type<std::remove_cv_t<T>>::type;
+using reference_t = typename reference_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -77,10 +93,10 @@ struct value_type<T> {
 
 // clang-format off
 template <class T>
-  requires requires(typename value_type<std::remove_cv_t<T>>::type value) {
+  requires requires(typename value_type<uncvref_t<T>>::type value) {
     { value } -> auto&&;
   }
-using value_type_t = typename value_type<std::remove_cv_t<T>>::type;
+using value_type_t = typename value_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -109,8 +125,8 @@ struct pointer_type<T> {
 
 // clang-format off
 template <class T>
-  requires requires { typename pointer_type<std::remove_cv_t<T>>::type; }
-using pointer_t = typename pointer_type<std::remove_cv_t<T>>::type;
+  requires requires { typename pointer_type<uncvref_t<T>>::type; }
+using pointer_t = typename pointer_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -141,8 +157,8 @@ struct const_pointer_type<T> {
 
 // clang-format off
 template <class T>
-  requires requires { typename const_pointer_type<std::remove_cv_t<T>>::type; }
-using const_pointer_t = typename const_pointer_type<std::remove_cv_t<T>>::type;
+  requires requires { typename const_pointer_type<uncvref_t<T>>::type; }
+using const_pointer_t = typename const_pointer_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -170,8 +186,8 @@ struct void_pointer_type<T> {
 
 // clang-format off
 template <class T>
-  requires requires { typename void_pointer_type<std::remove_cv_t<T>>::type; }
-using void_pointer_t = typename void_pointer_type<std::remove_cv_t<T>>::type;
+  requires requires { typename void_pointer_type<uncvref_t<T>>::type; }
+using void_pointer_t = typename void_pointer_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -200,10 +216,10 @@ struct const_void_pointer_type<T> {
 // clang-format off
 template <class T>
   requires requires { 
-    typename const_void_pointer_type<std::remove_cv_t<T>>::type; 
+    typename const_void_pointer_type<uncvref_t<T>>::type; 
   }
 using const_void_pointer_t = 
-  typename const_void_pointer_type<std::remove_cv_t<T>>::type;
+  typename const_void_pointer_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -231,12 +247,12 @@ struct difference_type<T> {
 // clang-format off
 template <class T>
   requires requires(
-      typename difference_type<std::remove_cv_t<T>>::type difference)
+      typename difference_type<uncvref_t<T>>::type difference)
   {
     requires std::is_integral<decltype(difference)>::value;
     requires std::is_signed<decltype(difference)>::value;
   }
-using difference_type_t = typename difference_type<std::remove_cv_t<T>>::type;
+using difference_type_t = typename difference_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -263,15 +279,27 @@ struct size_type<T> {
 
 // clang-format off
 template <class T>
-  requires requires { typename size_type<std::remove_cv_t<T>>::type; }
-using size_type_t = typename size_type<std::remove_cv_t<T>>::type;
+  requires requires { typename size_type<uncvref_t<T>>::type; }
+using size_type_t = typename size_type<uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
-// uncvref_t
+// is_writable_v
 //------------------------------------------------------------------------------
 template <class T>
-using uncvref_t = typename std::remove_cv_t<std::remove_reference_t<T>>;
+  requires requires {
+    typename reference_t<T>;
+  }
+constexpr bool is_writable_v = false;
+
+template <class T>
+  requires requires {
+    typename reference_t<T>;
+  } &&
+  requires(reference_t<T> ref, T t) {
+    ref = t;
+  }
+constexpr bool is_writable_v<T> = true;
 
 //------------------------------------------------------------------------------
 // arity_v
@@ -313,10 +341,10 @@ struct arity_impl<T> {
 // clang-format off
 template <class T>
   requires requires {
-    detail::arity_impl<std::remove_cv_t<T>>::value;
+    detail::arity_impl<uncvref_t<T>>::value;
   }
 static constexpr size_t arity_v = 
-                          detail::arity_impl<std::remove_cv_t<T>>::value;
+                          detail::arity_impl<uncvref_t<T>>::value;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -371,7 +399,7 @@ struct argument_type<I, T> {
 // clang-format off
 template <size_t I, class T>
   requires I < arity_v<T>
-using argument_t = typename argument_type<I, std::remove_cv_t<T>>::type;
+using argument_t = typename argument_type<I, uncvref_t<T>>::type;
 // clang-format on
 
 //------------------------------------------------------------------------------
@@ -409,7 +437,7 @@ struct codomain_type<T> {
 };
 
 template <class T>
-using codomain_t = typename codomain_type<std::remove_cv_t<T>>::type;
+using codomain_t = typename codomain_type<uncvref_t<T>>::type;
 
 //------------------------------------------------------------------------------
 // domain_t
@@ -461,19 +489,26 @@ struct domain_type<T> {
 };
 
 template <class T>
-using domain_t = typename domain_type<std::remove_cv_t<T>>::type;
+using domain_t = typename domain_type<uncvref_t<T>>::type;
 
 //------------------------------------------------------------------------------
 // codomain_value_type_t
 //------------------------------------------------------------------------------
 template <class T>
 using codomain_value_type_t =
-    std::remove_cv_t<std::remove_reference_t<codomain_t<T>>>;
+    uncvref_t<std::remove_reference_t<codomain_t<T>>>;
 
 //------------------------------------------------------------------------------
 // domain_value_type_t
 //------------------------------------------------------------------------------
 template <class T>
 using domain_value_type_t =
-    std::remove_cv_t<std::remove_reference_t<domain_t<T>>>;
-} // namespace traits
+    uncvref_t<std::remove_reference_t<domain_t<T>>>;
+
+//------------------------------------------------------------------------------
+// is_same_v
+//------------------------------------------------------------------------------
+template <class TFirst, class TSecond, class... TRest>
+constexpr bool is_same_v = std::is_same_v<TFirst, TSecond> &&
+                           (std::is_same_v<TFirst, TRest> && ...);
+}  // namespace traits

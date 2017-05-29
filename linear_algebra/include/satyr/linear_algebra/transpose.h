@@ -18,6 +18,7 @@ class transpose_evaluator {
         satyr::shape<2>{get_extent<1>(shape), get_extent<0>(shape)}, j, i);
   }
 
+  const Evaluator& evaluator() const { return evaluator_; }
  private:
   Evaluator evaluator_;
 };

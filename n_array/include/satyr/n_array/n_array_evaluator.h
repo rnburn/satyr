@@ -15,6 +15,7 @@ class flat_n_array_evaluator {
 
   T& operator()(index_t index) const { return *(data_ + index); }
 
+  T* data() const { return data_; }
  private:
   T* data_;
 };
@@ -36,6 +37,7 @@ class n_array_evaluator_impl<std::index_sequence<Indexes...>, T> {
     return *(data_ + get_1d_index(shape, indexes...));
   }
 
+  T* data() const { return data_; }
  private:
   T* data_;
 };
@@ -72,6 +74,8 @@ class n_array_subview_evaluator_impl<std::index_sequence<Indexes...>, T> {
                 std::enable_if_t<(Indexes, true), index_t>... indexes) const {
     return *(data_ + get_subshape_1d_index(strides_, indexes...));
   }
+
+  T* data() const { return data_; }
  private:
    T* data_;
    std::array<index_t, sizeof...(Indexes)> strides_;

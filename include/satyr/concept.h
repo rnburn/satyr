@@ -12,8 +12,8 @@ namespace satyr {
 //------------------------------------------------------------------------------
 template <class T>
 concept bool RealScalar = std::is_integral_v<uncvref_t<T>> ||
-                          std::is_same_v<uncvref_t<T>, double> ||
-                          std::is_same_v<uncvref_t<T>, float>;
+                          std::is_same_v<uncvref_t<T>, float> ||
+                          std::is_same_v<uncvref_t<T>, double>;
 
 //------------------------------------------------------------------------------
 // Scalar
@@ -22,6 +22,13 @@ template <class T>
 concept bool Scalar =
     RealScalar<T> || std::is_same_v<uncvref_t<T>, std::complex<float>> ||
     std::is_same_v<uncvref_t<T>, std::complex<double>>;
+
+//------------------------------------------------------------------------------
+// BlasScalar
+//------------------------------------------------------------------------------
+template <class T>
+concept bool BlasScalar =
+    std::is_same_v<uncvref_t<T>, float> || std::is_same_v<uncvref_t<T>, double>;
 
 //------------------------------------------------------------------------------
 // Functor
