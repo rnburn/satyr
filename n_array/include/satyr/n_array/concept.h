@@ -110,11 +110,14 @@ constexpr bool match_n_array_subview<n_array_subview<T, K, Structure>> = true;
 } // namespace detail
 
 template <class T>
-concept bool NArrayExpressible = 
-  detail::match_n_array_expression<uncvref_t<T>> ||
+concept bool NArray =
   detail::match_n_array<uncvref_t<T>> ||
   detail::match_n_array_view<uncvref_t<T>> ||
   detail::match_n_array_subview<uncvref_t<T>>;
+
+template <class T>
+concept bool NArrayExpressible =
+    detail::match_n_array_expression<uncvref_t<T>> || NArray<T>;
 
 template <class T>
 concept bool RealNArrayExpressible =
