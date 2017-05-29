@@ -14,8 +14,8 @@ class transpose_evaluator {
       : evaluator_{evaluator} {}
 
   decltype(auto) operator()(const shape<2>& shape, index_t i, index_t j) const {
-    return evaluator_(satyr::shape<2>{shape.extents()[1], shape.extents()[0]},
-                      j, i);
+    return evaluator_(
+        satyr::shape<2>{get_extent<1>(shape), get_extent<0>(shape)}, j, i);
   }
 
  private:
@@ -29,7 +29,8 @@ template <Matrix Matrix>
   requires std::is_same_v<structure_t<Matrix>, general_structure>
 auto transpose(Matrix&& matrix) {
   auto expression = make_expression(matrix);
+  auto shape = satyr::shape<2>{get_extent<1>(matrix), get_extent<0>(matrix)};
   return make_n_array_expression<structure_t<Matrix>>(
-      expression.shape(), transpose_evaluator(expression.evaluator()));
+      shape, transpose_evaluator(expression.evaluator()));
 }
 } // namespace satyr
