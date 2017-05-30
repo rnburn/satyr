@@ -71,3 +71,24 @@ index_t get_1d_index(const subshape<K>& subshape, Indexes... indexes) {
   return get_subshape_1d_index(subshape.strides(), indexes...);
 } 
 } // namespace satyr
+
+//------------------------------------------------------------------------------
+// tuple_size
+//------------------------------------------------------------------------------
+namespace std {
+template <size_t K>
+struct tuple_size<satyr::subshape<K>> {
+  static const size_t value = K;
+};
+} // namespace std
+
+//------------------------------------------------------------------------------
+// tuple_element
+//------------------------------------------------------------------------------
+namespace std {
+template <size_t I, size_t K>
+  requires I < K
+struct tuple_element<I, satyr::subshape<K>> {
+  using type = satyr::index_t;
+};
+} // namespace std

@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <array>
+#include <tuple>
 #include <satyr/index.h>
 
 namespace satyr {
@@ -68,6 +69,15 @@ index_t get_extent(const shape<K>& shape) {
 }
 
 //------------------------------------------------------------------------------
+// get_extent
+//------------------------------------------------------------------------------
+template <size_t I, size_t K>
+  requires I < K
+satyr::index_t get(const satyr::shape<K>& shape) {
+  return satyr::get_extent<I>(shape);
+}
+
+//------------------------------------------------------------------------------
 // get_num_elements
 //------------------------------------------------------------------------------
 template <size_t K>
@@ -101,3 +111,24 @@ index_t get_1d_index(const shape<K>& shape, Indexes... indexes) {
   return detail::get_1d_index_impl<0>(shape, indexes...);
 }
 } // namespace satyr
+
+//------------------------------------------------------------------------------
+// tuple_size
+//------------------------------------------------------------------------------
+namespace std {
+template <size_t K>
+struct tuple_size<satyr::shape<K>> {
+  static const size_t value = K;
+};
+} // namespace std
+
+//------------------------------------------------------------------------------
+// tuple_element
+//------------------------------------------------------------------------------
+namespace std {
+template <size_t I, size_t K>
+  requires I < K
+struct tuple_element<I, satyr::shape<K>> {
+  using type = satyr::index_t;
+};
+} // namespace std

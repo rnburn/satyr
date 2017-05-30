@@ -6,6 +6,9 @@
 int main() {
   satyr::k_array<int, 2> array = {{5, 8}, {6, 9}, {7, 10}};
   assert(array(0, 0) == 5);
+  auto [m, n] = array.shape();
+  assert(m == 3);
+  assert(n == 2);
 
   std::ostringstream oss1;
   oss1 << array;
