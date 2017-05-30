@@ -69,12 +69,24 @@ index_t get_extent(const shape<K>& shape) {
 }
 
 //------------------------------------------------------------------------------
-// get_extent
+// get
 //------------------------------------------------------------------------------
 template <size_t I, size_t K>
   requires I < K
-satyr::index_t get(const satyr::shape<K>& shape) {
-  return satyr::get_extent<I>(shape);
+index_t get(const shape<K>& shape) {
+  return get_extent<I>(shape);
+}
+
+//------------------------------------------------------------------------------
+// get_stride
+//------------------------------------------------------------------------------
+template <size_t I, size_t K>
+  requires I < K
+index_t get_stride(const shape<K>& shape) {
+  index_t stride = 1;
+  for (index_t i=1; i<=I; ++i)
+    stride *= shape.extents()[i-1];
+  return stride;
 }
 
 //------------------------------------------------------------------------------

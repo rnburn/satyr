@@ -3,6 +3,7 @@
 #include <satyr/linear_algebra/vector.h>
 #include <satyr/linear_algebra/matrix.h>
 #include <satyr/linear_algebra/concept.h>
+#include <satyr/linear_algebra/utility.h>
 #include <satyr/linear_algebra/operation_matrix_expression.h>
 #include <satyr/blas_lapack.h>
 
@@ -16,6 +17,6 @@ template <GeneralOperationMatrix A, Vector X, Vector Y>
            is_writable_v<Y>
 void inplace_product(value_type_t<A> alpha, const A& a, const X& x,
                      value_type_t<A> beta, Y&& y) {
-  
+  auto [a_m, a_n] = get_underlying_shape(a);  
 }
 } // namespace satyr
