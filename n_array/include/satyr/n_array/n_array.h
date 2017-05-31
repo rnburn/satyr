@@ -156,7 +156,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
  private:
   void move_assign(n_array_impl& other) noexcept {
-    if (data == other.data()) return;
+    if (data() == other.data()) return;
     static_cast<base&>(*this) = static_cast<base&>(other);
     static_cast<base&>(other) = {nullptr, shape<K>{}};
   }

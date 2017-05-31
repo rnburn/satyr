@@ -26,12 +26,24 @@ class transpose_evaluator {
 //------------------------------------------------------------------------------
 // transpose
 //------------------------------------------------------------------------------
-template <Matrix Matrix>
-  requires std::is_same_v<structure_t<Matrix>, general_structure>
+inline subshape<2> transpose(const subshape<2>& shape) {
+  std::array<index_t, 2> extents = {get_extent<1>(shape), get_extent<0>(shape)};
+  std::array<index_t, 2> strides = {get_stride<1>(shape), get_stride<0>(shape)};
+  return {satyr::shape<2>{extents}, strides};
+}
+
+template <GeneralMatrix Matrix>
 auto transpose(Matrix&& matrix) {
-  auto expression = make_expression(matrix);
-  auto shape = satyr::shape<2>{get_extent<1>(matrix), get_extent<0>(matrix)};
-  return make_n_array_expression<structure_t<Matrix>>(
-      shape, transpose_evaluator(expression.evaluator()));
+  using T = value_type_t<Matrix>;
+  if constexpr (detail::match_n_array_subview<uncvref_t<Matrix>>) {
+      auto evaluator = n_array_subview_evaluator<T, 2>(
+          matrix.data(), matrix.shape().strides());
+      return make_n_array_expression<structure_t<Matrix>>(
+          transpose(matrix.shape()), evaluator);
+  } else {
+    auto evaluator = n_array_evaluator<T, 2>(matrix.data());
+    return make_n_array_expression<structure_t<Matrix>>(
+        transpose(matrix.shape()), evaluator);
+  }
 }
 } // namespace satyr

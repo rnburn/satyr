@@ -12,82 +12,52 @@ template <class T>
 using uncvref_t = typename std::remove_cv_t<std::remove_reference_t<T>>;
 
 //------------------------------------------------------------------------------
-// reference_t
-//------------------------------------------------------------------------------
-template <class T> struct reference_type {};
-
-// clang-format off
-template <class T>
-  requires requires { typename T::reference; }
-struct reference_type<T> {
-  // clang-format on
-  using type = typename T::reference;
-};
-
-// clang-format off
-template <class T>
-  requires requires(T* t) { { *t } -> auto&&; }
-struct reference_type<T*> {
-  // clang-format on
-  using type = T&;
-};
-
-// clang-format off
-template <class T>
-  requires requires(T x) { { x.data() } -> auto*; } &&
-           !requires { typename T::reference; }
-struct reference_type<T> {
-  // clang-format on
-  using type =
-      typename reference_type<decltype(std::declval<T>().data())>::type;
-};
-
-// clang-format off
-template <class T>
-  requires requires(
-      typename reference_type<uncvref_t<T>>::type reference) {
-    { reference } -> auto&&;
-  }
-using reference_t = typename reference_type<uncvref_t<T>>::type;
-// clang-format on
-
-//------------------------------------------------------------------------------
 // value_type_t
 //------------------------------------------------------------------------------
+namespace detail {
+template <class T>
+constexpr bool has_value_type_v = false;
+
+template <class T>
+  requires requires {
+    typename T::value_type;
+  }
+constexpr bool has_value_type_v<T> = true;
+
+template <class T>
+constexpr bool has_element_type_v = false;
+
+template <class T>
+  requires requires {
+    typename T::element_type;
+  }
+constexpr bool has_element_type_v<T> = true;
+} // namespace detail
+
 template <class T> struct value_type {};
 
-// clang-format off
 template <class T>
-  // requires DETAIL_NS::has_member_value_type_v<T>
-  requires requires { typename T::value_type; }
+  requires detail::has_value_type_v<T>
 struct value_type<T> {
-  // clang-format on
   using type = typename T::value_type;
 };
 
-// clang-format off
 template <class T>
-  requires requires { typename T::element_type; }
+  requires detail::has_element_type_v<T>
 struct value_type<T> {
-  // clang-format on
   using type = typename T::element_type;
 };
 
-// clang-format off
 template <class T>
   requires requires(T* t) { { *t } -> auto&&; }
 struct value_type<T*> {
-  // clang-format on
   using type = std::decay_t<T>;
 };
 
-// clang-format off
 template <class T>
-  requires requires(T x) { { x.data() } -> auto*; } &&
-           !requires { typename T::value_type; } &&
-           !requires { typename T::element_type; }
+  requires requires(T x) { { x.data() } -> auto*; } 
+        && !detail::has_value_type_v<T> && !detail::has_element_type_v<T>
 struct value_type<T> {
-  // clang-format on
   using type = typename value_type<decltype(std::declval<T>().data())>::type;
 };
 
@@ -287,19 +257,11 @@ using size_type_t = typename size_type<uncvref_t<T>>::type;
 // is_writable_v
 //------------------------------------------------------------------------------
 template <class T>
-  requires requires {
-    typename reference_t<T>;
+  requires requires(T t) {
+    { t.data() } -> auto*;
   }
-constexpr bool is_writable_v = false;
-
-template <class T>
-  requires requires {
-    typename reference_t<T>;
-  } &&
-  requires(reference_t<T> ref, T t) {
-    ref = t;
-  }
-constexpr bool is_writable_v<T> = true;
+constexpr bool is_writable_v = 
+    std::is_lvalue_reference_v<decltype(*std::declval<T>().data())>;
 
 //------------------------------------------------------------------------------
 // arity_v

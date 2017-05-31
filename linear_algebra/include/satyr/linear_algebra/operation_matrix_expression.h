@@ -11,7 +11,7 @@ template <OperationMatrix T>
 constexpr matrix_operation matrix_operation_v = matrix_operation::none;
 
 template <OperationMatrix T>
-  requires detail::match_transposed_matrix<T>
+  requires detail::match_transposed_matrix<uncvref_t<T>>
 constexpr matrix_operation matrix_operation_v<T> = matrix_operation::transpose;
 
 //------------------------------------------------------------------------------
@@ -37,13 +37,13 @@ class n_array_expression<2, Structure, Evaluator, Policy> {
    using structure = Structure;
    using value_type = uncvref_t<codomain_t<Evaluator>>;
 
-   n_array_expression(const satyr::shape<2>& shape, const Evaluator& evaluator,
+   n_array_expression(const satyr::subshape<2>& shape, const Evaluator& evaluator,
                       Policy policy)
        : shape_{shape},
          evaluator_{evaluator},
          policy_{policy} {}
 
-   const satyr::shape<2>& shape() const { return shape_; }
+   const satyr::subshape<2>& shape() const { return shape_; }
 
    const Evaluator& evaluator() const { return evaluator_; }
 
@@ -51,7 +51,7 @@ class n_array_expression<2, Structure, Evaluator, Policy> {
 
    auto data() const { return evaluator_.evaluator().data(); }
  private:
-   satyr::shape<2> shape_;
+   satyr::subshape<2> shape_;
    Evaluator evaluator_;
    Policy policy_;
 };

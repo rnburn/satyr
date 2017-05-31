@@ -14,8 +14,7 @@ index_t get_leading_dimension(const A& a) {
 template <OperationMatrix A>
   requires detail::match_transposed_matrix<A>
 index_t get_leading_dimension(const A& a) {
-  /* return get_ */
-  return 0;
+  return get_stride<0>(a);
 }
 
 //------------------------------------------------------------------------------

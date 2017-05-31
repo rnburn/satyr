@@ -24,13 +24,6 @@ concept bool Scalar =
     std::is_same_v<uncvref_t<T>, std::complex<double>>;
 
 //------------------------------------------------------------------------------
-// BlasScalar
-//------------------------------------------------------------------------------
-template <class T>
-concept bool BlasScalar =
-    std::is_same_v<uncvref_t<T>, float> || std::is_same_v<uncvref_t<T>, double>;
-
-//------------------------------------------------------------------------------
 // Functor
 //------------------------------------------------------------------------------
 namespace detail {
