@@ -15,13 +15,36 @@ void test_product(const A& a, const X& x) {
     return y;
   }();
   auto result = product(a, x);
+  assert(expected_result.shape() == result.shape());
   for (index_t i=0; i<m; ++i)
     assert(expected_result(i) == result(i));
 }
 
+template <Matrix A, Matrix B>
+void test_product(const A& a, const B& b) {
+  auto [m, k] = a.shape();
+  auto n = get_extent<1>(b);
+  auto expected_result = [&] {
+    matrix<double> c(m, n);
+    c = 0;
+    for (index_t i=0; i<m; ++i)
+      for (index_t j=0; j<n; ++j)
+        for (index_t t=0; t<k; ++t)
+          c(i, j) += a(i, t) * b(t, j);
+    return c;
+  }();
+  auto result = product(a, b);
+  assert(expected_result.shape() == result.shape());
+  for (index_t i=0; i<m; ++i)
+    for (index_t j=0; j<n; ++j)
+      assert(expected_result(i, j) == result(i, j));
+}
+
 int main() {
   matrix<double> a = {{1, 2}, {3, 4}};
+  matrix<double> b = {{8, 1}, {9, -1}};
   vector<double> v = {7, 8};
   test_product(a, v);
+  test_product(a, b);
   return 0;
 }
