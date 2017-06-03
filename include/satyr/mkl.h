@@ -2,9 +2,7 @@
 
 #include <mkl.h>
 #include <satyr/index.h>
-#include <satyr/matrix_operation.h>
-#include <satyr/matrix_side.h>
-#include <satyr/uplo.h>
+#include <satyr/matrix.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <satyr/linear_algebra/transpose.h>
-#include <satyr/matrix_operation.h>
+#include <satyr/matrix.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------

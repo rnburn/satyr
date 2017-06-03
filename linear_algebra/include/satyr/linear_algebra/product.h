@@ -1,6 +1,6 @@
 #pragma once
 
-#include <satyr/matrix_side.h>
+#include <satyr/matrix.h>
 #include <satyr/linear_algebra/vector.h>
 #include <satyr/linear_algebra/matrix.h>
 #include <satyr/linear_algebra/concept.h>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <satyr/n_array.h>
-#include <satyr/uplo.h>
+#include <satyr/matrix.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
