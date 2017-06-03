@@ -129,6 +129,16 @@ void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
        ldb, a.data(), lda, beta, c.data(), ldc);
 }
 
+template <class A, class B, GeneralMatrix C>
+  requires ((SymmetricMatrix<A> && GeneralMatrix<B>) ||
+            (GeneralMatrix<A> && SymmetricMatrix<B>)) &&
+           is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
+           is_writable_v<C>
+void inplace_product(const A& a, const B& b, C&& c) {
+  inplace_product(1, a, b, 0, c);
+}
+
 //------------------------------------------------------------------------------
 // product
 //------------------------------------------------------------------------------
@@ -181,5 +191,26 @@ template <SymmetricMatrix A, Vector X>
            is_same_v<value_type_t<A>, value_type_t<X>>
 vector<value_type_t<A>> product(const A& a, const X& x) {
   return product(1, a, x);
+}
+
+// symm
+template <class A, class B>
+  requires ((SymmetricMatrix<A> && GeneralMatrix<B>) ||
+            (GeneralMatrix<A> && SymmetricMatrix<B>)) &&
+           is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>>
+matrix<value_type_t<A>> product(value_type_t<A> alpha, const A& a, const B& b) {
+  matrix<value_type_t<A>> c(get_extent<0>(a), get_extent<1>(b));
+  inplace_product(alpha, a, b, 0, c);
+  return c;
+}
+
+template <class A, class B>
+  requires ((SymmetricMatrix<A> && GeneralMatrix<B>) ||
+            (GeneralMatrix<A> && SymmetricMatrix<B>)) &&
+           is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>>
+matrix<value_type_t<A>> product(const A& a, const B& b) {
+  return product(1, a, b);
 }
 } // namespace satyr

@@ -48,5 +48,7 @@ int main() {
   test_product(a, v);
   test_product(a, b);
   test_product(s, v);
+  test_product(s, a);
+  test_product(a, s);
   return 0;
 }
