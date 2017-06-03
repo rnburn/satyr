@@ -24,6 +24,13 @@ concept bool GeneralMatrix =
     Matrix<T>&& std::is_same_v<structure_t<T>, general_structure>;
 
 //------------------------------------------------------------------------------
+// SymmetricMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool SymmetricMatrix =
+  Matrix<T> && std::is_same_v<structure_t<T>, symmetric_structure>;
+
+//------------------------------------------------------------------------------
 // OperationMatrix
 //------------------------------------------------------------------------------
 template <KEvaluator<2> Evaluator>

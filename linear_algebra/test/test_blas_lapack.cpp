@@ -43,8 +43,10 @@ void test_product(const A& a, const B& b) {
 int main() {
   matrix<double> a = {{1, 2}, {3, 4}};
   matrix<double> b = {{8, 1}, {9, -1}};
+  symmetric_matrix<double> s = {{1, 2}, {2, 1}};
   vector<double> v = {7, 8};
   test_product(a, v);
   test_product(a, b);
+  test_product(s, v);
   return 0;
 }

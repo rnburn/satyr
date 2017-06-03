@@ -3,6 +3,7 @@
 #include <mkl.h>
 #include <satyr/index.h>
 #include <satyr/matrix_operation.h>
+#include <satyr/uplo.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -20,6 +21,20 @@ inline CBLAS_TRANSPOSE get_operation(matrix_operation operation) {
   }
 }
 } // namespace detail
+
+//------------------------------------------------------------------------------
+// get_uplo
+//------------------------------------------------------------------------------
+namespace detail {
+inline CBLAS_UPLO get_uplo(uplo_t uplo) {
+  switch (uplo) {
+    case uplo_t::upper:
+      return CblasUpper;
+    case uplo_t::lower:
+      return CblasLower;
+  }
+}
+}  // namespace detail
 
 //------------------------------------------------------------------------------
 // gemv
@@ -56,4 +71,20 @@ MAKE_GEMV(double, d)
 MAKE_GEMM(float, s)
 MAKE_GEMM(double, d)
 #undef MAKE_GEMM
+
+//------------------------------------------------------------------------------
+// symv
+//------------------------------------------------------------------------------
+#define MAKE_SYMV(SCALAR, PREFIX)                                              \
+  inline void symv(uplo_t uplo_a, index_t n, SCALAR alpha, const SCALAR* a,    \
+                   index_t lda, const SCALAR* x, index_t incx, SCALAR beta,    \
+                   SCALAR* y, index_t incy) {                                  \
+    cblas_##PREFIX##symv(CblasColMajor, detail::get_uplo(uplo_a),              \
+                         static_cast<int>(n), alpha, a, static_cast<int>(lda), \
+                         x, static_cast<int>(incx), beta, y,                   \
+                         static_cast<int>(incy));                              \
+  }
+MAKE_SYMV(float, s)
+MAKE_SYMV(double, d)
+#undef MAKE_SYMV
 } // namespace satyr
