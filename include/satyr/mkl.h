@@ -10,17 +10,17 @@ namespace satyr {
 // get_operation
 //------------------------------------------------------------------------------
 namespace detail {
-inline CBLAS_TRANSPOSE get_operation(matrix_operation operation) {
+inline CBLAS_TRANSPOSE get_operation(matrix_operation_t operation) {
   switch (operation) {
-    case matrix_operation::none:
+    case matrix_operation_t::none:
       return CblasNoTrans;
-    case matrix_operation::transpose:
+    case matrix_operation_t::transpose:
       return CblasTrans;
-    case matrix_operation::conjugate_transpose:
+    case matrix_operation_t::conjugate_transpose:
       return CblasConjTrans;
   }
 }
-} // namespace detail
+}  // namespace detail
 
 //------------------------------------------------------------------------------
 // get_uplo
@@ -40,7 +40,7 @@ inline CBLAS_UPLO get_uplo(uplo_t uplo) {
 // gemv
 //------------------------------------------------------------------------------
 #define MAKE_GEMV(SCALAR, PREFIX)                                            \
-  inline void gemv(matrix_operation operation_a, index_t m, index_t n,       \
+  inline void gemv(matrix_operation_t operation_a, index_t m, index_t n,     \
                    SCALAR alpha, const SCALAR* a, index_t lda,               \
                    const SCALAR* x, index_t incx, SCALAR beta, SCALAR* y,    \
                    index_t incy) {                                           \
@@ -57,10 +57,11 @@ MAKE_GEMV(double, d)
 // gemm
 //------------------------------------------------------------------------------
 #define MAKE_GEMM(SCALAR, PREFIX)                                              \
-  inline void gemm(matrix_operation operation_a, matrix_operation operation_b, \
-                   index_t m, index_t n, index_t k, SCALAR alpha,              \
-                   const SCALAR* a, index_t lda, const SCALAR* b, index_t ldb, \
-                   SCALAR beta, SCALAR* c, index_t ldc) {                      \
+  inline void gemm(matrix_operation_t operation_a,                             \
+                   matrix_operation_t operation_b, index_t m, index_t n,       \
+                   index_t k, SCALAR alpha, const SCALAR* a, index_t lda,      \
+                   const SCALAR* b, index_t ldb, SCALAR beta, SCALAR* c,       \
+                   index_t ldc) {                                              \
     cblas_##PREFIX##gemm(CblasColMajor, detail::get_operation(operation_a),    \
                          detail::get_operation(operation_b),                   \
                          static_cast<int>(m), static_cast<int>(n),             \
@@ -87,4 +88,4 @@ MAKE_GEMM(double, d)
 MAKE_SYMV(float, s)
 MAKE_SYMV(double, d)
 #undef MAKE_SYMV
-} // namespace satyr
+}  // namespace satyr

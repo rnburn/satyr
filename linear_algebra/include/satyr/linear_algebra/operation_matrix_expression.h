@@ -8,11 +8,12 @@ namespace satyr {
 // matrix_operation_v
 //------------------------------------------------------------------------------
 template <OperationMatrix T>
-constexpr matrix_operation matrix_operation_v = matrix_operation::none;
+constexpr matrix_operation_t matrix_operation_v = matrix_operation_t::none;
 
 template <OperationMatrix T>
   requires detail::match_transposed_matrix<uncvref_t<T>>
-constexpr matrix_operation matrix_operation_v<T> = matrix_operation::transpose;
+constexpr matrix_operation_t matrix_operation_v<T> =
+                  matrix_operation_t::transpose;
 
 //------------------------------------------------------------------------------
 // n_array_expression
