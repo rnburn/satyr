@@ -1,5 +1,6 @@
 #pragma once
 
+#include <satyr/matrix_side.h>
 #include <satyr/linear_algebra/vector.h>
 #include <satyr/linear_algebra/matrix.h>
 #include <satyr/linear_algebra/concept.h>
@@ -89,6 +90,43 @@ template <SymmetricMatrix A, Vector X, Vector Y>
            is_writable_v<Y>
 void inplace_product(const A& a, const X& x, Y&& y) {
   inplace_product(1, a, x, 0, y);
+}
+
+// symm
+template <SymmetricMatrix A, GeneralMatrix B, GeneralMatrix C>
+  requires is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
+           is_writable_v<C>
+void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
+                     value_type_t<A> beta, C&& c) {
+  auto a_m = get_extent<0>(a);
+  auto lda = get_leading_dimension(a);
+
+  auto b_n = get_extent<1>(b);
+  auto ldb = get_leading_dimension(b);
+
+  auto ldc = get_leading_dimension(c);
+
+  symm(matrix_side_t::left, structure_t<A>::uplo, a_m, b_n, alpha, a.data(),
+       lda, b.data(), ldb, beta, c.data(), ldc);
+}
+
+template <GeneralMatrix A, SymmetricMatrix B, GeneralMatrix C>
+  requires is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
+           is_writable_v<C>
+void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
+                     value_type_t<A> beta, C&& c) {
+  auto a_m = get_extent<0>(a);
+  auto lda = get_leading_dimension(a);
+
+  auto b_n = get_extent<1>(b);
+  auto ldb = get_leading_dimension(b);
+
+  auto ldc = get_leading_dimension(c);
+
+  symm(matrix_side_t::right, structure_t<B>::uplo, a_m, b_n, alpha, b.data(),
+       ldb, a.data(), lda, beta, c.data(), ldc);
 }
 
 //------------------------------------------------------------------------------

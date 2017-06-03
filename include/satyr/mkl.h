@@ -3,6 +3,7 @@
 #include <mkl.h>
 #include <satyr/index.h>
 #include <satyr/matrix_operation.h>
+#include <satyr/matrix_side.h>
 #include <satyr/uplo.h>
 
 namespace satyr {
@@ -35,6 +36,20 @@ inline CBLAS_UPLO get_uplo(uplo_t uplo) {
   }
 }
 }  // namespace detail
+
+//------------------------------------------------------------------------------
+// get_side
+//------------------------------------------------------------------------------
+namespace detail {
+inline CBLAS_SIDE get_side(matrix_side_t side) {
+  switch (side) {
+    case matrix_side_t::left:
+      return CblasLeft;
+    case matrix_side_t::right:
+      return CblasRight;
+  }
+}
+}
 
 //------------------------------------------------------------------------------
 // gemv
@@ -88,4 +103,22 @@ MAKE_GEMM(double, d)
 MAKE_SYMV(float, s)
 MAKE_SYMV(double, d)
 #undef MAKE_SYMV
+
+//------------------------------------------------------------------------------
+// symm
+//------------------------------------------------------------------------------
+#define MAKE_SYMM(SCALAR, PREFIX)                                              \
+  inline void symm(matrix_side_t side_a, uplo_t uplo_a, index_t m, index_t n,  \
+                   SCALAR alpha, const SCALAR* a, index_t lda,                 \
+                   const SCALAR* b, index_t ldb, SCALAR beta, SCALAR* c,       \
+                   index_t ldc) {                                              \
+    cblas_##PREFIX##symm(CblasColMajor, detail::get_side(side_a),              \
+                         detail::get_uplo(uplo_a), static_cast<int>(m),        \
+                         static_cast<int>(n), alpha, a, static_cast<int>(lda), \
+                         b, static_cast<int>(ldb), beta, c,                    \
+                         static_cast<int>(ldc));                               \
+  }
+MAKE_SYMM(float, s)
+MAKE_SYMM(double, d)
+#undef MAKE_SYMM
 }  // namespace satyr
