@@ -7,6 +7,13 @@ namespace satyr {
 enum class uplo_t { upper, lower };
 
 //------------------------------------------------------------------------------
+// flip_uplo_v
+//------------------------------------------------------------------------------
+template <uplo_t uplo>
+constexpr uplo_t flip_uplo_v =
+    uplo == uplo_t::upper ? uplo_t::lower : uplo_t::upper;
+
+//------------------------------------------------------------------------------
 // matrix_diagonal_fill_t
 //------------------------------------------------------------------------------
 enum class matrix_diagonal_fill_t { general, unity, null };

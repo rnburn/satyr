@@ -46,4 +46,21 @@ auto transpose(Matrix&& matrix) {
         transpose(matrix.shape()), evaluator);
   }
 }
+
+template <TriangularMatrix Matrix>
+auto transpose(Matrix&& matrix) {
+  using T = value_type_t<Matrix>;
+  using StructureNew =
+      triangular_structure<flip_uplo_v<structure_t<Matrix>::uplo>>;
+  if constexpr (detail::match_n_array_subview<uncvref_t<Matrix>>) {
+      auto evaluator = n_array_subview_evaluator<T, 2>(
+          matrix.data(), matrix.shape().strides());
+      return make_n_array_expression<StructureNew>(
+          transpose(matrix.shape()), evaluator);
+  } else {
+    auto evaluator = n_array_evaluator<T, 2>(matrix.data());
+    return make_n_array_expression<StructureNew>(
+        transpose(matrix.shape()), evaluator);
+  }
+}
 } // namespace satyr

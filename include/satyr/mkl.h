@@ -3,6 +3,7 @@
 #include <mkl.h>
 #include <satyr/index.h>
 #include <satyr/matrix.h>
+#include <stdexcept>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -47,7 +48,23 @@ inline CBLAS_SIDE get_side(matrix_side_t side) {
       return CblasRight;
   }
 }
+} // namespace detail
+
+//------------------------------------------------------------------------------
+// get_unity_diagonal_fill
+//------------------------------------------------------------------------------
+namespace detail {
+inline CBLAS_DIAG get_unity_diagonal_fill(matrix_diagonal_fill_t diagonal_fill) {
+  switch (diagonal_fill) {
+    case matrix_diagonal_fill_t::unity:
+      return CblasUnit;
+    case matrix_diagonal_fill_t::general:
+      return CblasNonUnit;
+    case matrix_diagonal_fill_t::null:
+      std::terminate();
+  }
 }
+} // namespace detail
 
 //------------------------------------------------------------------------------
 // gemv
@@ -119,4 +136,21 @@ MAKE_SYMV(double, d)
 MAKE_SYMM(float, s)
 MAKE_SYMM(double, d)
 #undef MAKE_SYMM
+
+//------------------------------------------------------------------------------
+// trmv
+//------------------------------------------------------------------------------
+#define MAKE_TRMV(SCALAR, PREFIX)                                          \
+  void trmv(uplo_t uplo_a, matrix_operation_t operation_a,                 \
+            matrix_diagonal_fill_t diagonal_fill_a, index_t n,             \
+            const SCALAR* a, index_t lda, SCALAR* x, index_t incx) {       \
+    cblas_##PREFIX##trmv(CblasColMajor, detail::get_uplo(uplo_a),          \
+                         detail::get_operation(operation_a),               \
+                         detail::get_unity_diagonal_fill(diagonal_fill_a), \
+                         static_cast<int>(n), a, static_cast<int>(lda), x, \
+                         static_cast<int>(incx));                          \
+  }
+MAKE_TRMV(float, s)
+MAKE_TRMV(double, d)
+#undef MAKE_TRMV
 }  // namespace satyr

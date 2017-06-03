@@ -1,6 +1,7 @@
 #pragma once
 
 #include <satyr/n_array.h>
+#include <satyr/linear_algebra/structure.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -29,6 +30,27 @@ concept bool GeneralMatrix =
 template <class T>
 concept bool SymmetricMatrix =
   Matrix<T> && std::is_same_v<structure_t<T>, symmetric_structure>;
+
+//------------------------------------------------------------------------------
+// LowerTriangularMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool LowerTriangularMatrix =
+    Matrix<T>&& std::is_same_v<structure_t<T>, lower_triangular_structure>;
+
+//------------------------------------------------------------------------------
+// UpperTriangularMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool UpperTriangularMatrix =
+    Matrix<T>&& std::is_same_v<structure_t<T>, upper_triangular_structure>;
+
+//------------------------------------------------------------------------------
+// TriangularMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool TriangularMatrix =
+    LowerTriangularMatrix<T> || UpperTriangularMatrix<T>;
 
 //------------------------------------------------------------------------------
 // OperationMatrix
@@ -61,4 +83,25 @@ concept bool OperationMatrix =
 template <class T>
 concept bool GeneralOperationMatrix =
     OperationMatrix<T>&& std::is_same_v<structure_t<T>, general_structure>;
+
+//------------------------------------------------------------------------------
+// LowerTriangularOperationMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool LowerTriangularOperationMatrix = OperationMatrix<T>&&
+    std::is_same_v<structure_t<T>, lower_triangular_structure>;
+
+//------------------------------------------------------------------------------
+// UpperTriangularOperationMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool UpperTriangularOperationMatrix = OperationMatrix<T>&&
+    std::is_same_v<structure_t<T>, upper_triangular_structure>;
+
+//------------------------------------------------------------------------------
+// TriangularOperationMatrix
+//------------------------------------------------------------------------------
+template <class T>
+concept bool TriangularOperationMatrix =
+    LowerTriangularOperationMatrix<T> || UpperTriangularOperationMatrix<T>;
 }  // namespace satyr

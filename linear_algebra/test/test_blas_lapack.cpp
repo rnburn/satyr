@@ -43,12 +43,23 @@ void test_product(const A& a, const B& b) {
 int main() {
   matrix<double> a = {{1, 2}, {3, 4}};
   matrix<double> b = {{8, 1}, {9, -1}};
+  lower_triangular_matrix<double> l = {{1, 0}, {3, -2}};
   symmetric_matrix<double> s = {{1, 2}, {2, 1}};
   vector<double> v = {7, 8};
+  // gemv
   test_product(a, v);
+
+  // gemm
   test_product(a, b);
+
+  // symv
   test_product(s, v);
+
+  // symm
   test_product(s, a);
   test_product(a, s);
+
+  // trmv
+  test_product(l, v);
   return 0;
 }
