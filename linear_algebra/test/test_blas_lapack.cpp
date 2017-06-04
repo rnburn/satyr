@@ -61,5 +61,10 @@ int main() {
 
   // trmv
   test_product(l, v);
+
+  // trmm
+  test_product(l, a);
+  test_product(a, l);
+
   return 0;
 }

@@ -157,6 +157,54 @@ void inplace_product(const A& a, X&& x) {
        a.data(), lda, x.data(), incx);
 }
 
+// trmm
+template <TriangularOperationMatrix A, GeneralMatrix B>
+  requires is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>> &&
+           is_writable_v<B>
+void inplace_product(value_type_t<A> alpha, const A& a, B&& b) {
+  auto lda = get_leading_dimension(a);
+  auto a_uplo = matrix_operation_v<A> == matrix_operation_t::none
+                    ? structure_t<A>::uplo
+                    : flip_uplo_v<structure_t<A>::uplo>;
+
+  auto [b_m, b_n] = b.shape();
+  auto ldb = get_leading_dimension(b);
+
+  trmm(matrix_side_t::left, structure_t<A>::uplo, matrix_operation_v<A>,
+       matrix_diagonal_fill_t::general, b_m, b_n, alpha, a.data(), lda,
+       b.data(), ldb);
+}
+
+template <GeneralMatrix A, TriangularOperationMatrix B>
+  requires is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>> &&
+           is_writable_v<A>
+void inplace_product(value_type_t<A> alpha, A&& a, const B& b) {
+  auto [a_m, a_n] = a.shape();
+  auto lda = get_leading_dimension(a);
+
+  auto ldb = get_leading_dimension(b);
+  auto b_uplo = matrix_operation_v<B> == matrix_operation_t::none
+                    ? structure_t<B>::uplo
+                    : flip_uplo_v<structure_t<B>::uplo>;
+
+  trmm(matrix_side_t::right, b_uplo, matrix_operation_v<B>,
+       matrix_diagonal_fill_t::general, a_m, a_n, alpha, b.data(), ldb,
+       a.data(), lda);
+}
+
+template <class A, class B>
+  requires ((TriangularOperationMatrix<A> && GeneralMatrix<B> && 
+            is_writable_v<B>) ||
+            (GeneralMatrix<A> && TriangularOperationMatrix<B> &&
+             is_writable_v<A>)) &&
+           is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>>
+void inplace_product(A&& a, B&& b) {
+  inplace_product(1, a, b);
+}
+
 //------------------------------------------------------------------------------
 // product
 //------------------------------------------------------------------------------
@@ -240,5 +288,33 @@ vector<value_type_t<A>> product(const A& a, const X& x) {
   vector<value_type_t<A>> y{x};
   inplace_product(a, y);
   return y;
+}
+
+// trmm
+template <TriangularOperationMatrix A, GeneralMatrix B>
+  requires is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>>
+matrix<value_type_t<A>> product(value_type_t<A> alpha, const A& a, const B& b) {
+  matrix<value_type_t<B>> c{b};
+  inplace_product(alpha, a, c);
+  return c;
+}
+
+template <GeneralMatrix A, TriangularOperationMatrix B>
+  requires is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>>
+matrix<value_type_t<A>> product(value_type_t<A> alpha, const A& a, const B& b) {
+  matrix<value_type_t<B>> c{a};
+  inplace_product(alpha, c, b);
+  return c;
+}
+
+template <class A, class B>
+  requires ((TriangularOperationMatrix<A> && GeneralMatrix<B>) ||
+            (GeneralMatrix<A> && TriangularOperationMatrix<B>)) &&
+           is_blas_scalar_v<value_type_t<A>> &&
+           is_same_v<value_type_t<A>, value_type_t<B>>
+matrix<value_type_t<A>> product(const A& a, const B& b) {
+  return product(1, a, b);
 }
 } // namespace satyr
