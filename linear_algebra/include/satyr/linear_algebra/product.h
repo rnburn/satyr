@@ -237,8 +237,7 @@ template <TriangularOperationMatrix A, Vector X>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<X>>
 vector<value_type_t<A>> product(const A& a, const X& x) {
-  vector<value_type_t<A>> y(get_extent<0>(a));
-  y = make_expression(x);
+  vector<value_type_t<A>> y{x};
   inplace_product(a, y);
   return y;
 }

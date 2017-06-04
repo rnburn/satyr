@@ -28,7 +28,6 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
           n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>, K,
           Structure> {
   using base = n_array_cview<T, K, Structure>;
-
  public:
    using structure = Structure;
 
@@ -46,6 +45,10 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   n_array_impl(n_array_impl&& other) noexcept {
     move_assign(other);
+  }
+
+  n_array_impl(const n_array_impl& other) {
+    copy_assign(other.data(), other.shape());
   }
 
   template <class OtherT>
@@ -75,9 +78,10 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   n_array_impl(initializer_multilist<T, K> values)
       : n_array_impl{shape<K>{detail::get_extents<T, K>(values)}} {
-    auto k_array = this->as_k_array();
-    detail::initialize<T, K>(
-        values, [=](auto... indexes) -> T& { return k_array(indexes...); });
+    auto array = this->as_k_array();
+    detail::initialize<T, K>(values, [array](auto... indexes) -> auto& {
+      return array(indexes...);
+    });
   }
 
   // destructor
@@ -92,11 +96,17 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     return *this;
   }
 
+  n_array_impl& operator=(const n_array_impl& other) {
+    if (data() == other.data()) return *this;
+    copy_assign(other.data(), other.shape());
+    return *this;
+  }
+
   template <class OtherT>
   n_array_impl& operator=(const n_array_impl<std::index_sequence<Indexes...>,
                                              OtherT, K, Structure>& other) {
     if constexpr (std::is_same_v<T, OtherT>) {
-      if (data == other.data()) return *this;
+      if (data() == other.data()) return *this;
     }
     copy_assign(other.data(), other.shape());
     return *this;
@@ -137,7 +147,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     auto num_elements_new = get_num_elements(shape_new);
     if (num_elements == num_elements_new)
       return;
-    this->deallocate(num_elements);
+    this->deallocate(this->data(), num_elements);
     auto data_new = this->allocate(num_elements_new);
     static_cast<base&>(*this) = {data_new, shape_new};
   }

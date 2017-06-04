@@ -51,7 +51,7 @@ void initialize(initializer_multilist<T, N> values, F f) {
     index_t index = 0;
     for (auto value : values) {
       initialize<T, N - 1>(
-          value, [&](auto... args) -> T& { return f(index, args...); });
+          value, [&](auto... args) -> auto& { return f(index, args...); });
       ++index;
     }
   }
