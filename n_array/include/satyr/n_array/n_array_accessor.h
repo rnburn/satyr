@@ -97,11 +97,8 @@ struct n_array_accessor_impl;
 template <size_t... Indexes, class Derived, class Structure>
 struct n_array_accessor_impl<std::index_sequence<Indexes...>, Derived,
                              Structure>
-    : n_array_const_accessor_impl<std::index_sequence<Indexes...>, Derived,
-                                  Structure> {
-  private:
-    using base = n_array_const_accessor_impl<
-      std::index_sequence<Indexes...>, Derived, Structure>;
+    : n_array_const_accessor<Derived, sizeof...(Indexes), Structure> {
+    using base = n_array_const_accessor<Derived, sizeof...(Indexes), Structure>;
   public:
     using base::operator();
 

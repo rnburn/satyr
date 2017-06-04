@@ -10,15 +10,13 @@ namespace satyr {
 template <class Derived>
 struct n_array_const_accessor<Derived, 2, symmetric_structure> {
   const auto& operator()(access_mode::readonly, index_t i, index_t j) const {
-    auto [s, t] = std::minmax(i, j);
     const auto& derived = static_cast<const Derived&>(*this);
-    return derived.as_k_array()(t, s);
+    return derived.as_k_array()(std::max(i,j), std::min(i,j));
   }
 
   auto& operator()(access_mode::readwrite, index_t i, index_t j) const {
-    auto [s, t] = std::minmax(i, j);
     const auto& derived = static_cast<const Derived&>(*this);
-    return derived.as_k_array()(t, s);
+    return derived.as_k_array()(std::max(i,j), std::min(i, j));
   }
 
   auto& operator()(access_mode::raw, index_t i, index_t j) const {
