@@ -59,4 +59,23 @@ constexpr bool
 template <class F, size_t K>
 concept bool IndexFunctor =
     detail::is_index_functor_impl<std::make_index_sequence<K>, F>;
+
+//------------------------------------------------------------------------------
+// IndexPredicate
+//------------------------------------------------------------------------------
+namespace detail {
+template <class, class F>
+constexpr bool is_index_predicate_impl = false;
+
+template <size_t... Indexes, class F>
+  requires requires(F f, std::enable_if_t<(Indexes,true), index_t>... indexes) {
+    { f(indexes...) } -> bool;
+  }
+constexpr bool
+    is_index_predicate_impl<std::index_sequence<Indexes...>, F> = true;
+} // namespace detail
+
+template <class F, size_t K>
+concept bool IndexPredicate =
+    detail::is_index_predicate_impl<std::make_index_sequence<K>, F>;
 }  // namespace satyr

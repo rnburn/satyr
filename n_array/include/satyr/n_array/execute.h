@@ -39,4 +39,24 @@ void execute(const n_array_expression<2, Structure, Evaluator, Policy>&
       simd_v | expression.policy(), get_extent<0>(shape),
       [shape, evaluator](index_t i, index_t j) { evaluator(shape, i, j); });
 }
+
+//------------------------------------------------------------------------------
+// execute_with_exit
+//------------------------------------------------------------------------------
+template <size_t K, FlatEvaluator Evaluator, Policy Policy>
+bool execute_with_exit(const n_array_expression<K, general_structure, Evaluator,
+                                                Policy>& expression) {
+  return for_with_exit(simd_v | expression.policy(), 0,
+                       get_num_elements(expression), expression.evaluator());
+}
+
+template <size_t K, KEvaluator<K> Evaluator, Policy Policy>
+bool execute_with_exit(const n_array_expression<K, general_structure, Evaluator,
+                                                Policy>& expression) {
+  auto shape = expression.shape();
+  auto evaluator = expression.evaluator();
+  return for_each_index_with_exit(
+      simd_v | expression.policy(), shape.extents(),
+      [shape, evaluator](auto... indexes) { evaluator(shape, indexes...); });
+}
 } // namespace satyr

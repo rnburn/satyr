@@ -101,4 +101,22 @@ void for_each_index_triangular(Policy policy, index_t n, Functor f) {
     }
   });
 }
+
+//------------------------------------------------------------------------------
+// for_each_index-with_cancel
+//------------------------------------------------------------------------------
+template <Policy Policy, size_t K, IndexPredicate<K> Functor>
+  requires !has_policy_v<grainularity, Policy>
+bool for_each_index_with_cancel(Policy policy, std::array<index_t, K> extents,
+                                Functor f) {
+  if constexpr(K == 1) { return for_with_cancel(policy, 0, extents[0], f); }
+  else {
+    for_with_cancel(serial_v, 0, extents[K - 1], [=](index_t i) {
+      auto f_prime = [=](auto... indexes) { return f(indexes..., i); };
+      return for_each_index_with_cancel(
+          policy, reinterpret_cast<const std::array<index_t, K - 1>&>(extents),
+          f_prime);
+    });
+  }
+}
 } // namespace satyr
