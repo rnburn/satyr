@@ -7,5 +7,11 @@ int main() {
   array(0, 1) = 2;
   satyr::n_array_cview<double, 2, satyr::general_structure> view = array;
   assert(view(0, 1) == 2);
+
+  satyr::n_array<double, 3> array2 = {{{3, 4}, {7, 5}}, {{12, 9}, {-1, 3}}};
+  satyr::n_array<double, 3> array3{array2};
+  array3(0, 1, 0) += 1;
+  assert(array2 == array2);
+  assert(array2 != array3);
   return 0;
 }

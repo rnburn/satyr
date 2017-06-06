@@ -15,9 +15,7 @@ void test_product(const A& a, const X& x) {
     return y;
   }();
   auto result = product(a, x);
-  assert(expected_result.shape() == result.shape());
-  for (index_t i=0; i<m; ++i)
-    assert(expected_result(i) == result(i));
+  assert(expected_result == result);
 }
 
 template <Matrix A, Matrix B>
