@@ -10,7 +10,7 @@ namespace satyr {
 //------------------------------------------------------------------------------
 // k_array
 //------------------------------------------------------------------------------
-template <class T, size_t K, class Alloc = std::allocator<T>>
+template <class T, size_t K, class Alloc>
 class k_array : public k_array_cview<T, K>,
                 public detail::k_array_accessor<k_array<T, K, Alloc>, K>,
                 private Alloc {

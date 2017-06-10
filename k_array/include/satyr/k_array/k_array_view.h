@@ -9,6 +9,9 @@
 #include <satyr/k_array/k_array_subview.h>
 
 namespace satyr {
+template <class T, size_t K, class Alloc = std::allocator<T>>
+class k_array;
+
 //------------------------------------------------------------------------------
 // k_array_view
 //------------------------------------------------------------------------------
@@ -78,4 +81,22 @@ class k_array_view<T, K>
 //------------------------------------------------------------------------------
 template <class T, size_t K>
 using k_array_cview = k_array_view<const T, K>;
+
+//------------------------------------------------------------------------------
+// make_view
+//------------------------------------------------------------------------------
+template <class T, size_t K>
+k_array_view<T, K> make_view(const k_array_view<T, K>& array) {
+  return array;
+}
+
+template <class T, size_t K>
+k_array_cview<T, K> make_view(const k_array<T, K>& array) {
+  return {array.data(), array.shape()};
+}
+
+template <class T, size_t K>
+k_array_view<T, K> make_view(k_array<T, K>& array) {
+  return {array.data(), array.shape()};
+}
 } // namespace satyr

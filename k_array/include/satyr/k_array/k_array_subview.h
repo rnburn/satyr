@@ -70,4 +70,12 @@ k_array_subview<T, K> make_k_array_subview(T* data,
                                            const subshape<K>& subshape) {
   return {data, subshape};
 }
+
+//------------------------------------------------------------------------------
+// make_view
+//------------------------------------------------------------------------------
+template <class T, size_t K>
+k_array_subview<T, K> make_view(const k_array_subview<T, K>& array) {
+  return array;
+}
 } // namespace satyr
