@@ -6,21 +6,25 @@
 #include <satyr/traits.h>
 
 namespace satyr {
-#define MAKE_UNIMPLEMENTED_STUB(NAME)                           \
-  void NAME(...) {                                              \
+#define MAKE_UNIMPLEMENTED_STUB(RETURN, NAME)                   \
+  RETURN NAME(...) {                                            \
     std::cerr << SATYR_STRINGIFY(NAME) " is not implemented\n"; \
     std::terminate();                                           \
   }
-MAKE_UNIMPLEMENTED_STUB(dot)
-MAKE_UNIMPLEMENTED_STUB(gemv)
-MAKE_UNIMPLEMENTED_STUB(gemm)
-MAKE_UNIMPLEMENTED_STUB(trsv)
-MAKE_UNIMPLEMENTED_STUB(trmv)
-MAKE_UNIMPLEMENTED_STUB(trmm)
-MAKE_UNIMPLEMENTED_STUB(symv)
-MAKE_UNIMPLEMENTED_STUB(symm)
-MAKE_UNIMPLEMENTED_STUB(syr)
-MAKE_UNIMPLEMENTED_STUB(syr2)
+// blas
+MAKE_UNIMPLEMENTED_STUB(void, dot)
+MAKE_UNIMPLEMENTED_STUB(void, gemv)
+MAKE_UNIMPLEMENTED_STUB(void, gemm)
+MAKE_UNIMPLEMENTED_STUB(void, trsv)
+MAKE_UNIMPLEMENTED_STUB(void, trmv)
+MAKE_UNIMPLEMENTED_STUB(void, trmm)
+MAKE_UNIMPLEMENTED_STUB(void, symv)
+MAKE_UNIMPLEMENTED_STUB(void, symm)
+MAKE_UNIMPLEMENTED_STUB(void, syr)
+MAKE_UNIMPLEMENTED_STUB(void, syr2)
+
+// lapack
+MAKE_UNIMPLEMENTED_STUB(int, potrf)
 #undef MAKE_UNIMPLEMENTED_STUB
 
 //------------------------------------------------------------------------------

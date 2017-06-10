@@ -9,3 +9,4 @@
 #include <satyr/n_array/math.h>
 #include <satyr/n_array/print.h>
 #include <satyr/n_array/equality.h>
+#include <satyr/n_array/structure_cast.h>

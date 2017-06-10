@@ -34,6 +34,15 @@ inline CBLAS_UPLO get_uplo(uplo_t uplo) {
       return CblasLower;
   }
 }
+
+inline char get_uplo_char(uplo_t uplo) {
+  switch (uplo) {
+    case uplo_t::upper:
+      return 'U';
+    case uplo_t::lower:
+      return 'L';
+  }
+}
 }  // namespace detail
 
 //------------------------------------------------------------------------------
@@ -172,4 +181,18 @@ MAKE_TRMV(double, d)
 MAKE_TRMM(float, s)
 MAKE_TRMM(double, d)
 #undef MAKE_TRMM
+
+//------------------------------------------------------------------------------
+// potrf
+//------------------------------------------------------------------------------
+#define MAKE_POTRF(SCALAR, SUFFIX)                                          \
+  int potrf(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {               \
+    auto status = LAPACKE_##SUFFIX##potrf(                                  \
+        CblasColMajor, detail::get_uplo_char(uplo), static_cast<int>(n), a, \
+        static_cast<int>(lda));                                             \
+    return static_cast<int>(status);                                        \
+  }
+MAKE_POTRF(float, s)
+MAKE_POTRF(double, d)
+#undef MAKE_POTRF
 }  // namespace satyr

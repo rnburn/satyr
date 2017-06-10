@@ -91,4 +91,24 @@ class n_array_view<T, K, Structure>
 //------------------------------------------------------------------------------
 template <Scalar T, size_t K, Structure Structure>
 using n_array_cview = n_array_view<const T, K, Structure>;
-} // namespace satyr
+
+//------------------------------------------------------------------------------
+// make_view
+//------------------------------------------------------------------------------
+template <class T, size_t K, Structure Structure>
+n_array_view<T, K, Structure> make_view(
+    const n_array_view<T, K, Structure>& array) {
+  return {array.data(), array.shape()};
+}
+
+template <class T, size_t K, Structure Structure>
+n_array_view<T, K, Structure> make_view(n_array<T, K, Structure>& array) {
+  return {array.data(), array.shape()};
+}
+
+template <class T, size_t K, Structure Structure>
+n_array_cview<T, K, Structure> make_view(
+    const n_array<T, K, Structure>& array) {
+  return {array.data(), array.shape()};
+}
+}  // namespace satyr
