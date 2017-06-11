@@ -35,31 +35,8 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   // constructors
   n_array_impl() = default;
 
-  template <class OtherT>
-  n_array_impl(const n_array_impl<std::index_sequence<Indexes...>, OtherT, K,
-                                  Structure>& other) {
-    if constexpr (std::is_same_v<T, OtherT>) {
-      if (data == other.data()) return;
-    }
-    copy_assign(other.data(), other.shape());
-  }
-
   n_array_impl(n_array_impl&& other) noexcept {
     move_assign(other);
-  }
-
-  n_array_impl(const n_array_impl& other) {
-    copy_assign(other.data(), other.shape());
-  }
-
-  template <class OtherT>
-  n_array_impl(const n_array_view<OtherT, K, Structure>& other) {
-    copy_assign(other.data(), other.shape());
-  }
-
-  template <class OtherT>
-  n_array_impl(const n_array_subview<OtherT, K, Structure>& other) {
-    copy_assign(other.data(), other.shape());
   }
 
   explicit n_array_impl(const satyr::shape<K>& shape) {
@@ -162,10 +139,6 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   using n_array_accessor<n_array_impl,  K, Structure>::operator();
 
   // conversion
-  operator n_array_subcview<T, K, Structure>() const {
-    return {data(), subshape<K>{this->shape()}};
-  }
-
   operator n_array_subview<T, K, Structure>() {
     return {data(), subshape<K>{this->shape()}};
   }
@@ -175,26 +148,6 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     if (data() == other.data()) return;
     static_cast<base&>(*this) = static_cast<base&>(other);
     static_cast<base&>(other) = {nullptr, shape<K>{}};
-  }
-
-  template <class OtherT>
-  void copy_assign(const OtherT* other_data, const shape<K>& other_shape) {
-    reshape(other_shape);
-    auto num_elements = get_num_elements(this->shape());
-    auto data = this->data();
-    for_(simd_v, 0, num_elements,
-         [data, other_data](index_t i) { *(data + i) = *(other_data + i); });
-  }
-
-  template <class OtherT>
-  void copy_assign(const OtherT* other_data, const subshape<K>& other_shape) {
-    reshape(other_shape);
-    auto data = this->data();
-    for_each_index(simd_v, other_shape.extents(), [&](auto... indexes) {
-      *(data + get_1d_index(this->shape(), indexes...)) =
-          *(other_data +
-            get_subshape_1d_index(other_shape.strides(), indexes...));
-    });
   }
 };
 }
@@ -216,5 +169,39 @@ class n_array
       n_array,
       n_array_expression<K, Structure, flat_n_array_evaluator<T>,
                           no_policy>>::operator=;
+
+  // constructors
+  n_array(const n_array& other)
+      : n_array{static_cast<const n_array_cview<T, K, Structure>&>(other)} {}
+
+  template <Scalar OtherT, class OtherStructure>
+    requires detail::have_common_structure_v<
+                  n_array, 
+                  n_array_view<OtherT, K, OtherStructure>>
+  n_array(const n_array_view<OtherT, K, OtherStructure>& other) {
+    this->reshape(other.shape());
+    *this = make_expression(other);
+  }
+
+  template <Scalar OtherT, class OtherStructure>
+    requires detail::have_common_structure_v<
+                  n_array, 
+                  n_array_view<OtherT, K, OtherStructure>>
+  n_array(const n_array_subview<OtherT, K, OtherStructure>& other) {
+    this->reshape(other.shape());
+    *this = make_expression(other);
+  }
+
+  n_array(n_array&& other) noexcept
+      : n_array{static_cast<base&&>(std::move(other))} {}
+
+  // assignment
+  n_array& operator=(n_array&& other) noexcept {
+    *this = static_cast<base&&>(std::move(other));
+  }
+
+  n_array& operator=(const n_array& other) {
+    *this = make_expression(other);
+  }
 };
 } // namespace satyr
