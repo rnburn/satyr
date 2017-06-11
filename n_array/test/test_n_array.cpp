@@ -13,5 +13,8 @@ int main() {
   array3(0, 1, 0) += 1;
   assert(array2 == array2);
   assert(array2 != array3);
+
+  satyr::n_array<double, 2> array4{array(satyr::all_v, satyr::range{1, 3})};
+  assert(array4 == array(satyr::all_v, satyr::range{1,3}));
   return 0;
 }

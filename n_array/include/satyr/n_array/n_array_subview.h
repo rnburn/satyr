@@ -25,7 +25,7 @@ class n_array_subview<T, K, Structure> :
    // constructor
    n_array_subview() = default;
 
-   n_array_subview(T* data, subshape<K> subshape)
+   n_array_subview(T* data, subshape<K> shape)
      : array_{data, shape}
    {}
 

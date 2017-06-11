@@ -9,6 +9,7 @@
 #include <satyr/n_array/n_array_evaluator.h>
 #include <satyr/n_array/n_array_view.h>
 #include <satyr/n_array/n_array_subview.h>
+#include <satyr/for_each_index.h>
 #include <satyr/k_array.h>
 #include <stdexcept>
 
@@ -53,6 +54,11 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   template <class OtherT>
   n_array_impl(const n_array_view<OtherT, K, Structure>& other) {
+    copy_assign(other.data(), other.shape());
+  }
+
+  template <class OtherT>
+  n_array_impl(const n_array_subview<OtherT, K, Structure>& other) {
     copy_assign(other.data(), other.shape());
   }
 
@@ -178,6 +184,17 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     auto data = this->data();
     for_(simd_v, 0, num_elements,
          [data, other_data](index_t i) { *(data + i) = *(other_data + i); });
+  }
+
+  template <class OtherT>
+  void copy_assign(const OtherT* other_data, const subshape<K>& other_shape) {
+    reshape(other_shape);
+    auto data = this->data();
+    for_each_index(simd_v, other_shape.extents(), [&](auto... indexes) {
+      *(data + get_1d_index(this->shape(), indexes...)) =
+          *(other_data +
+            get_subshape_1d_index(other_shape.strides(), indexes...));
+    });
   }
 };
 }
