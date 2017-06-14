@@ -76,6 +76,9 @@ class n_array_view<T, K, Structure>
       n_array_expression<K, Structure, flat_n_array_evaluator<T>,
                          no_policy>>::operator=;
 
+  using n_array_const_accessor<n_array_view<T, K, Structure>, K, Structure>::
+  operator();
+
   // conversion
   operator n_array_subcview<T, K, Structure>() const {
     return {data(), subshape<K>{this->shape()}};

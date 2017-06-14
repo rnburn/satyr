@@ -51,6 +51,10 @@ class n_array_expression<2, Structure, Evaluator, Policy> {
    Policy policy() const { return policy_; }
 
    auto data() const { return evaluator_.evaluator().data(); }
+
+   decltype(auto) operator()(index_t i, index_t j) const {
+     return evaluator_(shape_, i, j);
+   }
  private:
    satyr::subshape<2> shape_;
    Evaluator evaluator_;

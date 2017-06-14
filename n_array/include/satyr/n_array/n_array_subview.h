@@ -70,6 +70,9 @@ class n_array_subview<T, K, Structure>
       n_array_subview,
       n_array_expression<K, Structure, n_array_subview_evaluator<T, K>,
                          no_policy>>::operator=;
+
+  using n_array_const_accessor<n_array_subview<T, K, Structure>, K, Structure>::
+  operator();
 };
 
 //------------------------------------------------------------------------------

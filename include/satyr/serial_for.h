@@ -39,7 +39,7 @@ template <Policy Policy, IndexPredicate<1> F>
            has_policy_v<simd, Policy>
 bool for_with_cancel(Policy policy, index_t first, index_t last, F f) {
   index_t i;
-  SATYR_PRAGMA_SIMD_LINEAR(i)
+  /* SATYR_PRAGMA_SIMD_LINEAR(i) */
   for (i = first; i < last; ++i)
     if (!f(i)) return false;
   return true;

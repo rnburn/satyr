@@ -2,10 +2,10 @@
 #include <cassert>
 using namespace satyr;
 
-template <Matrix A, Vector X>
+template <OperationMatrix A, Vector X>
 void test_product(const A& a, const X& x) {
   auto [m, n] = a.shape();
-  assert(m == get_extent<0>(x));
+  assert(n == get_extent<0>(x));
   auto expected_result = [&]{
     vector<double> y(m);
     y = 0;
@@ -18,7 +18,7 @@ void test_product(const A& a, const X& x) {
   assert(expected_result == result);
 }
 
-template <Matrix A, Matrix B>
+template <OperationMatrix A, OperationMatrix B>
 void test_product(const A& a, const B& b) {
   auto [m, k] = a.shape();
   auto n = get_extent<1>(b);
@@ -40,13 +40,18 @@ void test_product(const A& a, const B& b) {
 
 int main() {
   matrix<double> a = {{1, 2}, {3, 4}};
+  auto sa = a(range{0, 1}, all_v);
+  auto sv = a(1, all_v);
   matrix<double> b = {{8, 1}, {9, -1}};
   lower_triangular_matrix<double> l = {{1}, {3, -2}};
   symmetric_matrix<double> s = {{1}, {2, 1}};
   symmetric_matrix<double> i = {{1}, {0, 1}};
   vector<double> v = {7, 8};
+
   // gemv
   test_product(a, v);
+  test_product(sa, sv);
+  /* test_product(transpose(a), v); */
 
   // gemm
   test_product(a, b);
