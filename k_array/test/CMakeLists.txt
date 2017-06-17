@@ -1,2 +1,2 @@
-add_executable(test_k_array test_k_array.cpp)
-add_test(test_k_array test_k_array)
+add_executable(k_array_test k_array_test.cpp)
+add_test(k_array_test k_array_test)

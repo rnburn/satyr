@@ -1,7 +1,7 @@
-add_executable(test_matrix test_matrix.cpp)
-add_test(test_matrix test_matrix)
+add_executable(matrix_test matrix_test.cpp)
+add_test(matrix_test matrix_test)
 
 if (WITH_BLAS_LAPACK)
-  add_executable(test_blas_lapack test_blas_lapack.cpp)
-  add_test(test_blas_lapack test_blas_lapack)
+  add_executable(blas_lapack_test blas_lapack_test.cpp)
+  add_test(blas_lapack_test blas_lapack_test)
 endif()

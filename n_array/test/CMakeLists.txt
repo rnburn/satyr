@@ -1,8 +1,8 @@
-add_executable(test_n_array test_n_array.cpp)
-add_test(test_n_array test_n_array)
+add_executable(n_array_test n_array_test.cpp)
+add_test(n_array_test n_array_test)
 
-add_executable(test_map test_map.cpp)
-add_test(test_map test_map)
+add_executable(map_test map_test.cpp)
+add_test(map_test map_test)
 
-add_executable(test_expression test_expression.cpp)
-add_test(test_expression test_expression)
+add_executable(expression_test expression_test.cpp)
+add_test(expression_test expression_test)
