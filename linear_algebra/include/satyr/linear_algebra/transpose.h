@@ -66,4 +66,20 @@ auto transpose(Matrix&& matrix) {
                                                  evaluator);
   }
 }
+
+template <Evaluator<2> Evaluator, Policy Policy>
+n_array_expression<2, general_structure, transpose_evaluator<Evaluator>, Policy>
+transpose(const n_array_expression<2, general_structure, Evaluator, Policy>&
+              expression) {
+  return {satyr::shape<2>{get_extent<1>(expression), get_extent<0>(expression)},
+          transpose(expression.evaluator())};
+}
+
+template <uplo_t Uplo, Evaluator<2> Evaluator, Policy Policy>
+n_array_expression<2, triangular_structure<flip_uplo_v<Uplo>>,
+                   transpose_evaluator<Evaluator>, Policy>
+transpose(const n_array_expression<2, triangular_structure<Uplo>, Evaluator,
+                                   Policy>& expression) {
+  return {expression.shape(), transpose(expression.evaluator())};
+}
 } // namespace satyr
