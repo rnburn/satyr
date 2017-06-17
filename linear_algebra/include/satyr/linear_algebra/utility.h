@@ -18,6 +18,20 @@ index_t get_leading_dimension(const A& a) {
 }
 
 //------------------------------------------------------------------------------
+// get_underlying_uplo
+//------------------------------------------------------------------------------
+template <TriangularOperationMatrix A>
+uplo_t get_underlying_uplo(const A& a) {
+  return structure_t<A>::uplo;
+}
+
+template <TriangularOperationMatrix A>
+  requires detail::match_transposed_matrix<A>
+uplo_t get_underlying_uplo(const A& a) {
+  return flip_uplo_v<structure_t<A>::uplo>;
+}
+
+//------------------------------------------------------------------------------
 // get_underlying_shape
 //------------------------------------------------------------------------------
 template <OperationMatrix A>

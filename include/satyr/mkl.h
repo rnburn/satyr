@@ -164,6 +164,25 @@ MAKE_TRSV(double, d)
 #undef MAKE_TRSV
 
 //------------------------------------------------------------------------------
+// trsm
+//------------------------------------------------------------------------------
+#define MAKE_TRSM(SCALAR, PREFIX)                                              \
+  void trsm(matrix_side_t side, uplo_t uplo_a, matrix_operation_t operation_a, \
+            matrix_diagonal_fill_t diagonal_fill_a, index_t m, index_t n,      \
+            SCALAR alpha, const SCALAR* a, index_t lda, SCALAR* b,             \
+            index_t ldb) {                                                     \
+    cblas_##PREFIX##trsm(CblasColMajor, detail::get_side(side),                \
+                         detail::get_uplo(uplo_a),                             \
+                         detail::get_operation(operation_a),                   \
+                         detail::get_unity_diagonal_fill(diagonal_fill_a),     \
+                         static_cast<int>(m), static_cast<int>(n), alpha, a,   \
+                         static_cast<int>(lda), b, static_cast<int>(ldb));     \
+  }
+MAKE_TRSM(float, s)
+MAKE_TRSM(double, d)
+#undef MAKE_TRSM
+
+//------------------------------------------------------------------------------
 // trmv
 //------------------------------------------------------------------------------
 #define MAKE_TRMV(SCALAR, PREFIX)                                          \
