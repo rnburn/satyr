@@ -65,6 +65,9 @@ int main() {
   test_product(s, a);
   test_product(a, s);
 
+  // trsv
+  left_solve(l, v);
+
   // trmv
   test_product(l, v);
 

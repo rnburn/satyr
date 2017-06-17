@@ -8,3 +8,4 @@
 #include <satyr/linear_algebra/apply.h>
 #include <satyr/linear_algebra/product.h>
 #include <satyr/linear_algebra/cholesky.h>
+#include <satyr/linear_algebra/solve.h>

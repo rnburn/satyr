@@ -147,6 +147,23 @@ MAKE_SYMM(double, d)
 #undef MAKE_SYMM
 
 //------------------------------------------------------------------------------
+// trsv
+//------------------------------------------------------------------------------
+#define MAKE_TRSV(SCALAR, PREFIX)                                          \
+  void trsv(uplo_t uplo_a, matrix_operation_t operation_a,                 \
+            matrix_diagonal_fill_t diagonal_fill_a, index_t n,             \
+            const SCALAR* a, index_t lda, SCALAR* x, index_t incx) {       \
+    cblas_##PREFIX##trsv(CblasColMajor, detail::get_uplo(uplo_a),          \
+                         detail::get_operation(operation_a),               \
+                         detail::get_unity_diagonal_fill(diagonal_fill_a), \
+                         static_cast<int>(n), a, static_cast<int>(lda), x, \
+                         static_cast<int>(incx));                          \
+  }
+MAKE_TRSV(float, s)
+MAKE_TRSV(double, d)
+#undef MAKE_TRSV
+
+//------------------------------------------------------------------------------
 // trmv
 //------------------------------------------------------------------------------
 #define MAKE_TRMV(SCALAR, PREFIX)                                          \
