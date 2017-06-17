@@ -8,8 +8,7 @@ namespace satyr {
 // get_extent
 //------------------------------------------------------------------------------
 template <size_t I, class T>
-  requires has_shape_v<T> &&
-           I < num_dimensions_v<T>
+  requires has_shape_v<T> && I < num_dimensions_v<T>
 index_t get_extent(const T& t) {
   return get_extent<I>(t.shape());
 }
@@ -18,8 +17,7 @@ index_t get_extent(const T& t) {
 // get_stride
 //------------------------------------------------------------------------------
 template <size_t I, class T>
-  requires has_shape_v<T> &&
-           I < num_dimensions_v<T>
+  requires has_shape_v<T> && I < num_dimensions_v<T>
 index_t get_stride(const T& t) {
   return get_stride<I>(t.shape());
 }

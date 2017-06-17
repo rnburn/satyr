@@ -49,4 +49,16 @@ auto make_n_array_expression(const shape<K>& shape,
                               const Evaluator& evaluator) {
   return make_n_array_expression<Structure>(shape, evaluator, no_policy_v);
 }
+
+template <Structure Structure, size_t K, Evaluator<K> Evaluator, Policy Policy>
+n_array_expression<K, Structure, Evaluator, Policy> make_n_array_expression(
+    const subshape<K>& shape, const Evaluator& evaluator, Policy policy) {
+  return {shape, evaluator, policy};
+}
+
+template <Structure Structure, size_t K, Evaluator<K> Evaluator>
+auto make_n_array_expression(const subshape<K>& shape,
+                              const Evaluator& evaluator) {
+  return make_n_array_expression<Structure>(shape, evaluator, no_policy_v);
+}
 } // namespace satyr

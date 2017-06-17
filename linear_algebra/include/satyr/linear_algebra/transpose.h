@@ -1,6 +1,7 @@
 #pragma once
 
 #include <satyr/linear_algebra/concept.h>
+#include <satyr/linear_algebra/operation_matrix_expression.h>
 #include <satyr/n_array.h>
 
 namespace satyr {
@@ -36,12 +37,13 @@ template <GeneralMatrix Matrix>
 auto transpose(Matrix&& matrix) {
   using T = value_type_t<Matrix>;
   if constexpr (detail::match_n_array_subview<uncvref_t<Matrix>>) {
-      auto evaluator = n_array_subview_evaluator<T, 2>(
-          matrix.data(), matrix.shape().strides());
+      auto evaluator = transpose_evaluator(n_array_subview_evaluator<T, 2>(
+          matrix.data(), matrix.shape().strides()));
       return make_n_array_expression<structure_t<Matrix>>(
           transpose(matrix.shape()), evaluator);
   } else {
-    auto evaluator = n_array_evaluator<T, 2>(matrix.data());
+    auto evaluator =
+        transpose_evaluator(n_array_evaluator<T, 2>(matrix.data()));
     return make_n_array_expression<structure_t<Matrix>>(
         transpose(matrix.shape()), evaluator);
   }
@@ -53,14 +55,15 @@ auto transpose(Matrix&& matrix) {
   using StructureNew =
       triangular_structure<flip_uplo_v<structure_t<Matrix>::uplo>>;
   if constexpr (detail::match_n_array_subview<uncvref_t<Matrix>>) {
-      auto evaluator = n_array_subview_evaluator<T, 2>(
-          matrix.data(), matrix.shape().strides());
-      return make_n_array_expression<StructureNew>(
-          transpose(matrix.shape()), evaluator);
+      auto evaluator = transpose_evaluator(n_array_subview_evaluator<T, 2>(
+          matrix.data(), matrix.shape().strides()));
+      return make_n_array_expression<StructureNew>(transpose(matrix.shape()),
+                                                   evaluator);
   } else {
-    auto evaluator = n_array_evaluator<T, 2>(matrix.data());
-    return make_n_array_expression<StructureNew>(
-        transpose(matrix.shape()), evaluator);
+    auto evaluator =
+        transpose_evaluator(n_array_evaluator<T, 2>(matrix.data()));
+    return make_n_array_expression<StructureNew>(transpose(matrix.shape()),
+                                                 evaluator);
   }
 }
 } // namespace satyr

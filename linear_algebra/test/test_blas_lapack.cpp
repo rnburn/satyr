@@ -51,10 +51,12 @@ int main() {
   // gemv
   test_product(a, v);
   test_product(sa, sv);
-  /* test_product(transpose(a), v); */
+  test_product(transpose(a), v);
 
   // gemm
   test_product(a, b);
+  test_product(transpose(a), b);
+  test_product(a, transpose(b));
 
   // symv
   test_product(s, v);

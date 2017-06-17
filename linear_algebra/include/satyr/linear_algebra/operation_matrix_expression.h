@@ -38,11 +38,9 @@ class n_array_expression<2, Structure, Evaluator, Policy> {
    using structure = Structure;
    using value_type = uncvref_t<codomain_t<Evaluator>>;
 
-   n_array_expression(const satyr::subshape<2>& shape, const Evaluator& evaluator,
-                      Policy policy)
-       : shape_{shape},
-         evaluator_{evaluator},
-         policy_{policy} {}
+   n_array_expression(const satyr::subshape<2>& shape,
+                      const Evaluator& evaluator, Policy policy)
+       : shape_{shape}, evaluator_{evaluator}, policy_{policy} {}
 
    const satyr::subshape<2>& shape() const { return shape_; }
 
