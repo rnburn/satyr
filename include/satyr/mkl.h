@@ -195,4 +195,16 @@ MAKE_TRMM(double, d)
 MAKE_POTRF(float, s)
 MAKE_POTRF(double, d)
 #undef MAKE_POTRF
+
+//------------------------------------------------------------------------------
+// potri
+//------------------------------------------------------------------------------
+#define MAKE_POTRI(SCALAR, SUFFIX)                                          \
+  void potri(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {              \
+    LAPACKE_##SUFFIX##potri(CblasColMajor, detail::get_uplo_char(uplo),     \
+                            static_cast<int>(n), a, static_cast<int>(lda)); \
+  }
+MAKE_POTRI(float, s)
+MAKE_POTRI(double, d)
+#undef MAKE_POTRI
 }  // namespace satyr

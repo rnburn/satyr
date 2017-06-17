@@ -74,5 +74,6 @@ int main() {
 
   // potrf
   assert(cholesky_factorize(i));
+  cholesky_invert(l);
   return 0;
 }

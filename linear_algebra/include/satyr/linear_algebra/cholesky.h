@@ -15,8 +15,7 @@ namespace satyr {
 // inplace_cholesky_factorize
 //------------------------------------------------------------------------------
 template <SymmetricMatrix A>
-  requires is_blas_scalar_v<value_type_t<A>> &&
-           is_writable_v<A>
+  requires is_blas_scalar_v<value_type_t<A>> && is_writable_v<A>
 auto inplace_cholesky_factorize(A&& a) {
   auto n = get_extent<0>(a);
   auto lda = get_leading_dimension(a);
@@ -29,12 +28,12 @@ auto inplace_cholesky_factorize(A&& a) {
   return result;
 }
 
+
 //------------------------------------------------------------------------------
 // cholesky_factorize
 //------------------------------------------------------------------------------
 template <SymmetricMatrix A>
-  requires is_blas_scalar_v<value_type_t<A>> &&
-           is_writable_v<A>
+  requires is_blas_scalar_v<value_type_t<A>>
 std::optional<lower_triangular_matrix<value_type_t<A>>> cholesky_factorize(
     const A& a) {
   symmetric_matrix<value_type_t<A>> b{a};
@@ -42,5 +41,28 @@ std::optional<lower_triangular_matrix<value_type_t<A>>> cholesky_factorize(
   if (inplace_cholesky_factorize(b))
     result = std::move(structure_cast<lower_triangular_structure>(b));
   return result;
+}
+
+//------------------------------------------------------------------------------
+// inplace_cholesky_invert
+//------------------------------------------------------------------------------
+template <LowerTriangularMatrix A>
+  requires is_blas_scalar_v<value_type_t<A>> && is_writable_v<A>
+symmetric_matrix_view<value_type_t<A>> inplace_cholesky_invert(A&& a) {
+  auto n = get_extent<0>(a);
+  auto lda = get_leading_dimension(a);
+  potri(uplo_t::lower, n, a.data(), lda);
+  return structure_cast<symmetric_structure>(make_view(a));
+}
+
+//------------------------------------------------------------------------------
+// cholesky_invert
+//------------------------------------------------------------------------------
+template <LowerTriangularMatrix A>
+  requires is_blas_scalar_v<value_type_t<A>>
+symmetric_matrix<value_type_t<A>> cholesky_invert(const A& a) {
+  symmetric_matrix<value_type_t<A>> b{structure_cast<symmetric_structure>(a)};
+  inplace_cholesky_invert(structure_cast<lower_triangular_structure>(b));
+  return b;
 }
 } // namespace satyr

@@ -25,6 +25,7 @@ MAKE_UNIMPLEMENTED_STUB(void, syr2)
 
 // lapack
 MAKE_UNIMPLEMENTED_STUB(int, potrf)
+MAKE_UNIMPLEMENTED_STUB(int, potri)
 #undef MAKE_UNIMPLEMENTED_STUB
 
 //------------------------------------------------------------------------------
