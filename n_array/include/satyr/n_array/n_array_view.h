@@ -4,6 +4,7 @@
 #include <satyr/n_array/n_array_accessor.h>
 #include <satyr/n_array/n_array_assignment.h>
 #include <satyr/n_array/n_array_subview.h>
+#include <satyr/n_array/n_array_evaluator.h>
 #include <satyr/k_array.h>
 #include <satyr/concept.h>
 

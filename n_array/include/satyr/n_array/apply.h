@@ -1,8 +1,6 @@
 #pragma once
 
 #include <satyr/n_array/map.h>
-#pragma once
-
 #include <satyr/n_array/execute.h>
 
 namespace satyr {
