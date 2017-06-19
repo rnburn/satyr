@@ -2,6 +2,7 @@
 
 #include <satyr/n_array/concept.h>
 #include <satyr/n_array/map.h>
+#include <satyr/n_array/execute.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -71,7 +72,8 @@ class for_each_evaluator_impl<std::index_sequence<Indexes...>, Evaluator, F> {
    for_each_evaluator_impl(const Evaluator& evaluator, F f)
      : evaluator_{evaluator}, f_{f} {}
 
-   decltype(auto) operator()(std::enable_if_t<(Indexes,true), index_t>... indexes) const {
+   decltype(auto) operator()(
+       std::enable_if_t<(Indexes, true), index_t>... indexes) const {
      auto& x = evaluator_(indexes...);
      f_(x);
      return x;
@@ -89,8 +91,10 @@ class for_each_evaluator_impl<std::index_sequence<Indexes...>, Evaluator, F> {
    for_each_evaluator_impl(const Evaluator& evaluator, F f)
      : evaluator_{evaluator}, f_{f} {}
 
-   decltype(auto) operator()(std::enable_if_t<(Indexes,true), index_t>... indexes) const {
-     auto& x = evaluator_(indexes...);
+   decltype(auto) operator()(
+       const satyr::shape<sizeof...(Indexes)>& shape,
+       std::enable_if_t<(Indexes, true), index_t>... indexes) const {
+     auto& x = evaluator_(shape, indexes...);
      f_(x, indexes...);
      return x;
    }
@@ -131,7 +135,7 @@ for_each_evaluator<K, Evaluator, F> make_for_each_evaluator(
 }
 
 template <size_t K, FlatEvaluator Evaluator, class F>
-  requires is_scalar_functor_v<F, codomain_t<Evaluator>>
+  requires is_scalar_index_functor_v<F, K, codomain_t<Evaluator>>
 auto make_for_each_evaluator(const Evaluator& evaluator, F f) {
   return make_for_each_evaluator<K>(make_k_evaluator<K>(evaluator), f);
 }
@@ -144,19 +148,35 @@ template <Policy Policy, NArrayExpressible Expressible, class F>
   requires detail::is_scalar_functor_v<F, 
                                        detail::expressible_codomain_t<
                                                   structure_t<Expressible>, 
-                                                  Expressible>>
-void for_each(Policy policy, Expressible&& expressible, F f) {
-  auto expression = make_expression(expressible) << policy;
-
-}
-
-template <Policy Policy, NArrayExpressible Expressible, class F>
-  requires detail::is_scalar_index_functor_v<
+                                                  Expressible>> ||
+           detail::is_scalar_index_functor_v<
                                        F, 
+                                       num_dimensions_v<Expressible>,
                                        detail::expressible_codomain_t<
                                                   structure_t<Expressible>, 
                                                   Expressible>>
 void for_each(Policy policy, Expressible&& expressible, F f) {
+  auto n_array_expression = make_expression(expressible) << policy;
+  auto for_each_expression = make_n_array_expression<structure_t<Expressible>>(
+      n_array_expression.shape(),
+      detail::make_for_each_evaluator<num_dimensions_v<Expressible>>(
+          n_array_expression.evaluator(), f));
+  execute(for_each_expression);
+}
+
+template <NArrayExpressible Expressible, class F>
+  requires detail::is_scalar_functor_v<F, 
+                                       detail::expressible_codomain_t<
+                                                  structure_t<Expressible>, 
+                                                  Expressible>> ||
+           detail::is_scalar_index_functor_v<
+                                       F, 
+                                       num_dimensions_v<Expressible>,
+                                       detail::expressible_codomain_t<
+                                                  structure_t<Expressible>, 
+                                                  Expressible>>
+void for_each(Expressible&& expressible, F f) {
+  for_each(no_policy_v, expressible, f);
 }
 
 //------------------------------------------------------------------------------
