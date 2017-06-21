@@ -78,4 +78,11 @@ constexpr bool
 template <class F, size_t K>
 concept bool IndexPredicate =
     detail::is_index_predicate_impl<std::make_index_sequence<K>, F>;
+
+//------------------------------------------------------------------------------
+// Semiregular
+//------------------------------------------------------------------------------
+template <class T>
+concept bool Semiregular = std::is_copy_constructible_v<T>&&
+    std::is_copy_assignable_v<T>&& std::is_default_constructible_v<T>;
 }  // namespace satyr

@@ -4,12 +4,13 @@
 #include <type_traits>
 #include <array>
 
+#include <satyr/concept.h>
 #include <satyr/k_array/shape.h>
 #include <satyr/k_array/k_array_accessor.h>
 #include <satyr/k_array/k_array_subview.h>
 
 namespace satyr {
-template <class T, size_t K, class Alloc = std::allocator<T>>
+template <Semiregular T, size_t K, class Alloc = std::allocator<T>>
 class k_array;
 
 //------------------------------------------------------------------------------
@@ -19,7 +20,7 @@ template <class T, size_t K>
 class k_array_view;
 
 template <class T, size_t K>
-  requires std::is_const_v<T>
+  requires std::is_const_v<T> && Semiregular<std::remove_const_t<T>>
 class k_array_view<T, K> 
   : public detail::k_array_const_accessor<k_array_view<T, K>, K>
 {
@@ -47,7 +48,7 @@ class k_array_view<T, K>
    satyr::shape<K> shape_;
 };
 
-template <class T, size_t K>
+template <Semiregular T, size_t K>
   requires !std::is_const_v<T>
 class k_array_view<T, K>
     : public k_array_view<const T, K>,
