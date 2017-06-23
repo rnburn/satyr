@@ -1,5 +1,6 @@
 #pragma once
 
+#include <satyr/config.h>
 #include <satyr/preprocessor.h>
 #include <exception>
 #include <iostream>
