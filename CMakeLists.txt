@@ -3,11 +3,16 @@ enable_testing()
 
 project(satyr)
 
+set(SATYR_MAJOR_VERSION "0")
+set(SATYR_MINOR_VERSION "0")
+set(SATYR_PATCH_VERSION "0")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts -fopenmp-simd")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(SATYR_WITH_MKL "Use MKL as backend for BLAS and LAPACK calls" OFF)
 
 configure_file(config.h.in include/satyr/config.h)
+configure_file(version.h.in include/satyr/version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/satyr
         DESTINATION include)
@@ -26,11 +31,7 @@ if (SATYR_WITH_MKL)
 endif()
 
 include_directories(${TBB_INCLUDE_DIR})
-set(MODULE_LIST
-k_array
-n_array
-linear_algebra
-)
+set(MODULE_LIST k_array n_array linear_algebra)
 
 
 include_directories(include)
