@@ -17,9 +17,9 @@ template <GeneralOperationMatrix A, Vector X, Vector Y>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<X>, value_type_t<Y>> && 
            is_writable_v<Y>
-void inplace_product(value_type_t<A> alpha, const A& a, const X& x,
+auto inplace_product(value_type_t<A> alpha, const A& a, const X& x,
                      value_type_t<A> beta, Y&& y) {
-  auto [a_m, a_n] = get_underlying_shape(a);  
+  auto[a_m, a_n] = get_underlying_shape(a);
   auto lda = get_leading_dimension(a);
 
   auto stride_x = get_stride<0>(x);
@@ -27,14 +27,16 @@ void inplace_product(value_type_t<A> alpha, const A& a, const X& x,
 
   gemv(matrix_operation_v<A>, a_m, a_n, alpha, a.data(), lda, x.data(),
        stride_x, beta, y.data(), stride_y);
+
+  return make_view(y);
 }
 
 template <GeneralOperationMatrix A, Vector X, Vector Y>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<X>, value_type_t<Y>> && 
            is_writable_v<Y>
-void inplace_product(const A& a, const X& x, Y&& y) {
-  inplace_product(1, a, x, 0, y);
+auto inplace_product(const A& a, const X& x, Y&& y) {
+  return inplace_product(1, a, x, 0, y);
 }
 
 // gemm
@@ -43,7 +45,7 @@ template <GeneralOperationMatrix A, GeneralOperationMatrix B,
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
            is_writable_v<C>
-void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
+auto inplace_product(value_type_t<A> alpha, const A& a, const B& b,
                      value_type_t<A> beta, C&& c) {
   auto a_n = get_extent<1>(a);
   auto lda = get_leading_dimension(a);
@@ -55,6 +57,8 @@ void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
 
   gemm(matrix_operation_v<A>, matrix_operation_v<B>, c_m, c_n, a_n, alpha,
        a.data(), lda, b.data(), ldb, beta, c.data(), ldc);
+
+  make_view(c);
 }
 
 template <GeneralOperationMatrix A, GeneralOperationMatrix B,
@@ -62,8 +66,8 @@ template <GeneralOperationMatrix A, GeneralOperationMatrix B,
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
            is_writable_v<C>
-void inplace_product(const A& a, const B& b, C&& c) {
-  inplace_product(1, a, b, 0, c);
+auto inplace_product(const A& a, const B& b, C&& c) {
+  return inplace_product(1, a, b, 0, c);
 }
 
 // symv
@@ -71,7 +75,7 @@ template <SymmetricMatrix A, Vector X, Vector Y>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<X>, value_type_t<Y>> &&
            is_writable_v<Y>
-void inplace_product(value_type_t<A> alpha, const A& a, const X& x,
+auto inplace_product(value_type_t<A> alpha, const A& a, const X& x,
                      value_type_t<A> beta, Y&& y) {
   auto a_m = get_extent<0>(a);
   auto lda = get_leading_dimension(a);
@@ -82,14 +86,16 @@ void inplace_product(value_type_t<A> alpha, const A& a, const X& x,
 
   symv(structure_t<A>::uplo, a_m, alpha, a.data(), lda, x.data(), incx, beta,
        y.data(), incy);
+
+  return make_view(y);
 }
 
 template <SymmetricMatrix A, Vector X, Vector Y>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<X>, value_type_t<Y>> &&
            is_writable_v<Y>
-void inplace_product(const A& a, const X& x, Y&& y) {
-  inplace_product(1, a, x, 0, y);
+auto inplace_product(const A& a, const X& x, Y&& y) {
+  return inplace_product(1, a, x, 0, y);
 }
 
 // symm
@@ -97,7 +103,7 @@ template <SymmetricMatrix A, GeneralMatrix B, GeneralMatrix C>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
            is_writable_v<C>
-void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
+auto inplace_product(value_type_t<A> alpha, const A& a, const B& b,
                      value_type_t<A> beta, C&& c) {
   auto a_m = get_extent<0>(a);
   auto lda = get_leading_dimension(a);
@@ -109,13 +115,15 @@ void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
 
   symm(matrix_side_t::left, structure_t<A>::uplo, a_m, b_n, alpha, a.data(),
        lda, b.data(), ldb, beta, c.data(), ldc);
+
+  return make_view(c);
 }
 
 template <GeneralMatrix A, SymmetricMatrix B, GeneralMatrix C>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
            is_writable_v<C>
-void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
+auto inplace_product(value_type_t<A> alpha, const A& a, const B& b,
                      value_type_t<A> beta, C&& c) {
   auto a_m = get_extent<0>(a);
   auto lda = get_leading_dimension(a);
@@ -127,6 +135,8 @@ void inplace_product(value_type_t<A> alpha, const A& a, const B& b,
 
   symm(matrix_side_t::right, structure_t<B>::uplo, a_m, b_n, alpha, b.data(),
        ldb, a.data(), lda, beta, c.data(), ldc);
+
+  return make_view(c);
 }
 
 template <class A, class B, GeneralMatrix C>
@@ -135,8 +145,8 @@ template <class A, class B, GeneralMatrix C>
            is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>, value_type_t<C>> &&
            is_writable_v<C>
-void inplace_product(const A& a, const B& b, C&& c) {
-  inplace_product(1, a, b, 0, c);
+auto inplace_product(const A& a, const B& b, C&& c) {
+  return inplace_product(1, a, b, 0, c);
 }
 
 // trmv
@@ -144,7 +154,7 @@ template <TriangularOperationMatrix A, Vector X>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<X>> &&
            is_writable_v<X>
-void inplace_product(const A& a, X&& x) {
+auto inplace_product(const A& a, X&& x) {
   auto a_m = get_extent<0>(a);
   auto lda = get_leading_dimension(a);
   auto a_uplo = matrix_operation_v<A> == matrix_operation_t::none
@@ -155,6 +165,8 @@ void inplace_product(const A& a, X&& x) {
 
   trmv(a_uplo, matrix_operation_v<A>, matrix_diagonal_fill_t::general, a_m,
        a.data(), lda, x.data(), incx);
+
+  return make_view(x);
 }
 
 // trmm
@@ -162,7 +174,7 @@ template <TriangularOperationMatrix A, GeneralMatrix B>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>> &&
            is_writable_v<B>
-void inplace_product(value_type_t<A> alpha, const A& a, B&& b) {
+auto inplace_product(value_type_t<A> alpha, const A& a, B&& b) {
   auto lda = get_leading_dimension(a);
   auto a_uplo = matrix_operation_v<A> == matrix_operation_t::none
                     ? structure_t<A>::uplo
@@ -174,13 +186,15 @@ void inplace_product(value_type_t<A> alpha, const A& a, B&& b) {
   trmm(matrix_side_t::left, structure_t<A>::uplo, matrix_operation_v<A>,
        matrix_diagonal_fill_t::general, b_m, b_n, alpha, a.data(), lda,
        b.data(), ldb);
+
+  return make_view(b);
 }
 
 template <GeneralMatrix A, TriangularOperationMatrix B>
   requires is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>> &&
            is_writable_v<A>
-void inplace_product(value_type_t<A> alpha, A&& a, const B& b) {
+auto inplace_product(value_type_t<A> alpha, A&& a, const B& b) {
   auto [a_m, a_n] = a.shape();
   auto lda = get_leading_dimension(a);
 
@@ -192,6 +206,8 @@ void inplace_product(value_type_t<A> alpha, A&& a, const B& b) {
   trmm(matrix_side_t::right, b_uplo, matrix_operation_v<B>,
        matrix_diagonal_fill_t::general, a_m, a_n, alpha, b.data(), ldb,
        a.data(), lda);
+
+  return make_view(a);
 }
 
 template <class A, class B>
@@ -201,8 +217,8 @@ template <class A, class B>
              is_writable_v<A>)) &&
            is_blas_scalar_v<value_type_t<A>> &&
            is_same_v<value_type_t<A>, value_type_t<B>>
-void inplace_product(A&& a, B&& b) {
-  inplace_product(1, a, b);
+auto inplace_product(A&& a, B&& b) {
+  return inplace_product(1, a, b);
 }
 
 //------------------------------------------------------------------------------
