@@ -9,6 +9,7 @@ set(SATYR_PATCH_VERSION "0")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts -fopenmp-simd")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+option(SATYR_WITH_TBB "Use MKL as backend for BLAS and LAPACK calls" OFF)
 option(SATYR_WITH_MKL "Use MKL as backend for BLAS and LAPACK calls" OFF)
 option(SATYR_WITH_JEMALLOC "Use jemalloc for memory allocation." OFF)
 
@@ -21,10 +22,11 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/satyr
 ###############################################################################
 # Configure TBB
 ###############################################################################
-find_path(TBB_INCLUDE_DIR NAMES tbb/parallel_for.h)
-find_library(TBB_LIB tbb)
-set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${TBB_LIB}")
-include_directories(SYSTEM ${TBB_INCLUDE_DIR})
+if (SATYR_WITH_TBB)
+  find_package(TBB REQUIRED)
+  include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
+  link_libraries(${TBB_LIBRARIES})
+endif()
 
 ###############################################################################
 # Configure MKL

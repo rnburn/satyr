@@ -1,4 +1,5 @@
 #pragma once
 
+#cmakedefine SATYR_WITH_TBB 
 #cmakedefine SATYR_WITH_MKL 
 #cmakedefine SATYR_WITH_JEMALLOC 
