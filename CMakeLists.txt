@@ -10,6 +10,7 @@ set(SATYR_PATCH_VERSION "0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts -fopenmp-simd")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(SATYR_WITH_MKL "Use MKL as backend for BLAS and LAPACK calls" OFF)
+option(SATYR_WITH_JEMALLOC "Use jemalloc for memory allocation." OFF)
 
 configure_file(config.h.in include/satyr/config.h)
 configure_file(version.h.in include/satyr/version.h)
@@ -17,10 +18,17 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/satyr
         DESTINATION include)
 
+###############################################################################
+# Configure TBB
+###############################################################################
 find_path(TBB_INCLUDE_DIR NAMES tbb/parallel_for.h)
 find_library(TBB_LIB tbb)
 set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${TBB_LIB}")
+include_directories(SYSTEM ${TBB_INCLUDE_DIR})
 
+###############################################################################
+# Configure MKL
+###############################################################################
 set(WITH_BLAS_LAPACK OFF)
 if (SATYR_WITH_MKL)
   find_package(MKL REQUIRED)
@@ -30,9 +38,19 @@ if (SATYR_WITH_MKL)
   set(WITH_BLAS_LAPACK ON)
 endif()
 
-include_directories(${TBB_INCLUDE_DIR})
-set(MODULE_LIST k_array n_array linear_algebra)
+###############################################################################
+# Configure MKL
+###############################################################################
+if (SATYR_WITH_JEMALLOC)
+  find_package(Jemalloc REQUIRED)
+  include_directories(SYSTEM ${JEMALLOC_INCLUDE_DIR})
+  link_libraries(${JEMALLOC_LIBRARY})
+endif()
 
+###############################################################################
+# Set up satyr modules
+###############################################################################
+set(MODULE_LIST k_array n_array linear_algebra)
 
 include_directories(include)
 install(DIRECTORY include/satyr/ DESTINATION include/satyr

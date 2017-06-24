@@ -2,13 +2,13 @@
 
 #include <satyr/for.h>
 #include <satyr/n_array/structure.h>
-#include <satyr/n_array/scalar_allocator.h>
 #include <satyr/n_array/n_array_accessor.h>
 #include <satyr/n_array/n_array_assignment.h>
 #include <satyr/n_array/n_array_expression.h>
 #include <satyr/n_array/n_array_evaluator.h>
 #include <satyr/n_array/n_array_view.h>
 #include <satyr/n_array/n_array_subview.h>
+#include <satyr/n_array/utility.h>
 #include <satyr/for_each_index.h>
 #include <satyr/k_array.h>
 #include <stdexcept>
@@ -23,8 +23,7 @@ class n_array_impl;
 
 template <size_t... Indexes, class T, size_t K, class Structure>
 class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
-    : scalar_allocator<T>,
-      public n_array_cview<T, K, Structure>,
+    : public n_array_cview<T, K, Structure>,
       public n_array_accessor<
           n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>, K,
           Structure> {
@@ -40,12 +39,15 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   }
 
   explicit n_array_impl(const satyr::shape<K>& shape) {
-    if constexpr (is_equal_dimensional_v<Structure>)
-      if (!is_equal_dimensional(shape))
-        throw std::runtime_error{"shape must be equal dimensional"};
+    if constexpr (is_equal_dimensional_v<Structure>) {
+      if (!is_equal_dimensional(shape)) {
+        std::cerr << "shape must be equal dimensional\n";
+        std::terminate();
+      }
+    }
     T* data;
     if (get_num_elements(shape))
-      data = this->allocate(get_num_elements(shape));
+      data = scalar_allocate<T>(get_num_elements(shape));
     else
       data = nullptr;
     static_cast<base&>(*this) = {data, shape};
@@ -70,7 +72,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
   // destructor
   ~n_array_impl() {
     if (this->data())
-      this->deallocate(this->data(), get_num_elements(this->shape()));
+      scalar_deallocate(this->data());
   }
 
   // operator=
@@ -123,15 +125,25 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   // reshape
   void reshape(const shape<K>& shape_new) {
-    if constexpr (is_equal_dimensional_v<Structure>)
-      if (!is_equal_dimensional(shape_new))
-        throw std::runtime_error{"shape must be equal dimensional"};
+    if constexpr (is_equal_dimensional_v<Structure>) {
+      if (!is_equal_dimensional(shape_new)) {
+        std::cerr << "shape must be equal dimensional\n";
+        std::terminate();
+      }
+    }
     auto num_elements = get_num_elements(this->shape());
     auto num_elements_new = get_num_elements(shape_new);
     if (num_elements == num_elements_new)
       return;
-    this->deallocate(this->data(), num_elements);
-    auto data_new = this->allocate(num_elements_new);
+    T* data_new;
+    if (num_elements_new == 0) {
+      scalar_deallocate(this->data());
+      data_new = nullptr;
+    } else if (num_elements) {
+      data_new = scalar_reallocate(this->data(), num_elements_new);
+    } else {
+      data_new = scalar_allocate<T>(num_elements_new);
+    }
     static_cast<base&>(*this) = {data_new, shape_new};
   }
 
