@@ -52,12 +52,7 @@ endif()
 ###############################################################################
 # Set up satyr modules
 ###############################################################################
-set(MODULE_LIST k_array n_array linear_algebra)
-
-include_directories(include)
-install(DIRECTORY include/satyr/ DESTINATION include/satyr
-  FILES_MATCHING PATTERN "*.h")
-add_subdirectory(test)
+set(MODULE_LIST core k_array n_array linear_algebra)
 
 foreach(MODULE ${MODULE_LIST})
   include_directories(${MODULE}/include)
