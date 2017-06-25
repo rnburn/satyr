@@ -73,12 +73,14 @@ class for_each_evaluator_impl<std::index_sequence<Indexes...>, Evaluator, F> {
      : evaluator_{evaluator}, f_{f} {}
 
    decltype(auto) operator()(
+       const shape<sizeof...(Indexes)>& shape,
        std::enable_if_t<(Indexes, true), index_t>... indexes) const {
-     auto& x = evaluator_(indexes...);
+     auto& x = evaluator_(shape, indexes...);
      f_(x);
      return x;
    }
- private:
+
+  private:
    Evaluator evaluator_;
    F f_;
 };
@@ -246,8 +248,9 @@ class for_each_with_exit_evaluator_impl<std::index_sequence<Indexes...>, Evaluat
      : evaluator_{evaluator}, f_{f} {}
 
    decltype(auto) operator()(
+       const shape<sizeof...(Indexes)>& shape,
        std::enable_if_t<(Indexes, true), index_t>... indexes) const {
-     return f_(evaluator_(indexes...));
+     return f_(evaluator_(shape, indexes...));
    }
  private:
    Evaluator evaluator_;

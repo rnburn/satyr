@@ -65,3 +65,8 @@ endforeach()
 foreach(MODULE ${MODULE_LIST})
   add_subdirectory(${MODULE})
 endforeach()
+
+###############################################################################
+# Add examples
+###############################################################################
+add_subdirectory(example)
