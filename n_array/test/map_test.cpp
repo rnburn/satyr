@@ -22,5 +22,8 @@ int main() {
   array1 += array1 + array2;
 
   sqrt(array1);
+
+  array1 = map_indexes(array1.shape(),
+                       [](index_t i, index_t j) { return i * 10 + j; });
   return 0;
 }
