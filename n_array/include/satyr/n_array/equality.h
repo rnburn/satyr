@@ -8,7 +8,7 @@ template <NArrayExpressible Lhs, NArrayExpressible Rhs>
 bool operator==(const Lhs& lhs, const Rhs& rhs) {
   if (lhs.shape() != rhs.shape()) return true;
   auto expression = map([](auto x, auto y) { return x == y; }, lhs, rhs);
-  return execute_with_cancel(expression);
+  return execute_with_exit(expression);
 }
 
 template <NArrayExpressible Lhs, NArrayExpressible Rhs>

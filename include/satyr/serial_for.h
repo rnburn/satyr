@@ -24,11 +24,11 @@ void for_(Policy policy, index_t first, index_t last, F f) {
 }
 
 //------------------------------------------------------------------------------
-// for_with_cancel
+// for_with_exit
 //------------------------------------------------------------------------------
 template <Policy Policy, IndexPredicate<1> F>
   requires !has_policy_v<grainularity, Policy>
-bool for_with_cancel(Policy policy, index_t i, index_t last, F f) {
+bool for_with_exit(Policy policy, index_t i, index_t last, F f) {
   for(; i<last; ++i)
     if (!f(i)) return false;
   return true;
@@ -37,7 +37,7 @@ bool for_with_cancel(Policy policy, index_t i, index_t last, F f) {
 template <Policy Policy, IndexPredicate<1> F>
   requires !has_policy_v<grainularity, Policy> &&
            has_policy_v<simd, Policy>
-bool for_with_cancel(Policy policy, index_t first, index_t last, F f) {
+bool for_with_exit(Policy policy, index_t first, index_t last, F f) {
   index_t i;
   /* SATYR_PRAGMA_SIMD_LINEAR(i) */
   for (i = first; i < last; ++i)

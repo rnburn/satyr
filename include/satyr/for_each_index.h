@@ -103,17 +103,17 @@ void for_each_index_triangular(Policy policy, index_t n, Functor f) {
 }
 
 //------------------------------------------------------------------------------
-// for_each_index_with_cancel
+// for_each_index_with_exit
 //------------------------------------------------------------------------------
 template <Policy Policy, size_t K, IndexPredicate<K> Functor>
   requires !has_policy_v<grainularity, Policy>
-bool for_each_index_with_cancel(Policy policy, std::array<index_t, K> extents,
+bool for_each_index_with_exit(Policy policy, std::array<index_t, K> extents,
                                 Functor f) {
-  if constexpr(K == 1) { return for_with_cancel(policy, 0, extents[0], f); }
+  if constexpr(K == 1) { return for_with_exit(policy, 0, extents[0], f); }
   else {
-    return for_with_cancel(serial_v, 0, extents[K - 1], [=](index_t i) {
+    return for_with_exit(serial_v, 0, extents[K - 1], [=](index_t i) {
       auto f_prime = [=](auto... indexes) { return f(indexes..., i); };
-      return for_each_index_with_cancel(
+      return for_each_index_with_exit(
           policy, reinterpret_cast<const std::array<index_t, K - 1>&>(extents),
           f_prime);
     });
@@ -121,30 +121,30 @@ bool for_each_index_with_cancel(Policy policy, std::array<index_t, K> extents,
 }
 
 //------------------------------------------------------------------------------
-// for_each_index_triangular_with_cancel
+// for_each_index_triangular_with_exit
 //------------------------------------------------------------------------------
 namespace detail {
 template <uplo_t Uplo, class Policy, class Functor>
     requires Uplo == uplo_t::lower 
-bool for_each_index_triangular_with_cancel_impl(Policy policy, index_t j,
+bool for_each_index_triangular_with_exit_impl(Policy policy, index_t j,
                                                 index_t n, Functor f) {
-  return for_with_cancel(policy, j, n, [=](index_t i) { return f(i, j); });
+  return for_with_exit(policy, j, n, [=](index_t i) { return f(i, j); });
 }
 
 template <uplo_t Uplo, class Policy, class Functor>
     requires Uplo == uplo_t::upper 
-bool for_each_index_triangular_with_cancel_impl(Policy policy, index_t j,
+bool for_each_index_triangular_with_exit_impl(Policy policy, index_t j,
                                                 index_t n, Functor f) {
-  return for_with_cancel(policy, 0, j+1, [=](index_t i) { return f(i, j); });
+  return for_with_exit(policy, 0, j+1, [=](index_t i) { return f(i, j); });
 }
 }  // namespace detail
 
 template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
   requires !has_policy_v<grainularity, Policy>
-bool for_each_index_triangular_with_cancel(Policy policy, index_t n,
+bool for_each_index_triangular_with_exit(Policy policy, index_t n,
                                            Functor f) {
-  return for_with_cancel(no_policy_v, 0, n, [=](index_t j) {
-    return detail::for_each_index_triangular_with_cancel_impl<Uplo>(policy, j,
+  return for_with_exit(no_policy_v, 0, n, [=](index_t j) {
+    return detail::for_each_index_triangular_with_exit_impl<Uplo>(policy, j,
                                                                     n, f);
   });
 }

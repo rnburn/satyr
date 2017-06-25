@@ -41,22 +41,22 @@ void execute(const n_array_expression<2, Structure, Evaluator, Policy>&
 }
 
 //------------------------------------------------------------------------------
-// execute_with_cancel
+// execute_with_exit
 //------------------------------------------------------------------------------
 template <size_t K, FlatEvaluator Evaluator, Policy Policy>
-bool execute_with_cancel(
+bool execute_with_exit(
     const n_array_expression<K, general_structure, Evaluator, 
                              Policy>& expression) {
-  return for_with_cancel(simd_v | expression.policy(), 0,
+  return for_with_exit(simd_v | expression.policy(), 0,
                        get_num_elements(expression), expression.evaluator());
 }
 
 template <size_t K, KEvaluator<K> Evaluator, Policy Policy>
-bool execute_with_cancel(const n_array_expression<K, general_structure, Evaluator,
+bool execute_with_exit(const n_array_expression<K, general_structure, Evaluator,
                                                 Policy>& expression) {
   auto shape = expression.shape();
   auto evaluator = expression.evaluator();
-  return for_each_index_with_cancel(simd_v | expression.policy(),
+  return for_each_index_with_exit(simd_v | expression.policy(),
                                     shape.extents(),
                                     [shape, evaluator](auto... indexes) {
                                       return evaluator(shape, indexes...);
@@ -66,11 +66,11 @@ bool execute_with_cancel(const n_array_expression<K, general_structure, Evaluato
 template <Structure Structure, KEvaluator<2> Evaluator, Policy Policy>
   requires Structure::uplo == uplo_t::upper ||
            Structure::uplo == uplo_t::lower
-void execute_with_cancel(
+bool execute_with_exit(
     const n_array_expression<2, Structure, Evaluator, Policy>& expression) {
   auto shape = expression.shape();
   auto evaluator = expression.evaluator();
-  for_each_index_triangular<Structure::uplo>(
+  return for_each_index_triangular_with_exit<Structure::uplo>(
       simd_v | expression.policy(), get_extent<0>(shape),
       [shape, evaluator](index_t i, index_t j) {
         return evaluator(shape, i, j);
