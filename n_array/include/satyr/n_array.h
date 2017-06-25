@@ -1,5 +1,6 @@
 #pragma once
 
+#include <satyr/n_array/apply.h>
 #include <satyr/n_array/arithmetic.h>
 #include <satyr/n_array/equality.h>
 #include <satyr/n_array/expression.h>

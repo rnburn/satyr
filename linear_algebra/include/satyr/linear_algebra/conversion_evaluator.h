@@ -84,4 +84,12 @@ upper_triangular_to_general_evaluator<Evaluator> convert_evaluator(
     const Evaluator& evaluator) {
   return upper_triangular_to_general_evaluator(evaluator);
 }
+
+template <size_t K, Structure FromStructure, Structure ToStructure,
+          KEvaluator<K> Evaluator>
+  requires K == 2 && std::is_same_v<FromStructure, diagonal_structure> &&
+                     !std::is_same_v<FromStructure, ToStructure>
+Evaluator convert_evaluator(const Evaluator& evaluator) {
+  return evaluator;
+}
 } // namespace satyr

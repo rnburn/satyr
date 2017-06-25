@@ -20,5 +20,8 @@ int main() {
   m1 = s1;
   m1 = l1;
   m1 = u1;
+
+  m1 = m1 + as_diagonal_matrix(get_diagonal(m1));
+  m1 = m1 + identity_matrix(3) * 5;
   return 0;
 }
