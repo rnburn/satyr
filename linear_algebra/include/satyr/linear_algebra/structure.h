@@ -23,13 +23,4 @@ struct symmetric_structure : structure, refines_structure<general_structure> {
   static constexpr bool is_equal_dimensional = true;
   static constexpr uplo_t uplo = uplo_t::lower;
 };
-
-//------------------------------------------------------------------------------
-// diagonal_structure
-//------------------------------------------------------------------------------
-struct diagonal_structure : structure,
-                            refines_structure<general_structure>,
-                            refines_structure<upper_triangular_structure>,
-                            refines_structure<lower_triangular_structure>,
-                            refines_structure<symmetric_structure> {};
 }  // namespace satyr

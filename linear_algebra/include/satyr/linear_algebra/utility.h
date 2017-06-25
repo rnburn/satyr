@@ -1,6 +1,8 @@
 #pragma once
 
+#include <satyr/linear_algebra/concept.h>
 #include <satyr/linear_algebra/operation_matrix_expression.h>
+#include <satyr/linear_algebra/vector.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -43,5 +45,16 @@ template <OperationMatrix A>
   requires detail::match_transposed_matrix<A>
 shape<2> get_underlying_shape(const A& a) {
   return {get_extent<1>(a), get_extent<0>(a)};
+}
+
+//------------------------------------------------------------------------------
+// get_diagonal
+//------------------------------------------------------------------------------
+template <Matrix A>
+auto get_diagonal(A&& a) {
+  auto stride = get_stride<0>(a) + get_stride<1>(a);
+  auto n = std::min(get_extent<0>(a), get_extent<1>(a));
+  auto subshape = satyr::subshape<1>{{n}, {stride}};
+  return make_n_array_subview<general_structure>(a.data(), subshape);
 }
 } // namespace satyr

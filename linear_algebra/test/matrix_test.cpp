@@ -1,11 +1,14 @@
 #include <satyr/linear_algebra.h>
+using namespace satyr;
 
 int main() {
-  satyr::matrix<double> m1(3, 3);
-  satyr::symmetric_matrix<double> s1(3);
-  satyr::lower_triangular_matrix<double> l1(3);
-  satyr::upper_triangular_matrix<double> u1(3);
+  matrix<double> m1 = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+  symmetric_matrix<double> s1(3);
+  lower_triangular_matrix<double> l1(3);
+  upper_triangular_matrix<double> u1(3);
 
+  /* assert((get_diagonal(m1) == vector<double>{0, 4, 8})); */
+  /* std::cout << get_diagonal(m1) << "\n"; */
   l1 = 3;
   u1 = u1 + 1.0;
   s1 *= 5.0;
