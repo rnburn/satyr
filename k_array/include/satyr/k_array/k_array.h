@@ -103,6 +103,13 @@ class k_array : public k_array_cview<T, K>,
   operator k_array_view<T, K>() {
     return {data(), this->shape()};
   }
+
+  // iteration
+  using base::begin;
+  using base::end;
+  T* begin() { return const_cast<T*>(base::begin()); }
+  T* end() { return const_cast<T*>(base::end()); }
+
  private:
   template <class OtherAlloc>
   void move_assign(k_array<T, K, OtherAlloc>& other) noexcept {

@@ -43,6 +43,31 @@ class n_array_view<T, K, Structure> :
     return {data(), subshape<K>{this->shape()}};
   }
 
+  // iteration
+  T* begin() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return array_.begin(); 
+  }
+
+  T* end() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return array_.end(); 
+  }
+
+  T* cbegin() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return array_.cbegin(); 
+  }
+
+  T* cend() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return array_.cend(); 
+  }
+
  private:
   k_array_view<T, K> array_;
 };
@@ -87,6 +112,19 @@ class n_array_view<T, K, Structure>
 
   operator n_array_subview<T, K, Structure>() const {
     return {data(), subshape<K>{this->shape()}};
+  }
+
+  // iteration
+  T* begin() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return as_k_array().begin(); 
+  }
+
+  T* end() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return as_k_array().end(); 
   }
 };
 

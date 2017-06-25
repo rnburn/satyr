@@ -155,6 +155,24 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     return {data(), subshape<K>{this->shape()}};
   }
 
+  operator n_array_view<T, K, Structure>() { return {data(), this->shape()}; }
+
+  // iteration
+  using base::begin;
+  using base::end;
+
+  T* begin() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return const_cast<T*>(base::begin());
+  }
+
+  T* end() const 
+    requires std::is_same_v<Structure, general_structure>
+  { 
+    return const_cast<T*>(base::end());
+  }
+
  private:
   void move_assign(n_array_impl& other) noexcept {
     if (data() == other.data()) return;

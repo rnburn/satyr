@@ -43,6 +43,13 @@ class k_array_view<T, K>
   operator k_array_subcview<T, K>() const {
     return {data(), subshape<K>{this->shape()}};
   }
+
+  // iteration
+  T* begin() const { return data_; }
+  T* end() const { return data_ + get_num_elements(*this); }
+  T* cbegin() const { return begin(); }
+  T* cend() const { return end(); }
+
  private:
    T* data_;
    satyr::shape<K> shape_;
@@ -75,6 +82,10 @@ class k_array_view<T, K>
   operator k_array_subview<T, K>() const {
     return {data(), subshape<K>{this->shape()}};
   }
+
+  // iteration
+  T* begin() const { return const_cast<T*>(base::begin()); }
+  T* end() const { return const_cast<T*>(base::end()); }
 };
 
 //------------------------------------------------------------------------------
