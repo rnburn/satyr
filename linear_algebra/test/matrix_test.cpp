@@ -7,8 +7,7 @@ int main() {
   lower_triangular_matrix<double> l1(3);
   upper_triangular_matrix<double> u1(3);
 
-  /* assert((get_diagonal(m1) == vector<double>{0, 4, 8})); */
-  /* std::cout << get_diagonal(m1) << "\n"; */
+  assert((get_diagonal(m1) == vector<double>{0, 4, 8}));
   l1 = 3;
   u1 = u1 + 1.0;
   s1 *= 5.0;

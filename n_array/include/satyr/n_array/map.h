@@ -37,7 +37,7 @@ class map_evaluator_impl<std::index_sequence<Indexes1...>,
 
 template <size_t... Indexes1, size_t... Indexes2, class Functor,
           class... Evaluators>
-      requires (KEvaluator<Evaluators, sizeof...(Indexes1)> && ...)
+      requires (KEvaluator<Evaluators, sizeof...(Indexes2)> && ...)
 class map_evaluator_impl<std::index_sequence<Indexes1...>,
                          std::index_sequence<Indexes2...>, Functor,
                          Evaluators...> {

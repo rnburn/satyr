@@ -60,13 +60,13 @@ class n_array_expression;
 template <Scalar T, Policy Policy>
 class scalar_expression;
 
-template <Scalar T, size_t K, Structure Structure>
+template <Scalar T, size_t K, Structure Structure = general_structure>
 class n_array;
 
-template <Scalar T, size_t K, Structure Structure>
+template <Scalar T, size_t K, Structure Structure = general_structure>
 class n_array_view;
 
-template <Scalar T, size_t K, Structure Structure>
+template <Scalar T, size_t K, Structure Structure = general_structure>
 class n_array_subview;
 
 namespace detail {
