@@ -32,6 +32,9 @@ class shape {
    std::array<index_t, K> extents_;
 };
 
+template <class... Extents>
+shape(Extents...) -> shape<sizeof...(Extents)>;
+
 //------------------------------------------------------------------------------
 // is_equal_dimensional
 //------------------------------------------------------------------------------

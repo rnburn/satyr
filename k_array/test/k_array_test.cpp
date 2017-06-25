@@ -36,5 +36,8 @@ int main() {
 
   auto subview5 = subview4(satyr::range{1, 2}, satyr::range{0,1});
   assert(subview5(0, 0) == 7);
+
+  // shape deduction guide
+  assert((satyr::shape(1, 2) == satyr::shape<2>{1,2}));
   return 0;
 }
