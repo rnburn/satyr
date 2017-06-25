@@ -29,7 +29,7 @@ void for_(Policy policy, index_t first, index_t last, F f) {
 namespace detail {
 template <Policy Policy, IndexPredicate<1> F>
   requires has_policy_v<grainularity, Policy>
-bool for_with_cancel_impl(tbb::task_group_context& group, Policy policy,
+void for_with_cancel_impl(tbb::task_group_context& group, Policy policy,
                           index_t first, index_t last, F f) {
   auto grainularity = get_policy<satyr::grainularity>(policy);
   tbb::parallel_for(
@@ -40,7 +40,6 @@ bool for_with_cancel_impl(tbb::task_group_context& group, Policy policy,
           group.cancel_group_execution();
       },
       tbb::auto_partitioner{}, group);
-  return !group.is_group_execution_cancelled();
 }
 } // namespace detail
 
@@ -49,6 +48,7 @@ template <Policy Policy, IndexPredicate<1> F>
 bool for_with_cancel(Policy policy, index_t first, index_t last, F f) {
   tbb::task_group_context group;
   return detail::for_with_cancel_impl(group, policy, first, last, f);
+  return !group.is_group_execution_cancelled();
 }
 
 //------------------------------------------------------------------------------
@@ -57,20 +57,19 @@ bool for_with_cancel(Policy policy, index_t first, index_t last, F f) {
 namespace detail {
 template <uplo_t Uplo, class Policy, class Predicate>
     requires Uplo == uplo_t::lower 
-bool for_each_index_triangular_with_cancel_impl(tbb::task_group_context& group,
+void for_each_index_triangular_with_cancel_impl(tbb::task_group_context& group,
                                                 Policy policy, index_t j,
                                                 index_t n, Predicate f) {
-  return for_with_cancel_impl(group, policy, j, n,
-                              [=](index_t i) { return f(i, j); });
+  for_with_cancel_impl(group, policy, j, n, [=](index_t i) { return f(i, j); });
 }
 
 template <uplo_t Uplo, class Policy, class Predicate>
     requires Uplo == uplo_t::upper 
-bool for_each_index_triangular_with_cancel_impl(tbb::task_group_context& group,
+void for_each_index_triangular_with_cancel_impl(tbb::task_group_context& group,
                                                 Policy policy, index_t j,
                                                 index_t n, Predicate f) {
-  return for_with_cancel_impl(group, policy, 0, j + 1,
-                              [=](index_t i) { return f(i, j); });
+  for_with_cancel_impl(group, policy, 0, j + 1,
+                       [=](index_t i) { return f(i, j); });
 }
 }  // namespace detail
 
@@ -82,7 +81,7 @@ bool for_each_index_triangular_with_cancel(Policy policy, index_t n,
   auto n_div_2 = n / 2;
   auto p = n / 2 + (n % 2);
   tbb::task_group_context group;
-  return detail::for_with_cancel_impl(
+  detail::for_with_cancel_impl(
       group, grainularity_outer, 0, p, [=, &group](index_t j1) {
         auto j2 = n - j1 - 1;
         if (j1 != j2) {
@@ -95,5 +94,6 @@ bool for_each_index_triangular_with_cancel(Policy policy, index_t n,
               group, policy, j1, n, f);
         }
       });
+  return !group.is_group_execution_cancelled();
 }
 } // namespace satyr
