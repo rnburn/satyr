@@ -2,40 +2,49 @@
 #include <random>
 using satyr::index_t;
 
-static thread_local std::mt19937 rng{std::random_device{}()};
-
 int main() {
+  // Declare some random vector and matrices.
+  satyr::vector<double> v(5);
+  satyr::matrix<double> A(5, 5), B(5, 5);
+  satyr::symmetric_matrix<double> S(5);
+  satyr::lower_triangular_matrix<double> L(5);
+
   satyr::matrix<double> a(5, 5), b(5, 5);
   satyr::symmetric_matrix<double> c(5);
 
   // Randomly initialize matrices.
+  std::mt19937 rng{0};
   std::uniform_real_distribution<double> dist{-10, 10};
-  for_each(a, [&] (double& x) { x = dist(rng); });
-  for_each(satyr::parallel_v, b, [&] (double& x) { x = dist(rng); });
-  for_each(c, [&](double& x, index_t i, index_t j) {
-    x = dist(rng) + (i == j) * dist(rng);
-  });
-  std::cout << "a = " << a << "\n";
-  std::cout << "b = " << b << "\n";
-  std::cout << "c = " << c << "\n";
+  for_each(v, [&](double& element) { element = dist(rng); });
+  for_each(A, [&](double& element) { element = dist(rng); });
+  for_each(B, [&](double& element) { element = dist(rng); });
+  for_each(S, [&](double& element) { element = dist(rng); });
+  for_each(L, [&](double& element) { element = dist(rng); });
 
-  a += b + square(a);
-  std::cout << "a = " << a << "\n";
+  // The standard arithmetic operators and mathematical functions can be used to
+  // form execute expression templates.
+  A = B + 2.0 * cos(S);
 
-  a = cos(b) - sin(a) << satyr::parallel_v << satyr::simd_v;
-  std::cout << "a = " << a << "\n";
+  // Expressions involving only structural matrices are computed in an efficient
+  // manner that avoids unnecessary work.
+  S = sqrt(abs(S));  // computes only over a triangular portion of the matrix.
 
-  c = sqrt(abs(c)) << satyr::parallel_v;
-  std::cout << "c = " << c << "\n";
+  // Additionally execution policies can be applied to parallelize or vectorize
+  // the computation.
+  A = sqrt(abs(L)) << satyr::parallel_v << satyr::simd_v;
 
-  a += b - c;
-  std::cout << "a = " << a << "\n";
+  // For parallelization, you can also specify a grainsize if the cost of
+  // managing tasks could potentially be more expensive than the computation
+  // itself.
+  A += cos(B) - as_diagonal_matrix(v) << satyr::grainularity{
+           10};  // Don't create tasks with fewer than 10 iterations.
 
-  // multi-dimensional arrays
-  satyr::n_array<double, 3> a3(5, 2, 6);
-  for_each(a3, [&](double& x) { return x = dist(rng); });
-  std::cout << "a3 = " << a3 << "\n";
-  a += a3(satyr::all_v, 1, satyr::range{1, 6});
-  std::cout << "a = " << a << "\n";
+  // Addtionality you can declare numerical arrays of artibrary dimension.
+  satyr::n_array<float, 3> H(5, 2, 6);
+  for_each(H, [&](float& element) { element = static_cast<float>(dist(rng)); });
+
+  // And all array-like objects support indexing and slicing.
+  A(0, 0) -= 5;
+  A += H(satyr::all_v, 1, satyr::range{1, 6});
   return 0;
 }
