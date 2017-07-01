@@ -25,37 +25,45 @@ int main() {
 
   // The standard arithmetic operators and mathematical functions can be used to
   // form execute expression templates.
+  std::cout << "A = B + 2.0 * cos(S)\n";
   A = B + 2.0 * cos(S);
   std::cout << "A = " << A << "\n";
 
   // Expressions involving only structural matrices are computed in an efficient
   // manner that avoids unnecessary work.
+  std::cout << "S = sqrt(abs(S))\n";
   S = sqrt(abs(S));  // computes only over a triangular portion of the matrix.
   std::cout << "S = " << S << "\n";
 
   // Additionally execution policies can be applied to parallelize or vectorize
   // the computation.
+  std::cout << "A = sqrt(abs(L))\n";
   A = sqrt(abs(L)) << satyr::parallel_v << satyr::simd_v;
   std::cout << "A = " << A << "\n";
 
   // For parallelization, you can also specify a grainsize if the cost of
   // managing tasks could potentially be more expensive than the computation
   // itself.
+  std::cout << "A += cos(B) - as_diagonal_matrix(v)\n";
   A += cos(B) - as_diagonal_matrix(v) << satyr::grainularity{
            10};  // Don't create tasks with fewer than 10 iterations.
   std::cout << "A = " << A << "\n";
 
-  // Addtionality you can declare numerical arrays of artibrary dimension.
+  // Addtionality you can declare numerical arrays of arbitrary dimension.
   satyr::n_array<float, 3> H(5, 2, 6);
   for_each(H, [&](float& element) { element = static_cast<float>(dist(rng)); });
   std::cout << "H = " << H << "\n";
 
   // And all array-like objects support indexing and slicing.
+  std::cout << "A(0, 0) -= 5\n";
+  std::cout << "A += H(satyr_v::all_v, 1, satyr::range{1,6})\n";
   A(0, 0) -= 5;
   A += H(satyr::all_v, 1, satyr::range{1, 6});
   std::cout << "A = " << A << "\n";
 
   // There is a wrapper for many BLAS-LAPACK functions.
+  std::cout << "C = product(A, B)\n";
+  std::cout << "w = left_solve(L, v)\n";
   auto C = product(A, B);     // calls gemm.
   auto w = left_solve(L, v);  // calls trsv.
   std::cout << "C = " << C << "\n";
