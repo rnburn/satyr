@@ -46,7 +46,7 @@ A = sqrt(abs(L)) << satyr::parallel_v << satyr::simd_v;
 // For parallelization, you can also specify a grainsize if the cost of
 // managing tasks could potentially be more expensive than the computation
 // itself.
-A += cos(B) - as_diagonal_matrix(v) << satyr::grainularity{
+A += cos(B) - as_diagonal_matrix(v) << satyr::grainsize{
          10};  // Don't create tasks with fewer than 10 iterations.
 
 // Addtionality you can declare numerical arrays of arbitrary dimension.

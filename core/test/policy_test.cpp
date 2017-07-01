@@ -12,12 +12,12 @@ int main() {
   assert(!(has_policy_v<simd, decltype(p2)>));
   assert((has_policy_v<nosimd, decltype(p2)>));
 
-  auto p3 = simd_v | grainularity{10};
-  auto g1 = get_policy<grainularity>(p3);
+  auto p3 = simd_v | grainsize{10};
+  auto g1 = get_policy<grainsize>(p3);
   assert(g1.value == 10);
 
-  auto p4 = grainularity{10} | grainularity{15};
-  auto g2 = get_policy<grainularity>(p4);
+  auto p4 = grainsize{10} | grainsize{15};
+  auto g2 = get_policy<grainsize>(p4);
   assert(g2.value == 15);
   return 0;
 }

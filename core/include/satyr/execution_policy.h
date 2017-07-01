@@ -51,23 +51,23 @@ struct parallel_policy_group : policy<parallel_policy_group> {};
 const struct serial : parallel_policy_group {} serial_v{};
 
 //------------------------------------------------------------------------------
-// grainularity
+// grainsize
 //------------------------------------------------------------------------------
-struct grainularity : parallel_policy_group {
-  grainularity() : value{1} {}
-  explicit grainularity(index_t value) : value{value} {}
+struct grainsize : parallel_policy_group {
+  grainsize() : value{1} {}
+  explicit grainsize(index_t value) : value{value} {}
   index_t value;
 };
 
-inline satyr::grainularity subdivide(satyr::grainularity grainularity,
+inline satyr::grainsize subdivide(satyr::grainsize grainsize,
                                      index_t n) {
-  return satyr::grainularity{std::max<index_t>(grainularity.value / n, 1)};
+  return satyr::grainsize{std::max<index_t>(grainsize.value / n, 1)};
 }
 
 //------------------------------------------------------------------------------
 // parallel
 //------------------------------------------------------------------------------
-const grainularity parallel_v{1};
+const grainsize parallel_v{1};
 
 //------------------------------------------------------------------------------
 // inline_policy_group

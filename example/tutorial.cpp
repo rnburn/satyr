@@ -45,7 +45,7 @@ int main() {
   // managing tasks could potentially be more expensive than the computation
   // itself.
   std::cout << "A += cos(B) - as_diagonal_matrix(v)\n";
-  A += cos(B) - as_diagonal_matrix(v) << satyr::grainularity{
+  A += cos(B) - as_diagonal_matrix(v) << satyr::grainsize{
            10};  // Don't create tasks with fewer than 10 iterations.
   std::cout << "A = " << A << "\n";
 

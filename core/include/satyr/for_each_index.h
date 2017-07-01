@@ -9,7 +9,7 @@ namespace satyr {
 // for_each_index
 //------------------------------------------------------------------------------
 template <Policy Policy, size_t K, IndexFunctor<K> Functor>
-  requires !has_policy_v<grainularity, Policy>
+  requires !has_policy_v<grainsize, Policy>
 void for_each_index(Policy policy, std::array<index_t, K> extents,
     Functor f) {
   if constexpr(K == 1) { for_(policy, 0, extents[0], f); }
@@ -33,8 +33,8 @@ void parallel_for_each_index_impl(Policy policy,
     for_(policy, 0, extents[0], f); 
   } else {
     auto n = cardinalities[K - 2];
-    auto grainularity = subdivide(get_policy<satyr::grainularity>(policy), n);
-    for_(grainularity, 0, n, [=](index_t i) {
+    auto grainsize = subdivide(get_policy<satyr::grainsize>(policy), n);
+    for_(grainsize, 0, n, [=](index_t i) {
       auto f_prime = [=](auto... indexes) { f(indexes..., i); };
       return parallel_for_each_index_impl(
           policy,
@@ -47,7 +47,7 @@ void parallel_for_each_index_impl(Policy policy,
 } // namespace detail
 
 template <Policy Policy, size_t K, IndexFunctor<K> Functor>
-  requires has_policy_v<grainularity, Policy> 
+  requires has_policy_v<grainsize, Policy> 
 void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
   std::array<index_t, K - 1> cardinalities;
   index_t cardinality = 1;
@@ -78,7 +78,7 @@ void for_each_index_triangular_impl(Policy policy, index_t j, index_t n,
 }  // namespace detail
 
 template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
-  requires !has_policy_v<grainularity, Policy>
+  requires !has_policy_v<grainsize, Policy>
 void for_each_index_triangular(Policy policy, index_t n, Functor f) {
   for_(no_policy_v, 0, n, [=](index_t j) {
     detail::for_each_index_triangular_impl<Uplo>(policy, j, n, f);
@@ -86,12 +86,12 @@ void for_each_index_triangular(Policy policy, index_t n, Functor f) {
 }
 
 template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
-  requires has_policy_v<grainularity, Policy>
+  requires has_policy_v<grainsize, Policy>
 void for_each_index_triangular(Policy policy, index_t n, Functor f) {
-  auto grainularity_outer = subdivide(get_policy<grainularity>(policy), n + 1);
+  auto grainsize_outer = subdivide(get_policy<grainsize>(policy), n + 1);
   auto n_div_2 = n / 2;
   auto p = n / 2 + (n % 2);
-  for_(grainularity_outer, 0, p, [=](index_t j1) {
+  for_(grainsize_outer, 0, p, [=](index_t j1) {
     auto j2 = n - j1 - 1;
     if (j1 != j2) {
       detail::for_each_index_triangular_impl<Uplo>(policy, j1, n, f);
@@ -106,7 +106,7 @@ void for_each_index_triangular(Policy policy, index_t n, Functor f) {
 // for_each_index_with_exit
 //------------------------------------------------------------------------------
 template <Policy Policy, size_t K, IndexPredicate<K> Functor>
-  requires !has_policy_v<grainularity, Policy>
+  requires !has_policy_v<grainsize, Policy>
 bool for_each_index_with_exit(Policy policy, std::array<index_t, K> extents,
                                 Functor f) {
   if constexpr(K == 1) { return for_with_exit(policy, 0, extents[0], f); }
@@ -140,7 +140,7 @@ bool for_each_index_triangular_with_exit_impl(Policy policy, index_t j,
 }  // namespace detail
 
 template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
-  requires !has_policy_v<grainularity, Policy>
+  requires !has_policy_v<grainsize, Policy>
 bool for_each_index_triangular_with_exit(Policy policy, index_t n,
                                            Functor f) {
   return for_with_exit(no_policy_v, 0, n, [=](index_t j) {

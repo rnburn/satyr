@@ -12,12 +12,12 @@ namespace satyr {
 // for_
 //------------------------------------------------------------------------------
 template <Policy Policy, IndexFunctor<1> F>
-  requires has_policy_v<grainularity, Policy>
+  requires has_policy_v<grainsize, Policy>
 void for_(Policy policy, index_t first, index_t last, F f) {
-  auto grainularity = get_policy<satyr::grainularity>(policy);
+  auto grainsize = get_policy<satyr::grainsize>(policy);
   tbb::parallel_for(
       tbb::blocked_range<index_t>{first, last,
-                                  static_cast<size_t>(grainularity.value)},
+                                  static_cast<size_t>(grainsize.value)},
       [=](const tbb::blocked_range<index_t>& range) {
         for_(policy | serial_v, range.begin(), range.end(), f);
       });
@@ -28,13 +28,13 @@ void for_(Policy policy, index_t first, index_t last, F f) {
 //------------------------------------------------------------------------------
 namespace detail {
 template <Policy Policy, IndexPredicate<1> F>
-  requires has_policy_v<grainularity, Policy>
+  requires has_policy_v<grainsize, Policy>
 void for_with_exit_impl(tbb::task_group_context& group, Policy policy,
                           index_t first, index_t last, F f) {
-  auto grainularity = get_policy<satyr::grainularity>(policy);
+  auto grainsize = get_policy<satyr::grainsize>(policy);
   tbb::parallel_for(
       tbb::blocked_range<index_t>{first, last,
-                                  static_cast<size_t>(grainularity.value)},
+                                  static_cast<size_t>(grainsize.value)},
       [=, &group](const tbb::blocked_range<index_t>& range) {
         if (!for_with_exit(policy | serial_v, range.begin(), range.end(), f))
           group.cancel_group_execution();
@@ -44,7 +44,7 @@ void for_with_exit_impl(tbb::task_group_context& group, Policy policy,
 } // namespace detail
 
 template <Policy Policy, IndexPredicate<1> F>
-  requires has_policy_v<grainularity, Policy>
+  requires has_policy_v<grainsize, Policy>
 bool for_with_exit(Policy policy, index_t first, index_t last, F f) {
   tbb::task_group_context group;
   return detail::for_with_exit_impl(group, policy, first, last, f);
@@ -74,15 +74,15 @@ void for_each_index_triangular_with_exit_impl(tbb::task_group_context& group,
 }  // namespace detail
 
 template <uplo_t Uplo, Policy Policy, IndexPredicate<2> Functor>
-  requires has_policy_v<grainularity, Policy>
+  requires has_policy_v<grainsize, Policy>
 bool for_each_index_triangular_with_exit(Policy policy, index_t n,
                                            Functor f) {
-  auto grainularity_outer = subdivide(get_policy<grainularity>(policy), n + 1);
+  auto grainsize_outer = subdivide(get_policy<grainsize>(policy), n + 1);
   auto n_div_2 = n / 2;
   auto p = n / 2 + (n % 2);
   tbb::task_group_context group;
   detail::for_with_exit_impl(
-      group, grainularity_outer, 0, p, [=, &group](index_t j1) {
+      group, grainsize_outer, 0, p, [=, &group](index_t j1) {
         auto j2 = n - j1 - 1;
         if (j1 != j2) {
           detail::for_each_index_triangular_with_exit_impl<Uplo>(
