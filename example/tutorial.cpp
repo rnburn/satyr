@@ -24,7 +24,7 @@ int main() {
   std::cout << "L = " << L << "\n";
 
   // The standard arithmetic operators and mathematical functions can be used to
-  // form execute expression templates.
+  // execute expression templates.
   std::cout << "A = B + 2.0 * cos(S)\n";
   A = B + 2.0 * cos(S);
   std::cout << "A = " << A << "\n";

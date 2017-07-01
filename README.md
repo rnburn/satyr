@@ -32,7 +32,7 @@ satyr::symmetric_matrix<double> S(5);
 satyr::lower_triangular_matrix<double> L(5);
 
 // The standard arithmetic operators and mathematical functions can be used to
-// form execute expression templates.
+// execute expression templates.
 A = B + 2.0 * cos(S);
 
 // Expressions involving only structural matrices are computed in an efficient
