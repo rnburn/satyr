@@ -41,7 +41,7 @@ if (SATYR_WITH_MKL)
 endif()
 
 ###############################################################################
-# Configure MKL
+# Configure jemalloc
 ###############################################################################
 if (SATYR_WITH_JEMALLOC)
   find_package(Jemalloc REQUIRED)
