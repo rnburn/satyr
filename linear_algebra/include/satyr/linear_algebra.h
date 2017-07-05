@@ -7,6 +7,7 @@
 #include <satyr/linear_algebra/diagonal_matrix.h>
 #include <satyr/linear_algebra/matrix.h>
 #include <satyr/linear_algebra/matrix_accessor.h>
+#include <satyr/linear_algebra/partial_cholesky.h>
 #include <satyr/linear_algebra/product.h>
 #include <satyr/linear_algebra/solve.h>
 #include <satyr/linear_algebra/utility.h>
