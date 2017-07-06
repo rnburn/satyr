@@ -8,7 +8,7 @@
 
 namespace satyr {
 #define MAKE_UNIMPLEMENTED_STUB(RETURN, NAME)                   \
-  RETURN NAME(...) {                                            \
+  inline RETURN NAME(...) {                                     \
     std::cerr << SATYR_STRINGIFY(NAME) " is not implemented\n"; \
     std::terminate();                                           \
   }

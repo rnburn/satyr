@@ -149,15 +149,15 @@ MAKE_SYMM(double, d)
 //------------------------------------------------------------------------------
 // trsv
 //------------------------------------------------------------------------------
-#define MAKE_TRSV(SCALAR, PREFIX)                                          \
-  void trsv(uplo_t uplo_a, matrix_operation_t operation_a,                 \
-            matrix_diagonal_fill_t diagonal_fill_a, index_t n,             \
-            const SCALAR* a, index_t lda, SCALAR* x, index_t incx) {       \
-    cblas_##PREFIX##trsv(CblasColMajor, detail::get_uplo(uplo_a),          \
-                         detail::get_operation(operation_a),               \
-                         detail::get_unity_diagonal_fill(diagonal_fill_a), \
-                         static_cast<int>(n), a, static_cast<int>(lda), x, \
-                         static_cast<int>(incx));                          \
+#define MAKE_TRSV(SCALAR, PREFIX)                                           \
+  inline void trsv(uplo_t uplo_a, matrix_operation_t operation_a,           \
+                   matrix_diagonal_fill_t diagonal_fill_a, index_t n,       \
+                   const SCALAR* a, index_t lda, SCALAR* x, index_t incx) { \
+    cblas_##PREFIX##trsv(CblasColMajor, detail::get_uplo(uplo_a),           \
+                         detail::get_operation(operation_a),                \
+                         detail::get_unity_diagonal_fill(diagonal_fill_a),  \
+                         static_cast<int>(n), a, static_cast<int>(lda), x,  \
+                         static_cast<int>(incx));                           \
   }
 MAKE_TRSV(float, s)
 MAKE_TRSV(double, d)
@@ -166,17 +166,17 @@ MAKE_TRSV(double, d)
 //------------------------------------------------------------------------------
 // trsm
 //------------------------------------------------------------------------------
-#define MAKE_TRSM(SCALAR, PREFIX)                                              \
-  void trsm(matrix_side_t side, uplo_t uplo_a, matrix_operation_t operation_a, \
-            matrix_diagonal_fill_t diagonal_fill_a, index_t m, index_t n,      \
-            SCALAR alpha, const SCALAR* a, index_t lda, SCALAR* b,             \
-            index_t ldb) {                                                     \
-    cblas_##PREFIX##trsm(CblasColMajor, detail::get_side(side),                \
-                         detail::get_uplo(uplo_a),                             \
-                         detail::get_operation(operation_a),                   \
-                         detail::get_unity_diagonal_fill(diagonal_fill_a),     \
-                         static_cast<int>(m), static_cast<int>(n), alpha, a,   \
-                         static_cast<int>(lda), b, static_cast<int>(ldb));     \
+#define MAKE_TRSM(SCALAR, PREFIX)                                            \
+  inline void trsm(                                                          \
+      matrix_side_t side, uplo_t uplo_a, matrix_operation_t operation_a,     \
+      matrix_diagonal_fill_t diagonal_fill_a, index_t m, index_t n,          \
+      SCALAR alpha, const SCALAR* a, index_t lda, SCALAR* b, index_t ldb) {  \
+    cblas_##PREFIX##trsm(CblasColMajor, detail::get_side(side),              \
+                         detail::get_uplo(uplo_a),                           \
+                         detail::get_operation(operation_a),                 \
+                         detail::get_unity_diagonal_fill(diagonal_fill_a),   \
+                         static_cast<int>(m), static_cast<int>(n), alpha, a, \
+                         static_cast<int>(lda), b, static_cast<int>(ldb));   \
   }
 MAKE_TRSM(float, s)
 MAKE_TRSM(double, d)
@@ -185,15 +185,15 @@ MAKE_TRSM(double, d)
 //------------------------------------------------------------------------------
 // trmv
 //------------------------------------------------------------------------------
-#define MAKE_TRMV(SCALAR, PREFIX)                                          \
-  void trmv(uplo_t uplo_a, matrix_operation_t operation_a,                 \
-            matrix_diagonal_fill_t diagonal_fill_a, index_t n,             \
-            const SCALAR* a, index_t lda, SCALAR* x, index_t incx) {       \
-    cblas_##PREFIX##trmv(CblasColMajor, detail::get_uplo(uplo_a),          \
-                         detail::get_operation(operation_a),               \
-                         detail::get_unity_diagonal_fill(diagonal_fill_a), \
-                         static_cast<int>(n), a, static_cast<int>(lda), x, \
-                         static_cast<int>(incx));                          \
+#define MAKE_TRMV(SCALAR, PREFIX)                                           \
+  inline void trmv(uplo_t uplo_a, matrix_operation_t operation_a,           \
+                   matrix_diagonal_fill_t diagonal_fill_a, index_t n,       \
+                   const SCALAR* a, index_t lda, SCALAR* x, index_t incx) { \
+    cblas_##PREFIX##trmv(CblasColMajor, detail::get_uplo(uplo_a),           \
+                         detail::get_operation(operation_a),                \
+                         detail::get_unity_diagonal_fill(diagonal_fill_a),  \
+                         static_cast<int>(n), a, static_cast<int>(lda), x,  \
+                         static_cast<int>(incx));                           \
   }
 MAKE_TRMV(float, s)
 MAKE_TRMV(double, d)
@@ -203,7 +203,7 @@ MAKE_TRMV(double, d)
 // trmm
 //------------------------------------------------------------------------------
 #define MAKE_TRMM(SCALAR, PREFIX)                                            \
-  void trmm(                                                                 \
+  inline void trmm(                                                          \
       matrix_side_t side_a, uplo_t uplo_a, matrix_operation_t operation_a,   \
       matrix_diagonal_fill_t diagonal_fill_a, index_t m, index_t n,          \
       SCALAR alpha, const SCALAR* a, index_t lda, SCALAR* b, index_t ldb) {  \
@@ -222,7 +222,7 @@ MAKE_TRMM(double, d)
 // potrf
 //------------------------------------------------------------------------------
 #define MAKE_POTRF(SCALAR, SUFFIX)                                          \
-  int potrf(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {               \
+  inline int potrf(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {        \
     auto status = LAPACKE_##SUFFIX##potrf(                                  \
         CblasColMajor, detail::get_uplo_char(uplo), static_cast<int>(n), a, \
         static_cast<int>(lda));                                             \
@@ -236,7 +236,7 @@ MAKE_POTRF(double, d)
 // potri
 //------------------------------------------------------------------------------
 #define MAKE_POTRI(SCALAR, SUFFIX)                                          \
-  void potri(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {              \
+  inline void potri(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {       \
     LAPACKE_##SUFFIX##potri(CblasColMajor, detail::get_uplo_char(uplo),     \
                             static_cast<int>(n), a, static_cast<int>(lda)); \
   }
