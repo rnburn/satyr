@@ -7,6 +7,8 @@ int main() {
   lower_triangular_matrix<double> l1(3);
   upper_triangular_matrix<double> u1(3);
 
+  assert(norm1(m1) == 15);
+  assert(norm2_squared(m1(0, satyr::all_v)) == 5);
   assert((get_diagonal(m1) == vector<double>{0, 4, 8}));
   l1 = 3;
   u1 = u1 + 1.0;
@@ -23,5 +25,6 @@ int main() {
 
   m1 = m1 + as_diagonal_matrix(get_diagonal(m1));
   m1 = m1 + identity_matrix(3) * 5;
+
   return 0;
 }

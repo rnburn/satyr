@@ -12,3 +12,4 @@
 #include <satyr/linear_algebra/solve.h>
 #include <satyr/linear_algebra/utility.h>
 #include <satyr/linear_algebra/vector.h>
+#include <satyr/linear_algebra/norm.h>
