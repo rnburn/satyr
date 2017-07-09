@@ -1,6 +1,7 @@
 #pragma once
 
 #include <satyr/type_list.h>
+#include <satyr/index.h>
 #include <type_traits>
 #include <memory>
 
@@ -466,6 +467,31 @@ using codomain_value_type_t =
 template <class T>
 using domain_value_type_t =
     uncvref_t<std::remove_reference_t<domain_t<T>>>;
+
+//------------------------------------------------------------------------------
+// index_functor_codomain_t
+//------------------------------------------------------------------------------
+namespace detail {
+template <class, class>
+struct index_functor_codomain_type;
+
+template <size_t... Indexes, class F>
+struct index_functor_codomain_type<std::index_sequence<Indexes...>, F> {
+  using type = decltype(std::declval<F>()((Indexes, index_t{0})...));
+};
+} // namespace detail
+
+template <class F, size_t K>
+using index_functor_codomain_t =
+    typename detail::index_functor_codomain_type<std::index_sequence<K>,
+                                                 F>::type;
+
+//------------------------------------------------------------------------------
+// index_functor_codomain_value_type_t
+//------------------------------------------------------------------------------
+template <class F, size_t K>
+using index_functor_codomain_value_type_t =
+    uncvref_t<index_functor_codomain_t<F, K>>;
 
 //------------------------------------------------------------------------------
 // is_same_v
