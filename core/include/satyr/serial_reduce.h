@@ -9,8 +9,8 @@ namespace satyr {
 //------------------------------------------------------------------------------
 // reduce
 //------------------------------------------------------------------------------
-// TODO: What's the constraint on the return type for F?
-template <Policy Policy, IndexReducer Reducer, IndexFunctor<1> F>
+template <Policy Policy, IndexFunctor<1> F,
+          IndexReducer<index_functor_codomain_t<F, 1>> Reducer>
   requires !has_policy_v<grainsize, Policy>
 value_type_t<Reducer> reduce(Policy policy, index_t first, index_t last,
                              Reducer reducer, F f) {

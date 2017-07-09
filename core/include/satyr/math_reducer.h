@@ -15,6 +15,8 @@ namespace satyr {
 template <Scalar T>
 class sum_reducer {
  public:
+   using value_type = T;
+
    sum_reducer() = default;
 
    sum_reducer(sum_reducer& other, split_reduction) {}
@@ -47,7 +49,9 @@ class sum_reducer {
 template <RealScalar T>
 class max_reducer {
   public:
-    max_reducer() = default;
+   using value_type = T;
+
+   max_reducer() = default;
 
    max_reducer(max_reducer& other, split_reduction) {}
 
@@ -81,7 +85,9 @@ class max_reducer {
 template <RealScalar T>
 class min_reducer {
   public:
-    min_reducer() = default;
+   using value_type = T;
+
+   min_reducer() = default;
 
    min_reducer(min_reducer& other, split_reduction) {}
 
