@@ -68,11 +68,17 @@ class max_reducer {
    T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, max, value_)
-     for (i = first; i != last; ++i) value_ = std::max(value_, f(i));
+     for (i = first; i != last; ++i) {
+       auto element = f(i);
+       // Note: GCC won't vectorize this properly unless max is written with
+       // the ?: notation. See 
+       //     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81366
+       value_ = f(i) > value_ ? f(i) : value_;
+     }
    }
 
    void join(const max_reducer& other) {
-     value_ = std::max(other.value_, value_);
+     value_ = other.value_ > value_ ? other.value_ : value_;
    }
 
   private:
@@ -104,11 +110,17 @@ class min_reducer {
    T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, min, value_)
-     for (i = first; i != last; ++i) value_ = std::min(value_, f(i));
+     for (i = first; i != last; ++i) {
+       auto element = f(i);
+       // Note: GCC won't vectorize this properly unless min is written with
+       // the ?: notation. See 
+       //     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81366
+       value_ = f(i) < value_ ? f(i) : value_;
+     }
    }
 
    void join(const min_reducer& other) {
-     value_ = std::min(other.value_, value_);
+     value_ = other.value_ < value_ ? other.value_ : value_;
    }
 
   private:
