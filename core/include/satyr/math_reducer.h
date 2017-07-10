@@ -39,6 +39,8 @@ class sum_reducer {
 
    void join(const sum_reducer& other) { value_ += other.value_; }
 
+   T value() const { return value_; }
+
   private:
    T value_ = 0;
 };
@@ -81,6 +83,8 @@ class max_reducer {
      value_ = other.value_ > value_ ? other.value_ : value_;
    }
 
+   T value() const { return value_; }
+
   private:
    T value_ = std::numeric_limits<T>::lowest();
 };
@@ -122,6 +126,8 @@ class min_reducer {
    void join(const min_reducer& other) {
      value_ = other.value_ < value_ ? other.value_ : value_;
    }
+
+   T value() const { return value_; }
 
   private:
    T value_ = std::numeric_limits<T>::max();
