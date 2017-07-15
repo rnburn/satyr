@@ -4,6 +4,7 @@
 #include <satyr/execution_policy.h>
 #include <cstddef>
 #include <array>
+#include <algorithm>
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -93,7 +94,9 @@ class k_blocked_range {
      }
    }
 
-   k_blocked_range(k_blocked_range& range, proportional_split_range split) {
+   k_blocked_range(k_blocked_range& range, proportional_split_range split) 
+     : ranges_{range.ranges_}
+   {
      for (index_t i=K; i-->0;) {
        if (ranges_[i].is_divisible()) {
          ranges_[i] = blocked_range{range.ranges_[i], split};
@@ -102,16 +105,14 @@ class k_blocked_range {
      }
    }
 
-   bool empty() const { 
-     for (auto& range : ranges_)
-       if (range.empty()) return true;
-     return false;
+   bool empty() const {
+     return std::any_of(std::begin(ranges_), std::end(ranges_),
+                        [](auto& range) { return range.empty(); });
    }
 
    bool is_divisible() const {
-     for (auto& range : ranges_)
-       if (range.is_divisible()) return true;
-     return false;
+     return std::any_of(std::begin(ranges_), std::end(ranges_),
+                        [](auto& range) { return range.is_divisible(); });
    }
 
    index_t size() const {
@@ -119,6 +120,18 @@ class k_blocked_range {
      for (auto& range : ranges_)
        result *= range.size();
      return result;
+   }
+
+   template <size_t I>
+     requires I < K
+   index_t first() const {
+     return ranges_[I].first();
+   }
+
+   template <size_t I>
+     requires I < K
+   index_t last() const {
+     return ranges_[I].last();
    }
  private:
    std::array<blocked_range, K> ranges_;

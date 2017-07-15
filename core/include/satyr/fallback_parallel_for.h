@@ -2,6 +2,7 @@
 #pragma once
 
 #include <satyr/serial_for.h>
+#include <satyr/serial_for_each_index.h>
 #include <satyr/matrix.h>
 
 namespace satyr {
@@ -12,6 +13,15 @@ template <Policy Policy, IndexFunctor<1> F>
   requires has_policy_v<grainsize, Policy>
 void for_(Policy policy, index_t first, index_t last, F f) {
   for_(policy | serial_v, first, last, f);
+}
+
+//------------------------------------------------------------------------------
+// for_each_index
+//------------------------------------------------------------------------------
+template <Policy Policy, size_t K, IndexFunctor<K> Functor>
+  requires has_policy_v<grainsize, Policy>
+void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
+  return for_each_index(policy | serial_v, extents, f);
 }
 
 //------------------------------------------------------------------------------

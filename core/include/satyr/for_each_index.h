@@ -1,63 +1,12 @@
 #pragma once
 
 #include <satyr/serial_for.h>
+#include <satyr/serial_for_each_index.h>
 #include <satyr/parallel_for.h>
+#include <satyr/blocked_range.h>
 #include <satyr/matrix.h>
 
 namespace satyr {
-//------------------------------------------------------------------------------
-// for_each_index
-//------------------------------------------------------------------------------
-template <Policy Policy, size_t K, IndexFunctor<K> Functor>
-  requires !has_policy_v<grainsize, Policy>
-void for_each_index(Policy policy, std::array<index_t, K> extents,
-    Functor f) {
-  if constexpr(K == 1) { for_(policy, 0, extents[0], f); }
-  else {
-    for_(serial_v, 0, extents[K - 1], [=](index_t i) {
-      auto f_prime = [=](auto... indexes) { f(indexes..., i); };
-      return for_each_index(
-          policy, reinterpret_cast<const std::array<index_t, K - 1>&>(extents),
-          f_prime);
-    });
-  }
-}
-
-namespace detail {
-template <class Policy, size_t K, class Functor>
-void parallel_for_each_index_impl(Policy policy,
-                                  std::array<index_t, K-1> cardinalities,
-                                  std::array<index_t, K> extents,
-                                  Functor f) {
-  if constexpr(K == 1) { 
-    for_(policy, 0, extents[0], f); 
-  } else {
-    auto n = cardinalities[K - 2];
-    auto grainsize = subdivide(get_policy<satyr::grainsize>(policy), n);
-    for_(grainsize, 0, n, [=](index_t i) {
-      auto f_prime = [=](auto... indexes) { f(indexes..., i); };
-      return parallel_for_each_index_impl(
-          policy,
-          reinterpret_cast<const std::array<index_t, K - 2>&>(extents),
-          reinterpret_cast<const std::array<index_t, K - 1>&>(extents),
-          f_prime);
-    });
-  }
-}
-} // namespace detail
-
-template <Policy Policy, size_t K, IndexFunctor<K> Functor>
-  requires has_policy_v<grainsize, Policy> 
-void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
-  std::array<index_t, K - 1> cardinalities;
-  index_t cardinality = 1;
-  for (index_t i = 0; i < K - 1; ++i) {
-    cardinality *= extents[i];
-    cardinalities[i] = cardinality;
-  }
-  detail::parallel_for_each_index_impl(policy, cardinalities, extents, f);
-}
-
 //------------------------------------------------------------------------------
 // for_each_index_triangular
 //------------------------------------------------------------------------------

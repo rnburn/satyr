@@ -3,6 +3,7 @@
 #include <satyr/concept.h>
 #include <satyr/execution_policy.h>
 #include <satyr/serial_for.h>
+#include <satyr/serial_for_each_index.h>
 #include <satyr/matrix.h>
 #include <tbb/parallel_for.h>
 #include <tbb/task.h>
@@ -21,6 +22,45 @@ void for_(Policy policy, index_t first, index_t last, F f) {
       [=](const tbb::blocked_range<index_t>& range) {
         for_(policy | serial_v, range.begin(), range.end(), f);
       });
+}
+
+//------------------------------------------------------------------------------
+// for_each_index
+//------------------------------------------------------------------------------
+namespace detail {
+template <size_t K>
+struct tbb_k_blocked_range {
+  explicit tbb_k_blocked_range(const k_blocked_range<K>& range_)
+      : range{range_} {}
+
+  tbb_k_blocked_range(
+      tbb_k_blocked_range& other, 
+      tbb::split /*split*/)
+    : range{other.range, split_range_v} {}
+
+  static const bool is_splittable_in_proportion = true;
+
+  tbb_k_blocked_range(tbb_k_blocked_range& other,
+                      const tbb::proportional_split& split)
+      : range{other.range,
+              proportional_split_range{split.left(), split.right()}} {}
+
+  bool empty() const { return range.empty(); }
+
+  bool is_divisible() const { return range.is_divisible(); }
+
+  k_blocked_range<K> range;
+};
+} // namespace detail
+
+template <Policy Policy, size_t K, IndexFunctor<K> Functor>
+  requires has_policy_v<grainsize, Policy>
+void for_each_index(Policy policy, std::array<index_t, K> extents, Functor f) {
+  auto grainsize = get_policy<satyr::grainsize>(policy);
+  auto range = k_blocked_range(extents, grainsize.value);
+  tbb::parallel_for(detail::tbb_k_blocked_range(range), [=](const auto& range) {
+    for_each_index(policy | serial_v, range.range, f);
+  });
 }
 
 //------------------------------------------------------------------------------
