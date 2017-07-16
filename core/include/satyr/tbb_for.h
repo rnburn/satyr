@@ -86,8 +86,43 @@ void for_with_exit_impl(tbb::task_group_context& group, Policy policy,
 template <Policy Policy, IndexPredicate<1> F>
   requires has_policy_v<grainsize, Policy>
 bool for_with_exit(Policy policy, index_t first, index_t last, F f) {
+  auto grainsize = get_policy<satyr::grainsize>(policy);
+  auto range = tbb::blocked_range<index_t>{
+      first, last, static_cast<size_t>(grainsize.value)};
+  if (!range.is_divisible()) {
+    return for_with_exit(policy | serial_v, first, last, f);
+  }
   tbb::task_group_context group;
-  return detail::for_with_exit_impl(group, policy, first, last, f);
+  tbb::parallel_for(
+      range,
+      [=, &group](const tbb::blocked_range<index_t>& range) {
+        if (!for_with_exit(policy | serial_v, range.begin(), range.end(), f))
+          group.cancel_group_execution();
+      },
+      tbb::auto_partitioner{}, group);
+  return !group.is_group_execution_cancelled();
+}
+
+//------------------------------------------------------------------------------
+// for_each_index_with_exit
+//------------------------------------------------------------------------------
+template <Policy Policy, size_t K, IndexPredicate<K> Predicate>
+  requires has_policy_v<grainsize, Policy>
+bool for_each_index_with_exit(Policy policy, std::array<index_t, K> extents,
+    Predicate f) {
+  auto grainsize = get_policy<satyr::grainsize>(policy);
+  auto range = k_blocked_range(extents, static_cast<size_t>(grainsize.value));
+  if (!range.is_divisible()) {
+    return for_each_index_with_exit(policy | serial_v, extents, f);
+  }
+  tbb::task_group_context group;
+  tbb::parallel_for(
+      range,
+      [=, &group](const auto& range) {
+        if (!for_each_index_with_exit(policy | serial_v, range, f))
+          group.cancel_group_execution();
+      },
+      tbb::auto_partitioner{}, group);
   return !group.is_group_execution_cancelled();
 }
 
