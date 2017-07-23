@@ -168,7 +168,7 @@ class triangular_blocked_range {
 
   index_t size() const {
     if (is_column_range_)
-      return column_range_.size();
+      return column_range_.size(n_);
     else
       return column_slice_.size();
   }
@@ -188,11 +188,11 @@ class triangular_blocked_range {
   struct column_range {
     index_t column_first, column_last;
 
-    index_t size() const {
+    index_t size(index_t n) const {
       auto delta = column_last - column_first;
       index_t a;
       if constexpr(Uplo == uplo_t::lower) 
-        a = n_ - column_last;
+        a = n - column_last;
       else
         a = column_first;
       return delta * a + delta * (delta + 1) / 2;
@@ -262,9 +262,10 @@ class triangular_blocked_range {
     n_ = range.n_;
     grainsize_ = range.grainsize_;
     if (range.is_column_range_) {
-      if (column_range_.column_first + 1 == column_range_.column_last) {
+      if (range.column_range_.column_first + 1 ==
+          range.column_range_.column_last) {
         range.is_column_range_ = false;
-        auto column = range.column_first;
+        auto column = range.column_range_.column_first;
         range.column_slice_ = {column, row_first(column), row_last(column)};
         do_split_impl(range.column_slice_, split);
       } else {
@@ -277,7 +278,7 @@ class triangular_blocked_range {
   }
 
   void do_split_impl(column_range& region, split_range /*split*/) {
-    do_split_impl(region, region.size() / 2.0f);
+    do_split_impl(region, region.size(n_) / 2.0f);
   }
 
   void do_split_impl(column_range& region, proportional_split_range split) {

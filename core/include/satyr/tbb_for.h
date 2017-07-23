@@ -70,7 +70,7 @@ template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
   requires has_policy_v<grainsize, Policy>
 void for_each_index_triangular(Policy policy, index_t n, Functor f) {
   auto grainsize = get_policy<satyr::grainsize>(policy);
-  auto range = triangular_blocked_range<Uplo>{n, grainsize};
+  auto range = triangular_blocked_range<Uplo>{n, grainsize.value};
   tbb::parallel_for(detail::tbb_blocked_range(range), [=](const auto& range) {
     for_each_index_triangular<Uplo>(policy | serial_v, range.range, f);
   });
@@ -128,7 +128,7 @@ template <Policy Policy, uplo_t Uplo, IndexPredicate<2> Predicate>
 bool for_each_index_triangular_with_exit(Policy policy, index_t n,
                                          Predicate f) {
   auto grainsize = get_policy<satyr::grainsize>(policy);
-  auto range = triangular_blocked_range<Uplo>{n, grainsize};
+  auto range = triangular_blocked_range<Uplo>{n, grainsize.value};
   if (!range.is_divisible())
     return for_each_index_triangular_with_exit<Uplo>(policy | serial_v, n, f);
   tbb::task_group_context group;

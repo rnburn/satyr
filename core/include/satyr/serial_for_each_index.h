@@ -77,7 +77,7 @@ void for_each_index_triangular(Policy policy, index_t n, Functor f) {
 }
 
 // triangular blocked-range
-template <Policy Policy, uplo_t Uplo, IndexFunctor<2> Functor>
+template <uplo_t Uplo, Policy Policy, IndexFunctor<2> Functor>
   requires !has_policy_v<grainsize, Policy>
 void for_each_index_triangular(Policy policy,
                                const triangular_blocked_range<Uplo>& range,
@@ -171,7 +171,7 @@ bool for_each_index_triangular_with_exit(Policy policy, index_t n,
 }
 
 // triangular blocked-range
-template <Policy Policy, uplo_t Uplo, IndexPredicate<2> Predicate>
+template <uplo_t Uplo, Policy Policy, IndexPredicate<2> Predicate>
   requires !has_policy_v<grainsize, Policy>
 bool for_each_index_triangular_with_exit(
     Policy policy, const triangular_blocked_range<Uplo>& range, Predicate f) {
