@@ -164,6 +164,8 @@ class triangular_blocked_range {
 
   bool empty() const { return n_ == 0; }
 
+  index_t n() const { return n_; }
+
   index_t size() const {
     if (is_column_range_)
       return column_range_.size();
@@ -294,10 +296,10 @@ class triangular_blocked_range {
 
   template <class Split>
   void do_split_impl(column_slice& region, Split split) {
-    blocked_range left{
-        blocked_range{region.row_first, region.row_last, grainsize_}, split};
-    column_slice_ = {region.column, left.first(), left.last()};
-    region.row_last = left.first();
+    auto left = blocked_range{region.row_first, region.row_last, grainsize_};
+    auto right = blocked_range{left, split};
+    column_slice_ = {region.column, right.first(), right.last()};
+    region.row_last = right.first();
   }
 };
 } // namesapce satyr
