@@ -1,6 +1,5 @@
 #pragma once
 
-#include <satyr/for.h>
 #include <satyr/n_array/structure.h>
 #include <satyr/n_array/n_array_accessor.h>
 #include <satyr/n_array/n_array_assignment.h>
@@ -9,7 +8,6 @@
 #include <satyr/n_array/n_array_view.h>
 #include <satyr/n_array/n_array_subview.h>
 #include <satyr/n_array/utility.h>
-#include <satyr/for_each_index.h>
 #include <satyr/k_array.h>
 #include <stdexcept>
 

@@ -3,7 +3,6 @@
 #include <satyr/n_array/n_array_expression.h>
 #include <satyr/n_array/concept.h>
 #include <satyr/for.h>
-#include <satyr/for_each_index.h>
 #include <satyr/execution_policy.h>
 
 namespace satyr {

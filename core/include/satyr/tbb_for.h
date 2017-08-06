@@ -2,9 +2,8 @@
 
 #include <satyr/concept.h>
 #include <satyr/execution_policy.h>
-#include <satyr/serial_for.h>
-#include <satyr/serial_for_each_index.h>
 #include <satyr/matrix.h>
+#include <satyr/serial_for.h>
 #include <tbb/parallel_for.h>
 #include <tbb/task.h>
 

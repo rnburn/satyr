@@ -1,4 +1,4 @@
-#include <satyr/for_each_index.h>
+#include <satyr/for.h>
 #include <cassert>
 using namespace satyr;
 

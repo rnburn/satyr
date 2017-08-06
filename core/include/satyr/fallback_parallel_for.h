@@ -2,7 +2,6 @@
 #pragma once
 
 #include <satyr/serial_for.h>
-#include <satyr/serial_for_each_index.h>
 #include <satyr/matrix.h>
 
 namespace satyr {
