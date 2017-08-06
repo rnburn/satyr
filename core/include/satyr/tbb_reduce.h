@@ -2,6 +2,7 @@
 
 #include <satyr/concept.h>
 #include <satyr/execution_policy.h>
+#include <satyr/serial_reduce.h>
 #include <satyr/serial_reduce_each_index.h>
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_reduce.h>
@@ -38,6 +39,24 @@ class tbb_reducer {
   F f_;
 };
 } // namespace detail
+
+//------------------------------------------------------------------------------
+// reduce
+//------------------------------------------------------------------------------
+/* template <Policy Policy, IndexReducer Reducer, IndexFunctor<1> Functor> */
+/*   requires has_policy_v<grainsize, Policy> && */
+/*            std::is_convertible_v<index_functor_codomain_t<Functor, 1>, */
+/*                                  value_type_t<Reducer>> */
+/* void reduce(Policy policy, index_t first, index_t last, Reducer& reducer, */
+/*             Functor f) { */
+/*   auto grainsize = get_policy<satyr::grainsize>(policy); */
+/*   tbb::parallel_for( */
+/*       tbb::blocked_range<index_t>{first, last, */
+/*                                   static_cast<size_t>(grainsize.value)}, */
+/*       [=, &reducer](const tbb::blocked_range<index_t>& range) { */
+/*         reduce(policy | serial_v, range.begin(), range.end(), reducer, f); */
+/*       }); */
+/* } */
 
 //------------------------------------------------------------------------------
 // reduce_each_index

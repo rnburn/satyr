@@ -9,12 +9,12 @@ namespace satyr {
 //------------------------------------------------------------------------------
 // reduce
 //------------------------------------------------------------------------------
-template <Policy Policy, IndexFunctor<1> F,
-          IndexReducer<index_functor_codomain_t<F, 1>> Reducer>
-  requires !has_policy_v<grainsize, Policy>
-value_type_t<Reducer> reduce(Policy policy, index_t first, index_t last,
-                             Reducer reducer, F f) {
+template <Policy Policy, IndexReducer Reducer, IndexFunctor<1> Functor>
+  requires !has_policy_v<grainsize, Policy> &&
+           std::is_convertible_v<index_functor_codomain_t<Functor, 1>,
+                                 value_type_t<Reducer>>
+void reduce(Policy policy, index_t first, index_t last, Reducer& reducer,
+            Functor f) {
   reducer(policy, first, last, f);
-  return reducer.value();
 }
 } // namespace satyr
