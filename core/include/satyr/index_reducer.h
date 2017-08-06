@@ -17,6 +17,7 @@ template <class R>
 concept bool IndexReducer = requires(R r, const R& cr, index_t i,
                                      typename R::value_type (*f)(index_t)) {
   typename R::value_type;
+  requires std::is_default_constructible_v<R>;
   R{r, split_reduction_v};
   r(no_policy_v, i, i, f);
   r.join(r);

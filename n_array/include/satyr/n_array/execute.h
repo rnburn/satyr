@@ -1,14 +1,17 @@
 #pragma once
 
 #include <satyr/n_array/n_array_expression.h>
+#include <satyr/n_array/n_array_reduction_expression.h>
 #include <satyr/n_array/concept.h>
 #include <satyr/for.h>
+#include <satyr/reduce.h>
 #include <satyr/execution_policy.h>
 
 namespace satyr {
 //------------------------------------------------------------------------------
 // execute
 //------------------------------------------------------------------------------
+// n_array_expression, flat
 template <size_t K, FlatEvaluator Evaluator, Policy Policy>
 void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
                  expression) {
@@ -16,6 +19,7 @@ void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
        expression.evaluator());
 }
 
+// n_array_expression, k
 template <size_t K, KEvaluator<K> Evaluator, Policy Policy>
 void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
                  expression) {
@@ -27,6 +31,7 @@ void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
                  });
 }
 
+// n_array_expression, triangular
 template <Structure Structure, KEvaluator<2> Evaluator, Policy Policy>
   requires Structure::uplo == uplo_t::upper ||
            Structure::uplo == uplo_t::lower
@@ -39,9 +44,37 @@ void execute(const n_array_expression<2, Structure, Evaluator, Policy>&
       [shape, evaluator](index_t i, index_t j) { evaluator(shape, i, j); });
 }
 
+// n_array_reduction_expression, flat
+template <size_t K, IndexReducer Reducer, FlatEvaluator Evaluator,
+          Policy Policy>
+value_type_t<Reducer> execute(
+    const n_array_reduction_expression<K, general_structure, Reducer, Evaluator,
+                                       Policy>& expression) {
+  Reducer reducer;
+  reduce(simd_v | expression.policy(), 0, get_num_elements(expression), reducer,
+         expression.evaluator());
+  return reducer.value();
+}
+
+// n_array_reduction_expression, k
+template <size_t K, IndexReducer Reducer, KEvaluator<K> Evaluator,
+          Policy Policy>
+value_type_t<Reducer> execute(
+    const n_array_reduction_expression<K, general_structure, Reducer, Evaluator,
+                                       Policy>& expression) {
+  auto shape = expression.shape();
+  auto evaluator = expression.evalutor();
+  Reducer reducer;
+  reduce_each_index(
+      simd_v | expression.policy(), shape.extents(), reducer,
+      [shape, evaluator](auto... indexes) { evaluator(shape, indexes...); });
+  return reducer.value();
+}
+
 //------------------------------------------------------------------------------
 // execute_with_exit
 //------------------------------------------------------------------------------
+// n_array_expression, flat
 template <size_t K, FlatEvaluator Evaluator, Policy Policy>
 bool execute_with_exit(
     const n_array_expression<K, general_structure, Evaluator, 
@@ -50,6 +83,7 @@ bool execute_with_exit(
                        get_num_elements(expression), expression.evaluator());
 }
 
+// n_array_expression, k
 template <size_t K, KEvaluator<K> Evaluator, Policy Policy>
 bool execute_with_exit(const n_array_expression<K, general_structure, Evaluator,
                                                 Policy>& expression) {
@@ -62,6 +96,7 @@ bool execute_with_exit(const n_array_expression<K, general_structure, Evaluator,
                                     });
 }
 
+// n_array_expression, triangular
 template <Structure Structure, KEvaluator<2> Evaluator, Policy Policy>
   requires Structure::uplo == uplo_t::upper ||
            Structure::uplo == uplo_t::lower
