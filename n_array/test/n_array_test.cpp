@@ -29,5 +29,10 @@ int main() {
       array_sum2 += x + array(i, j);
   });
   assert(array_sum2 == 2*array_sum);
+
+  assert(sum_elements(array) == array_sum);
+  assert(max_element(array) == 15);
+  assert(min_element(array) == 1);
+  assert(min_element(array(all_v, range{1,3})) == 2);
   return 0;
 }

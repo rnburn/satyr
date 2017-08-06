@@ -40,7 +40,7 @@ class n_array_reduction_expression {
 // make_n_array_reduction_expression
 //------------------------------------------------------------------------------
 template <Structure Structure, IndexReducer Reducer, size_t K,
-          KEvaluator<K> Evaluator, Policy Policy>
+          Evaluator<K> Evaluator, Policy Policy>
   requires std::is_convertible_v<codomain_t<Evaluator>, value_type_t<Reducer>> 
 n_array_reduction_expression<K, Structure, Reducer, Evaluator, Policy>
 make_n_array_reduction_expression(const shape<K>& shape,
@@ -49,7 +49,7 @@ make_n_array_reduction_expression(const shape<K>& shape,
 }
 
 template <Structure Structure, IndexReducer Reducer, size_t K,
-          KEvaluator<K> Evaluator, Policy Policy>
+          Evaluator<K> Evaluator, Policy Policy>
   requires std::is_convertible_v<codomain_t<Evaluator>, value_type_t<Reducer>> 
 auto make_n_array_reduction_expression(const shape<K>& shape,
                                        const Evaluator& evaluator) {
@@ -57,7 +57,7 @@ auto make_n_array_reduction_expression(const shape<K>& shape,
 }
 
 template <Structure Structure, IndexReducer Reducer, size_t K,
-          KEvaluator<K> Evaluator, Policy Policy>
+          Evaluator<K> Evaluator, Policy Policy>
   requires std::is_convertible_v<codomain_t<Evaluator>, value_type_t<Reducer>> 
 n_array_reduction_expression<K, Structure, Reducer, Evaluator, Policy>
 make_n_array_reduction_expression(const subshape<K>& shape,
@@ -66,7 +66,7 @@ make_n_array_reduction_expression(const subshape<K>& shape,
 }
 
 template <Structure Structure, IndexReducer Reducer, size_t K,
-          KEvaluator<K> Evaluator, Policy Policy>
+          Evaluator<K> Evaluator, Policy Policy>
   requires std::is_convertible_v<codomain_t<Evaluator>, value_type_t<Reducer>> 
 auto make_n_array_reduction_expression(const subshape<K>& shape,
                                        const Evaluator& evaluator) {

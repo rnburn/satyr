@@ -27,7 +27,7 @@ void execute(const n_array_expression<K, general_structure, Evaluator, Policy>&
   auto evaluator = expression.evaluator();
   for_each_index(simd_v | expression.policy(), shape.extents(),
                  [shape, evaluator](auto... indexes) {
-                    evaluator(shape, indexes...);
+                    return evaluator(shape, indexes...);
                  });
 }
 
@@ -41,7 +41,9 @@ void execute(const n_array_expression<2, Structure, Evaluator, Policy>&
   auto evaluator = expression.evaluator();
   for_each_index_triangular<Structure::uplo>(
       simd_v | expression.policy(), get_extent<0>(shape),
-      [shape, evaluator](index_t i, index_t j) { evaluator(shape, i, j); });
+      [shape, evaluator](index_t i, index_t j) {
+        return evaluator(shape, i, j);
+      });
 }
 
 // n_array_reduction_expression, flat
@@ -63,11 +65,31 @@ value_type_t<Reducer> execute(
     const n_array_reduction_expression<K, general_structure, Reducer, Evaluator,
                                        Policy>& expression) {
   auto shape = expression.shape();
-  auto evaluator = expression.evalutor();
+  auto evaluator = expression.evaluator();
   Reducer reducer;
-  reduce_each_index(
-      simd_v | expression.policy(), shape.extents(), reducer,
-      [shape, evaluator](auto... indexes) { evaluator(shape, indexes...); });
+  reduce_each_index(simd_v | expression.policy(), shape.extents(), reducer,
+                    [shape, evaluator](auto... indexes) {
+                      return evaluator(shape, indexes...);
+                    });
+  return reducer.value();
+}
+
+// n_array_reduction_expression, triangular
+template <Structure Structure, IndexReducer Reducer, KEvaluator<2> Evaluator,
+          Policy Policy>
+  requires Structure::uplo == uplo_t::upper ||
+           Structure::uplo == uplo_t::lower
+value_type_t<Reducer> execute(
+    const n_array_reduction_expression<2, Structure, Reducer, Evaluator,
+                                       Policy>& expression) {
+  auto shape = expression.shape();
+  auto evaluator = expression.evaluator();
+  Reducer reducer;
+  reduce_each_index_triangular(simd_v | expression.policy(), shape.extents(),
+                               reducer,
+                               [shape, evaluator](index_t i, index_t j) {
+                                 return evaluator(shape, i, j);
+                               });
   return reducer.value();
 }
 

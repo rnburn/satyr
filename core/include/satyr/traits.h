@@ -483,7 +483,7 @@ struct index_functor_codomain_type<std::index_sequence<Indexes...>, F> {
 
 template <class F, size_t K>
 using index_functor_codomain_t =
-    typename detail::index_functor_codomain_type<std::index_sequence<K>,
+    typename detail::index_functor_codomain_type<std::make_index_sequence<K>,
                                                  F>::type;
 
 //------------------------------------------------------------------------------

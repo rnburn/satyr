@@ -24,17 +24,17 @@ class sum_reducer {
    template <Policy Policy, IndexFunctor<1> F>
      requires !has_policy_v<simd, Policy> &&
               Scalar<index_functor_codomain_value_type_t<F, 1>>
-   T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
-     for (index_t i = first; i != last; ++i) value_ += f(i);
+   void operator()(Policy /*policy*/, index_t first, index_t last, F f) {
+     for (index_t i = first; i < last; ++i) value_ += f(i);
    }
 
    template <Policy Policy, IndexFunctor<1> F>
      requires has_policy_v<simd, Policy> &&
               Scalar<index_functor_codomain_value_type_t<F, 1>>
-   T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
+   void operator()(Policy /*policy*/, index_t first, index_t last, F f) {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, +, value_)
-     for (i = first; i != last; ++i) value_ += f(i);
+     for (i = first; i < last; ++i) value_ += f(i);
    }
 
    void join(const sum_reducer& other) { value_ += other.value_; }
@@ -60,17 +60,17 @@ class max_reducer {
    template <Policy Policy, IndexFunctor<1> F>
      requires !has_policy_v<simd, Policy> &&
               std::is_same_v<index_functor_codomain_value_type_t<F, 1>, T>
-   T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
-     for (index_t i = first; i != last; ++i) value_ = std::max(value_, f(i));
+   void operator()(Policy /*policy*/, index_t first, index_t last, F f) {
+     for (index_t i = first; i < last; ++i) value_ = std::max(value_, f(i));
    }
 
    template <Policy Policy, IndexFunctor<1> F>
      requires has_policy_v<simd, Policy> &&
               std::is_same_v<index_functor_codomain_value_type_t<F, 1>, T>
-   T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
+   void operator()(Policy /*policy*/, index_t first, index_t last, F f) {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, max, value_)
-     for (i = first; i != last; ++i) {
+     for (i = first; i < last; ++i) {
        auto element = f(i);
        // Note: GCC won't vectorize this properly unless max is written with
        // the ?: notation. See 
@@ -104,17 +104,17 @@ class min_reducer {
    template <Policy Policy, IndexFunctor<1> F>
      requires !has_policy_v<simd, Policy> &&
               std::is_same_v<index_functor_codomain_value_type_t<F, 1>, T>
-   T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
-     for (index_t i = first; i != last; ++i) value_ = std::min(value_, f(i));
+   void operator()(Policy /*policy*/, index_t first, index_t last, F f) {
+     for (index_t i = first; i < last; ++i) value_ = std::min(value_, f(i));
    }
 
    template <Policy Policy, IndexFunctor<1> F>
      requires has_policy_v<simd, Policy> &&
               std::is_same_v<index_functor_codomain_value_type_t<F, 1>, T>
-   T operator()(Policy /*policy*/, index_t first, index_t last, F f) {
+   void operator()(Policy /*policy*/, index_t first, index_t last, F f) {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, min, value_)
-     for (i = first; i != last; ++i) {
+     for (i = first; i < last; ++i) {
        auto element = f(i);
        // Note: GCC won't vectorize this properly unless min is written with
        // the ?: notation. See 

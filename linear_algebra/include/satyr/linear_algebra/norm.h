@@ -10,11 +10,7 @@ namespace satyr {
 template <Vector X>
   requires RealScalar<value_type_t<X>>
 value_type_t<X> norm2_squared(const X& x) {
-  value_type_t<X> result = 0;
-  for_each(x, [&] (value_type_t<X> element) {
-      result += element*element;
-  });
-  return result;
+  return sum_elements(x*x);
 }
 
 //------------------------------------------------------------------------------
@@ -33,7 +29,7 @@ template <Matrix A>
   requires RealScalar<value_type_t<A>>
 value_type_t<A> norm1(const A& a) {
   value_type_t<A> result = 0;
-  auto[m, n] = a.shape();
+  auto [m, n] = a.shape();
   for (index_t j = 0; j < n; ++j) {
     value_type_t<A> abs_column_sum = 0;
     for (index_t i = 0; i < m; ++i) abs_column_sum += std::abs(a(i, j));

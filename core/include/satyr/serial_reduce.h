@@ -35,8 +35,9 @@ void reduce_each_index(Policy policy, std::array<index_t, K> extents,
   if constexpr(K == 1) { 
     reducer(policy, 0, extents[0], f); 
   } else {
-    for_(serial_v, 0, extents[K - 1], [=, &reducer](index_t i) {
-      auto f_prime = [=](auto... indexes) { return f(indexes..., i); };
+    for_(serial_v, 0, extents[K - 1], [policy, extents, &reducer,
+                                       f](index_t i) {
+      auto f_prime = [f, i](auto... indexes) { return f(indexes..., i); };
       reduce_each_index(
           policy, reinterpret_cast<const std::array<index_t, K - 1>&>(extents),
           reducer, f_prime);
