@@ -53,4 +53,19 @@ void reduce_each_index(Policy policy, std::array<index_t, K> extents,
   auto range = k_blocked_range(extents, grainsize.value);
   tbb::parallel_reduce(range, tbb_reducer(policy, reducer, f));
 }
+
+//------------------------------------------------------------------------------
+// reduce_each_index_triangular
+//------------------------------------------------------------------------------
+template <uplo_t Uplo, Policy Policy, IndexReducer Reducer,
+          IndexFunctor<2> Functor>
+  requires has_policy_v<grainsize, Policy> &&
+           std::is_convertible_v<index_functor_codomain_t<Functor, 2>,
+                                 value_type_t<Reducer>>
+void reduce_each_index_triangular(Policy policy, index_t n, Reducer& reducer,
+                                  Functor f) {
+  auto grainsize = get_policy<satyr::grainsize>(policy);
+  auto range = triangular_blocked_range<Uplo>{n, grainsize.value};
+  tbb::parallel_reduce(range, tbb_reducer(policy, reducer, f));
+}
 } // namespace satyr
