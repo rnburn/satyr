@@ -2,7 +2,7 @@
 
 #include <satyr/concept.h>
 #include <satyr/execution_policy.h>
-#include <satyr/serial_reduce.h>
+#include <satyr/serial_reduce_each_index.h>
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_reduce.h>
 
@@ -14,7 +14,7 @@ namespace detail {
 template <class Policy, class Reducer, class F>
 class tbb_reducer {
  public:
-  tbb_reducer(Policy policy, const Reducer& reducer, F f)
+  tbb_reducer(Policy policy, Reducer& reducer, F f)
       : policy_{policy}, reducer_{reducer}, f_{f} {}
 
   tbb_reducer(tbb_reducer& other, tbb::split)
@@ -23,7 +23,7 @@ class tbb_reducer {
         f_{other.f} {}
 
   void operator()(tbb::blocked_range<index_t> range) {
-    reducer_(policy_, range.begin(), range.end(), f_);
+    reduce_each_index(policy_ | serial_v, range, reducer_, f_);
   }
 
   void join(tbb_reducer& other) {
@@ -34,25 +34,23 @@ class tbb_reducer {
 
  private:
   Policy policy_;
-  Reducer reducer_;
+  Reducer& reducer_;
   F f_;
 };
 } // namespace detail
 
 //------------------------------------------------------------------------------
-// reduce
+// reduce_each_index
 //------------------------------------------------------------------------------
-template <Policy Policy, IndexFunctor<1> F,
-          IndexReducer<index_functor_codomain_t<F, 1>> Reducer>
-  requires has_policy_v<grainsize, Policy>
-value_type_t<Reducer> reduce(Policy policy, index_t first, index_t last,
-                             Reducer reducer, F f) {
-  auto tbb_reducer = detail::tbb_reducer(policy, reducer, f);
+template <Policy Policy, size_t K, IndexReducer Reducer, 
+          IndexFunctor<K> Functor>
+  requires has_policy_v<grainsize, Policy> &&
+           std::is_convertible_v<index_functor_codomain_t<Functor, K>,
+                                 value_type_t<Reducer>>
+void reduce_each_index(Policy policy, std::array<index_t, K> extents, 
+                       Reducer& reducer, Functor f) {
   auto grainsize = get_policy<satyr::grainsize>(policy);
-  tbb::parallel_reduce(
-      tbb::blocked_range<index_t>{first, last,
-                                  static_cast<size_t>(grainsize.value)},
-      tbb_reducer);
-  return tbb_reducer.value();
+  auto range = k_blocked_range(extents, grainsize.value);
+  tbb::parallel_reduce(range, tbb_reducer(policy, reducer, f));
 }
 } // namespace satyr
