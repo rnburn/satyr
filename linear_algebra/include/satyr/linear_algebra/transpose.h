@@ -51,7 +51,7 @@ auto transpose(Matrix&& matrix) {
 
 template <TriangularMatrix Matrix>
 auto transpose(Matrix&& matrix) {
-  using T = value_type_t<Matrix>;
+  using T = std::remove_reference_t<decltype(*matrix.data())>;
   using StructureNew =
       triangular_structure<flip_uplo_v<structure_t<Matrix>::uplo>>;
   if constexpr (detail::match_n_array_subview<uncvref_t<Matrix>>) {
