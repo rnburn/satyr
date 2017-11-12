@@ -19,7 +19,7 @@ symmetric).
 git clone https://github.com/rnburn/satyr
 cd satyr
 mkdir .build && cd .build
-cmake -DSATYR_WITH_TBB=[ON|OFF] -DSATYR_WITH_MKL=[ON|OFF] -DSATYR_WITH_JEMALLOC=[ON|OFF] ..
+cmake -DWITH_TBB=[ON|OFF] -DWITH_MKL=[ON|OFF] -DWITH_JEMALLOC=[ON|OFF] ..
 make && make install
 ```
 
