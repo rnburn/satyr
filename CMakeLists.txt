@@ -64,7 +64,7 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/satyr
 # ==============================================================================
 # Set up satyr modules
 
-set(MODULE_LIST core k_array n_array linear_algebra)
+set(MODULE_LIST core k_array n_array linear_algebra test)
 
 foreach(MODULE ${MODULE_LIST})
   include_directories(${MODULE}/include)
