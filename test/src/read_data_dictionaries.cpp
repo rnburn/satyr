@@ -13,6 +13,13 @@ static bool starts_with(std::string_view s1, std::string_view s2) {
 }
 
 //------------------------------------------------------------------------------
+// consume_whitespace
+//------------------------------------------------------------------------------
+static const char* consume_whitespace(const char* i, const char* last) {
+  return std::find_if_not(i, last, [](char c) { return std::isspace(c); });
+}
+
+//------------------------------------------------------------------------------
 // get_next_statement
 //------------------------------------------------------------------------------
 std::tuple<std::string_view, std::string_view> get_next_statement(
@@ -23,7 +30,7 @@ std::tuple<std::string_view, std::string_view> get_next_statement(
   // Skip over comments
   while (1) {
     // Skip over whitespace
-    i = std::find_if_not(i, last, [](char c) { return std::isspace(c); });
+    i = consume_whitespace(i, last);
     if (i == last) return {};
 
     if (!starts_with(std::string_view(&*i, std::distance(i, last)), "//")) {
@@ -52,7 +59,7 @@ std::tuple<std::string_view, std::string_view> parse_identifier(
   auto i = std::begin(statement);
   auto last = std::end(statement);
   // Skip over whitespace
-  i = std::find_if_not(i, last, [](char c) { return std::isspace(c); });
+  i = consume_whitespace(i, last);
   if (i == last) throw std::invalid_argument{"invalid identifier"};
 
   auto identifier_first = i;
@@ -72,7 +79,7 @@ std::tuple<std::string_view, std::string_view> parse_identifier(
 std::string_view consume(std::string_view source, std::string_view s) {
   auto i = std::begin(source);
   auto last = std::end(source);
-  i = std::find_if_not(i, last, [](char c) { return std::isspace(c); });
+  i = consume_whitespace(i, last);
 
   auto rest = std::string_view(&*i, std::distance(i, last));
   if (!starts_with(rest, s))
