@@ -1,0 +1,11 @@
+add_executable(token_stream_test token_stream_test.cpp)
+add_test(token_stream_test token_stream_test)
+target_link_libraries(token_stream_test satyr_test)
+
+add_executable(lex_test lex_test.cpp)
+add_test(lex_test lex_test)
+target_link_libraries(lex_test satyr_test)
+
+add_executable(array_test array_test.cpp)
+add_test(array_test array_test)
+target_link_libraries(array_test satyr_test)
