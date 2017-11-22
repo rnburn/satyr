@@ -43,9 +43,19 @@ static data_dictionary::value_type parse_value(std::string_view type,
     satyr::lower_triangular_matrix<double> matrix =
         satyr::lower_triangular_matrix_subview<double>{
             values.data(), compute_matrix_subshape(dimensions)};
-    /* return matrix; */
+    return matrix;
   } else if (type == "upper_triangular_matrix") {
+    auto [values, dimensions] = parse_array(2, token_stream);
+    satyr::upper_triangular_matrix<double> matrix =
+        satyr::upper_triangular_matrix_subview<double>{
+            values.data(), compute_matrix_subshape(dimensions)};
+    return matrix;
   } else if (type == "symmetric_matrix") {
+    auto [values, dimensions] = parse_array(2, token_stream);
+    satyr::symmetric_matrix<double> matrix =
+        satyr::symmetric_matrix_subview<double>{
+            values.data(), compute_matrix_subshape(dimensions)};
+    return matrix;
   } else {
     throw std::invalid_argument{std::string{"unknown type `"} +
                                 std::string{type} + "`"};
@@ -70,8 +80,11 @@ std::vector<data_dictionary> read_data_dictionaries(std::istream& istream) {
       if (!token_stream.peek<std::string_view>())
         break;
       auto type = token_stream.consume<std::string_view>();
-      auto key = token_stream.consume<std::string_view>();
+      auto name = token_stream.consume<std::string_view>();
       token_stream.consume<equals_token>();
+      auto value = parse_value(type, token_stream);
+      dictionary.set(name, value);
+      token_stream.consume<semicolon_token>();
     }
     if (token_stream.empty())
       break;
