@@ -1,114 +1,84 @@
+#include <satyr/linear_algebra.h>
 #include <satyr/test/data_dictionary.h>
+#include "lex.h"
+#include "array.h"
 #include <tuple>
 #include <stdexcept>
 #include <cctype>
 #include <algorithm>
+#include <iterator>
 
 namespace satyr::testing {
 //------------------------------------------------------------------------------
-// starts_with
+// compute_matrix_subshape
 //------------------------------------------------------------------------------
-static bool starts_with(std::string_view s1, std::string_view s2) {
-  return s1.compare(0, s2.size(), s2) == 0;
+static satyr::subshape<2> compute_matrix_subshape(
+    const std::vector<size_t>& dimensions) {
+  index_t m = static_cast<index_t>(dimensions[0]);
+  index_t n = static_cast<index_t>(dimensions[1]);
+  return {satyr::shape(m, n), {n, 1}};
 }
 
 //------------------------------------------------------------------------------
-// consume_whitespace
+// parse_value
 //------------------------------------------------------------------------------
-static const char* consume_whitespace(const char* i, const char* last) {
-  return std::find_if_not(i, last, [](char c) { return std::isspace(c); });
-}
-
-//------------------------------------------------------------------------------
-// get_next_statement
-//------------------------------------------------------------------------------
-std::tuple<std::string_view, std::string_view> get_next_statement(
-    std::string_view source) {
-  auto i = std::begin(source);
-  auto last = std::end(source);
-
-  // Skip over comments
-  while (1) {
-    // Skip over whitespace
-    i = consume_whitespace(i, last);
-    if (i == last) return {};
-
-    if (!starts_with(std::string_view(&*i, std::distance(i, last)), "//")) {
-      break;
-    }
-
-    i = std::find(i, last, '\n');
-  }
-
-  // Get the end of the statement
-  auto statement_first = i;
-  auto statement_last = std::find(i, last, ';');
-  if (statement_last == last) throw std::invalid_argument{"invalid statement"};
-  i = std::next(statement_last);
-  auto statement = std::string_view(
-      &*statement_first, std::distance(statement_first, statement_last));
-  auto rest = std::string_view(&*i, std::distance(i, last));
-  return std::make_tuple(statement, rest);
-}
-
-//------------------------------------------------------------------------------
-// parse_identifier
-//------------------------------------------------------------------------------
-std::tuple<std::string_view, std::string_view> parse_identifier(
-    std::string_view statement) {
-  auto i = std::begin(statement);
-  auto last = std::end(statement);
-  // Skip over whitespace
-  i = consume_whitespace(i, last);
-  if (i == last) throw std::invalid_argument{"invalid identifier"};
-
-  auto identifier_first = i;
-  auto identifier_last =
-      std::find_if(i, last, [](char c) { return std::isspace(c); });
-  i = std::next(identifier_last);
-  auto identifier = std::string_view(
-      &*identifier_first, std::distance(identifier_first, identifier_last));
-  auto rest =
-      std::string_view(&*i, std::distance(i, last));
-  return std::make_tuple(identifier, rest);
-}
-
-//------------------------------------------------------------------------------
-// consume
-//------------------------------------------------------------------------------
-std::string_view consume(std::string_view source, std::string_view s) {
-  auto i = std::begin(source);
-  auto last = std::end(source);
-  i = consume_whitespace(i, last);
-
-  auto rest = std::string_view(&*i, std::distance(i, last));
-  if (!starts_with(rest, s))
-    throw std::invalid_argument{"unexpected token"};
-  return rest.substr(s.size());
-}
-
-//------------------------------------------------------------------------------
-// parse_data_dictionary
-//------------------------------------------------------------------------------
-static data_dictionary parse_data_dictionary(std::string_view s) {
-  data_dictionary result;
-  while (1) {
-    auto [statement, rest] = get_next_statement(s);
-    if (statement.empty()) return result;
-    std::string_view type, name, value;
-    std::tie(type, statement) = parse_identifier(statement);
-    std::tie(name, statement) = parse_identifier(statement);
-    value = consume(statement, "=");
-
-    // TODO(rnburn): add entry
+static data_dictionary::value_type parse_value(std::string_view type,
+                                        testing::token_stream& token_stream) {
+  if (type == "double") {
+    return token_stream.consume<double>();
+  } else if (type == "string") {
+    return std::string{token_stream.consume<std::string_view>()};
+  } else if (type == "vector") {
+    auto [values, dimensions] = parse_array(1, token_stream);
+    satyr::vector<double> vector = satyr::vector_view<double>{
+        values.data(), satyr::shape(static_cast<index_t>(values.size()))};
+    return vector;
+  } else if (type == "matrix") {
+    auto [values, dimensions] = parse_array(2, token_stream);
+    satyr::matrix<double> matrix = satyr::matrix_subview<double>{
+        values.data(), compute_matrix_subshape(dimensions)};
+    return matrix;
+  } else if (type == "lower_triangular_matrix") {
+    auto [values, dimensions] = parse_array(2, token_stream);
+    satyr::lower_triangular_matrix<double> matrix =
+        satyr::lower_triangular_matrix_subview<double>{
+            values.data(), compute_matrix_subshape(dimensions)};
+    /* return matrix; */
+  } else if (type == "upper_triangular_matrix") {
+  } else if (type == "symmetric_matrix") {
+  } else {
+    throw std::invalid_argument{std::string{"unknown type `"} +
+                                std::string{type} + "`"};
   }
 }
+
 
 //------------------------------------------------------------------------------
 // read_data_dictionaries
 //------------------------------------------------------------------------------
-std::vector<data_dictionary> read_data_dictionaries(std::istream istream) {
+std::vector<data_dictionary> read_data_dictionaries(std::istream& istream) {
   std::vector<data_dictionary> result;
+  auto source = std::string{std::istreambuf_iterator<char>(istream), {}};
+  auto token_stream = lex(source);
+
+  // Remove any initial divider.
+  if (token_stream.peek<divider_token>()) token_stream.consume<divider_token>();
+
+  while (1) {
+    data_dictionary dictionary;
+    while (1) {
+      if (!token_stream.peek<std::string_view>())
+        break;
+      auto type = token_stream.consume<std::string_view>();
+      auto key = token_stream.consume<std::string_view>();
+      token_stream.consume<equals_token>();
+    }
+    if (token_stream.empty())
+      break;
+    token_stream.consume<divider_token>();
+    result.emplace_back(std::move(dictionary));
+  }
+
   return result;
 }
 } // namespace satyr::testing

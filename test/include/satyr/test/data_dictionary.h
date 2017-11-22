@@ -30,5 +30,5 @@ class data_dictionary {
 //------------------------------------------------------------------------------
 // read_data_dictionaries
 //------------------------------------------------------------------------------
-std::vector<data_dictionary> read_data_dictionaries(std::istream istream);
+std::vector<data_dictionary> read_data_dictionaries(std::istream& istream);
 } // namespace satyr::testing
