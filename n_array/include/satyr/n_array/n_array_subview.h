@@ -37,6 +37,8 @@ class n_array_subview<T, K, Structure> :
 
    const subshape<K>& shape() const { return array_.shape(); }
 
+   index_t extent(index_t dimension) const { return array_.extent(dimension); }
+
  private:
   k_array_subview<T, K> array_;
 };

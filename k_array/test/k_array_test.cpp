@@ -9,12 +9,15 @@ int main() {
   auto [m, n] = array.shape();
   assert(m == 3);
   assert(n == 2);
+  assert(m == array.extent(0));
+  assert(n == array.extent(1));
 
   std::ostringstream oss1;
   oss1 << array;
   assert(oss1.str() == "{{5, 8}, {6, 9}, {7, 10}}");
 
   auto subview1 = array(satyr::all_v, 0);
+  assert(subview1.extent(0) == array.extent(0));
   assert(subview1(0) == 5);
   assert(subview1(1) == 6);
   assert(subview1(2) == 7);

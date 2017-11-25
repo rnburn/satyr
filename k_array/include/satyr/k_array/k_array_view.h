@@ -39,6 +39,8 @@ class k_array_view<T, K>
 
    const satyr::shape<K>& shape() const { return shape_; }
 
+   index_t extent(index_t dimension) const { return shape_.extent(dimension); }
+
    // conversion
   operator k_array_subcview<T, K>() const {
     return {data(), subshape<K>{this->shape()}};

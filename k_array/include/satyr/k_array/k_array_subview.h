@@ -33,9 +33,14 @@ class k_array_subview<T, K>
   T* cdata() const { return data_; }
 
   const subshape<K>& shape() const { return subshape_; }
+
+  index_t extent(index_t dimension) const {
+    return subshape_.extent(dimension);
+  }
+
  private:
-   T* data_;
-   subshape<K> subshape_;
+  T* data_;
+  subshape<K> subshape_;
 };
 
 template <Semiregular T, size_t K>

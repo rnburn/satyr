@@ -7,6 +7,8 @@ int main() {
       {1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}};
   array(0, 1) = 2;
   n_array_cview<double, 2, general_structure> view = array;
+  assert(array.extent(0) == view.extent(0));
+  assert(array.extent(1) == view.extent(1));
   assert(view(0, 1) == 2);
 
   n_array<double, 3> array2 = {{{3, 4}, {7, 5}}, {{12, 9}, {-1, 3}}};

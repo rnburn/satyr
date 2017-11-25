@@ -27,7 +27,9 @@ class shape {
   explicit shape(const std::array<index_t, K>& extents) : extents_{extents} {}
 
   // accessors
-  const std::array<index_t, K> extents() const { return extents_; }
+  const std::array<index_t, K>& extents() const { return extents_; }
+
+  index_t extent(index_t dimension) const { return extents_[dimension]; }
  private:
    std::array<index_t, K> extents_;
 };

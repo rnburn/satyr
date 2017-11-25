@@ -38,6 +38,8 @@ class n_array_view<T, K, Structure> :
 
    const satyr::shape<K>& shape() const { return array_.shape(); }
 
+   index_t extent(index_t dimension) const { return array_.extent(dimension); }
+
   // conversion
   operator n_array_subcview<T, K, Structure>() const {
     return {data(), subshape<K>{this->shape()}};
