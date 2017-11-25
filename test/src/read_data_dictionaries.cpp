@@ -30,6 +30,8 @@ static data_dictionary::value_type parse_value(std::string_view type,
     return std::string{token_stream.consume<std::string_view>()};
   } else if (type == "vector") {
     auto [values, dimensions] = parse_array(1, token_stream);
+    auto v = satyr::vector_view<double>{
+        values.data(), satyr::shape(static_cast<index_t>(values.size()))};
     satyr::vector<double> vector = satyr::vector_view<double>{
         values.data(), satyr::shape(static_cast<index_t>(values.size()))};
     return vector;
@@ -74,6 +76,8 @@ std::vector<data_dictionary> read_data_dictionaries(std::istream& istream) {
   // Remove any initial divider.
   if (token_stream.peek<divider_token>()) token_stream.consume<divider_token>();
 
+  if (token_stream.empty()) return result;
+
   while (1) {
     data_dictionary dictionary;
     while (1) {
@@ -86,10 +90,10 @@ std::vector<data_dictionary> read_data_dictionaries(std::istream& istream) {
       dictionary.set(name, value);
       token_stream.consume<semicolon_token>();
     }
+    result.emplace_back(std::move(dictionary));
     if (token_stream.empty())
       break;
     token_stream.consume<divider_token>();
-    result.emplace_back(std::move(dictionary));
   }
 
   return result;

@@ -43,9 +43,13 @@ token_stream lex(std::string_view s) {
     } else if (*i == ';') {
       tokens.push_back(semicolon_token{});
       ++i;
+    } else if (*i == '=') {
+      tokens.push_back(equals_token{});
+      ++i;
     } else if (std::isalpha(*i)) {
       auto id_first = i;
-      i = std::find_if_not(i, last, [](char c) { return std::isalnum(c); });
+      i = std::find_if_not(i, last,
+                           [](char c) { return std::isalnum(c) || c == '_'; });
       auto id = std::string_view(&*id_first, std::distance(id_first, i));
       tokens.push_back(id);
     } else if (std::isdigit(*i) || *i == '-' || *i == '+') {

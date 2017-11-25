@@ -28,6 +28,18 @@ class data_dictionary {
 };
 
 //------------------------------------------------------------------------------
+// get
+//------------------------------------------------------------------------------
+template <class T>
+T get(data_dictionary& dictionary, std::string_view name) {
+  auto value_maybe = dictionary.lookup(name);
+  if (!value_maybe)
+    throw std::runtime_error{std::string{"key `"} + std::string{name} +
+                             "` does not exist"};
+  return std::get<T>(*value_maybe);
+}
+
+//------------------------------------------------------------------------------
 // read_data_dictionaries
 //------------------------------------------------------------------------------
 std::vector<data_dictionary> read_data_dictionaries(std::istream& istream);

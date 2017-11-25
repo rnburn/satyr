@@ -9,3 +9,7 @@ target_link_libraries(lex_test satyr_test)
 add_executable(array_test array_test.cpp)
 add_test(array_test array_test)
 target_link_libraries(array_test satyr_test)
+
+add_executable(data_dictionary_test data_dictionary_test.cpp)
+add_test(data_dictionary_test data_dictionary_test)
+target_link_libraries(data_dictionary_test satyr_test)
