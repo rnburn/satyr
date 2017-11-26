@@ -26,6 +26,8 @@ static data_dictionary::value_type parse_value(std::string_view type,
                                         testing::token_stream& token_stream) {
   if (type == "double") {
     return token_stream.consume<double>();
+  } else if (type == "int") {
+    return static_cast<int>(token_stream.consume<double>());
   } else if (type == "string") {
     return std::string{token_stream.consume<std::string_view>()};
   } else if (type == "vector") {

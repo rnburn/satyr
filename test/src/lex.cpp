@@ -48,10 +48,16 @@ token_stream lex(std::string_view s) {
       ++i;
     } else if (std::isalpha(*i)) {
       auto id_first = i;
-      i = std::find_if_not(i, last,
+      i = std::find_if_not(std::next(i), last,
                            [](char c) { return std::isalnum(c) || c == '_'; });
       auto id = std::string_view(&*id_first, std::distance(id_first, i));
       tokens.push_back(id);
+    } else if (*i == '"') {
+      auto s_first = std::next(i);
+      i = std::find(std::next(i), last, '"');
+      if (i == last) throw std::invalid_argument{"unmatched '\"'"};
+      auto s = std::string_view(&*s_first, std::distance(s_first, i));
+      tokens.push_back(s);
     } else if (std::isdigit(*i) || *i == '-' || *i == '+') {
       char* value_last;
       double value = std::strtod(i, &value_last);

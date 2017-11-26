@@ -15,7 +15,7 @@ namespace satyr::testing {
 class data_dictionary {
  public:
   using value_type =
-      std::variant<std::string, double, satyr::vector<double>,
+      std::variant<std::string, double, int, satyr::vector<double>,
                    satyr::matrix<double>, satyr::symmetric_matrix<double>,
                    satyr::lower_triangular_matrix<double>,
                    satyr::upper_triangular_matrix<double>>;
