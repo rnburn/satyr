@@ -14,6 +14,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fconcepts -fopenmp-simd")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(WITH_TBB "Use MKL as backend for BLAS and LAPACK calls" OFF)
 option(WITH_MKL "Use MKL as backend for BLAS and LAPACK calls" OFF)
+option(WITH_ATLAS "Use ATLAS as backend for BLAS and LAPACK calls" OFF)
 option(WITH_JEMALLOC "Use jemalloc for memory allocation." OFF)
 
 # ==============================================================================
@@ -28,17 +29,28 @@ if (WITH_TBB)
 endif()
 
 # ==============================================================================
-# Configure MKL
+# Configure BLAS and LAPACK
 
 set(WITH_BLAS_LAPACK OFF)
+
 set(SATYR_WITH_MKL OFF)
+set(SATYR_WITH_ATLAS OFF)
 if (WITH_MKL)
   set(SATYR_WITH_MKL ON)
-  find_package(MKL REQUIRED)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  include_directories(${MKL_INCLUDE_DIR})
-  set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${MKL_LIBRARIES}")
   set(WITH_BLAS_LAPACK ON)
+  find_package(MKL REQUIRED)
+  include_directories(SYSTEM ${MKL_INCLUDE_DIR})
+  set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${MKL_LIBRARIES}")
+elseif(WITH_ATLAS)
+  set(SATYR_WITH_ATLAS ON)
+  set(WITH_BLAS_LAPACK ON)
+  find_package(ATLAS REQUIRED)
+  include_directories(SYSTEM ${ATLAS_CBLACK_INCLUDE_DIR})
+  include_directories(SYSTEM ${ATLAS_CLAPACK_INCLUDE_DIR})
+  set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} \
+                                    ${ATLAS_ATLAS_LIBRARY} \
+                                    ${ATLAS_CBLAS_LIBRARY} \
+                                    ${ATLAS_LAPACK_ATLAS_LIBRARY}")
 endif()
 
 # ==============================================================================

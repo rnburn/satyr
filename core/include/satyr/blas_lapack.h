@@ -38,6 +38,8 @@ constexpr bool is_blas_scalar_v =
     std::is_same_v<uncvref_t<T>, float> || std::is_same_v<uncvref_t<T>, double>;
 } // namespace satyr
 
-#ifdef SATYR_WITH_MKL
+#if defined SATYR_WITH_MKL
 #include <satyr/mkl.h>
+#elif defined SATYR_WITH_ATLAS
+#include <satyr/atlas.h>
 #endif
