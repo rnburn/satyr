@@ -11,7 +11,7 @@ symmetric).
 ### Dependencies
 * [GCC 7](https://gcc.gnu.org/) or later.
 * [TBB](https://www.threadingbuildingblocks.org/) for parallelization. (optional but recommended)
-* [MKL](https://software.intel.com/en-us/mkl) for BLAS/LAPACK functionality. (optional)
+* [MKL](https://software.intel.com/en-us/mkl) or [ATLAS](http://math-atlas.sourceforge.net/) for BLAS/LAPACK functionality. (optional)
 * [jemalloc](http://jemalloc.net/). (optional).
 
 ### Installation
@@ -19,7 +19,7 @@ symmetric).
 git clone https://github.com/rnburn/satyr
 cd satyr
 mkdir .build && cd .build
-cmake -DWITH_TBB=[ON|OFF] -DWITH_MKL=[ON|OFF] -DWITH_JEMALLOC=[ON|OFF] ..
+cmake -DWITH_TBB=[ON|OFF] -DWITH_MKL=[ON|OFF] -DWITH_ATLAS=[ON|OFF] -DWITH_JEMALLOC=[ON|OFF] ..
 make && make install
 ```
 
