@@ -1,12 +1,20 @@
 #pragma once
 
-extern "C" {
-#include <cblas.h>
-#include <clapack.h>
-}
+#include <satyr/cblas.h>
 #include <satyr/index.h>
 #include <satyr/matrix.h>
 #include <stdexcept>
+
+extern "C" {
+#define MAKE_LAPACKE_PROTO(SCALAR, SUFFIX)                                    \
+  int LAPACKE_##SUFFIX##potrf(int matrix_layout, char uplo, int n, SCALAR* a, \
+                              int lda);                                       \
+  int LAPACKE_##SUFFIX##potri(int matrix_layout, char uplo, int n, SCALAR* a, \
+                              int lda);
+MAKE_LAPACKE_PROTO(float, s)
+MAKE_LAPACKE_PROTO(double, d)
+#undef MAKE_LAPACKE_PROTO
+}
 
 namespace satyr {
 //------------------------------------------------------------------------------
@@ -35,6 +43,15 @@ inline CBLAS_UPLO get_uplo(uplo_t uplo) {
       return CblasUpper;
     case uplo_t::lower:
       return CblasLower;
+  }
+}
+
+inline char get_uplo_char(uplo_t uplo) {
+  switch (uplo) {
+    case uplo_t::upper:
+      return 'U';
+    case uplo_t::lower:
+      return 'L';
   }
 }
 }  // namespace detail
@@ -217,8 +234,8 @@ MAKE_TRMM(double, d)
 //------------------------------------------------------------------------------
 #define MAKE_POTRF(SCALAR, SUFFIX)                                          \
   inline int potrf(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {        \
-    auto status = clapack_##SUFFIX##potrf(                                  \
-        CblasColMajor, detail::get_uplo(uplo), static_cast<int>(n), a, \
+    auto status = LAPACKE_##SUFFIX##potrf(                                  \
+        CblasColMajor, detail::get_uplo_char(uplo), static_cast<int>(n), a, \
         static_cast<int>(lda));                                             \
     return static_cast<int>(status);                                        \
   }
@@ -231,7 +248,7 @@ MAKE_POTRF(double, d)
 //------------------------------------------------------------------------------
 #define MAKE_POTRI(SCALAR, SUFFIX)                                          \
   inline void potri(uplo_t uplo, index_t n, SCALAR* a, index_t lda) {       \
-    clapack_##SUFFIX##potri(CblasColMajor, detail::get_uplo(uplo),     \
+    LAPACKE_##SUFFIX##potri(CblasColMajor, detail::get_uplo_char(uplo),     \
                             static_cast<int>(n), a, static_cast<int>(lda)); \
   }
 MAKE_POTRI(float, s)
