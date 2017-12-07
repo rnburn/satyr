@@ -33,13 +33,7 @@
 
 ## Bazel (https://github.com/orrsella/bazel-example/blob/master/.gitignore)
 bazel
-bazel-bazel-test
-bazel-bin
-bazel-genfiles
-bazel-out
-bazel-testlogs
-bazel-vagrant
-bazel-bazel-example
+bazel-*
 .vagrant/
 Vagrantfile
 .idea/
