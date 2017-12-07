@@ -33,6 +33,8 @@ set(SATYR_WITH_BLAS_LAPACK OFF)
 if (WITH_BLAS_LAPACK)
   set(SATYR_WITH_BLAS_LAPACK ON)
   include_directories(SYSTEM 3rd_party/netlib/include)
+  install(DIRECTORY 3rd_party/netlib/include/satyr/ DESTINATION include/satyr
+    FILES_MATCHING PATTERN "*.h")
 endif()
 
 # ==============================================================================
