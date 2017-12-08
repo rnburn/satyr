@@ -13,6 +13,7 @@ case "$1" in
   bazel.debug)
     echo "Testing..."
     bazel test ${BAZEL_OPTIONS} -c dbg //...
+    exit 0
     ;;
   *)
     echo $"Usage: $0 {bazel.debug}"
