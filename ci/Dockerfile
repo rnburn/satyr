@@ -3,8 +3,10 @@ RUN set -x \
   && apt-get update \
   && apt-get install --no-install-recommends --no-install-suggests -y \
               build-essential \
+              libtbb-dev \
               libatlas-base-dev \
               liblapacke-dev \
+              gfortran \
               vim \
               gdb \
 # Build bazel

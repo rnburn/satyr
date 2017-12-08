@@ -10,7 +10,12 @@ satyr_cc_library(
         "include/satyr/*.def",
         ]) + [":include/satyr/config.h"],
     strip_include_prefix = "include",
-    deps = ["//3rd_party/netlib:cblas"],
+    deps = [
+        "//3rd_party/netlib:cblas", 
+        "@org_threadingbuildingblocks//:tbb",
+        "@org_netlib_blas//:cblas",
+        "@org_netlib_lapack//:lapacke",
+    ],
     visibility = ["//visibility:public"]
 )
 
@@ -23,8 +28,8 @@ genrule(
     cat <<END  > $${PWD}/$(location :include/satyr/config.h)
 #pragma once
 
-#define SAYR_WITH_TBB
+#define SATYR_WITH_TBB
 #define SATYR_WITH_BLAS_LAPACK
 END
-""",
+"""
 )
