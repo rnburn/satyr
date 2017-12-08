@@ -4,6 +4,6 @@ cc_library(
     "lib/x86_64-linux-gnu/libcblas.a",
     "lib/x86_64-linux-gnu/libatlas.a",
   ],
-  linkopts = ["-lgfortran"],
+  linkopts = ["-lgfortran", "-lm"],
   visibility = ["//visibility:public"]
 )
