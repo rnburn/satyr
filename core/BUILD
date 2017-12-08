@@ -20,16 +20,34 @@ satyr_cc_library(
 )
 
 genrule(
+    name = "with_tbb_h",
+    outs = ["with_tbb.h"],
+    cmd = select({
+        "//bazel:with_tbb": """echo "#define SATYR_WITH_TBB" > $@""",
+        "//conditions:default": """touch $@""",
+    })
+)
+
+genrule(
+    name = "with_blas_lapack_h",
+    outs = ["with_blas_lapack.h"],
+    cmd = select({
+        "//bazel:with_blas_lapack": """echo "#define SATYR_WITH_BLAS_LAPACK" > $@""",
+        "//conditions:default": """touch $@""",
+    })
+)
+
+genrule(
     name = "generate_config_h",
+    srcs = [
+      ":with_tbb.h",
+      ":with_blas_lapack.h"
+    ],
     outs = [
         "include/satyr/config.h"
     ],
     cmd = """
-    cat <<END  > $${PWD}/$(location :include/satyr/config.h)
-#pragma once
-
-#define SATYR_WITH_TBB
-#define SATYR_WITH_BLAS_LAPACK
-END
-"""
+    echo "#pragma once\n" > $@
+    cat $(SRCS) >> $@
+    """
 )

@@ -7,7 +7,12 @@ export SATYR_CI_DIR=${SATYR_SRC_DIR}/ci
 
 cd "${SATYR_CI_DIR}"
 
-export BAZEL_OPTIONS="--package_path=%workspace%:${SATYR_SRC_DIR}"
+export BAZEL_OPTIONS="\
+  --package_path=%workspace%:${SATYR_SRC_DIR} \
+  --define threading=tbb \
+  --define with_blas=1 \
+  --define with_lapack=1 \
+"
 
 case "$1" in
   bazel.debug)
