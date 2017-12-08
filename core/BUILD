@@ -6,10 +6,10 @@ load(
 satyr_cc_library(
     name = "core",
     hdrs = glob([
-        'include/satyr/*.h',
-        'include/satyr/*.def',
+        "include/satyr/*.h",
+        "include/satyr/*.def",
         ]) + [":include/satyr/config.h"],
-    strip_include_prefix = 'include',
+    strip_include_prefix = "include",
     deps = ["//3rd_party/netlib:cblas"],
     visibility = ["//visibility:public"]
 )
