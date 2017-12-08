@@ -1,0 +1,10 @@
+cc_library(
+  name = "lapacke",
+  srcs = [
+    "lib/x86_64-linux-gnu/liblapacke.a",
+    "lib/x86_64-linux-gnu/liblapack.a",
+  ],
+  deps = ["@org_netlib_blas//:cblas"],
+  visibility = ["//visibility:public"],
+)
+

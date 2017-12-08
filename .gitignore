@@ -30,3 +30,9 @@
 *.swp
 *.swo
 *.swn
+
+## Bazel (https://github.com/orrsella/bazel-example/blob/master/.gitignore)
+bazel-*
+.vagrant/
+Vagrantfile
+.idea/

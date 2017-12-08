@@ -14,7 +14,7 @@ symmetric).
   (optional but recommended)
 * BLAS and LAPACK libraries (See, for example,
   [MKL](https://software.intel.com/en-us/mkl) or
-  [ATLAS](http://math-atlas.sourceforge.net/) (optional).
+  [ATLAS](http://math-atlas.sourceforge.net/) (optional)).
 * [jemalloc](http://jemalloc.net/). (optional).
 
 ### Installation
