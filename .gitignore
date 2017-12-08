@@ -32,7 +32,6 @@
 *.swn
 
 ## Bazel (https://github.com/orrsella/bazel-example/blob/master/.gitignore)
-bazel
 bazel-*
 .vagrant/
 Vagrantfile
