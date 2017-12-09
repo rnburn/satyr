@@ -21,9 +21,6 @@ option(WITH_JEMALLOC "Use jemalloc for memory allocation." OFF)
 set(SATYR_WITH_TBB OFF)
 if (WITH_TBB)
   set(SATYR_WITH_TBB ON)
-  find_package(TBB REQUIRED)
-  include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
-  link_libraries(${TBB_LIBRARIES})
 endif()
 
 # ==============================================================================
@@ -43,9 +40,6 @@ endif()
 set(SATYR_WITH_JEMALLOC OFF)
 if (WITH_JEMALLOC)
   set(SATYR_WITH_JEMALLOC ON)
-  find_package(Jemalloc REQUIRED)
-  include_directories(SYSTEM ${JEMALLOC_INCLUDE_DIR})
-  link_libraries(${JEMALLOC_LIBRARY})
 endif()
 
 # ==============================================================================
@@ -60,7 +54,7 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/satyr
 # ==============================================================================
 # Set up satyr modules
 
-set(MODULE_LIST core k_array n_array linear_algebra test)
+set(MODULE_LIST core k_array n_array linear_algebra)
 
 foreach(MODULE ${MODULE_LIST})
   include_directories(${MODULE}/include)
@@ -69,12 +63,3 @@ foreach(MODULE ${MODULE_LIST})
   install(DIRECTORY ${MODULE}/include/satyr/ DESTINATION include/satyr
     FILES_MATCHING PATTERN "*.def")
 endforeach()
-
-foreach(MODULE ${MODULE_LIST})
-  add_subdirectory(${MODULE})
-endforeach()
-
-# ==============================================================================
-# Add examples
-
-add_subdirectory(example)

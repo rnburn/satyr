@@ -1,5 +1,0 @@
-if (SATYR_WITH_TBB)
-  add_executable(bench_matrix bench_matrix.cpp)
-  add_test(bench_matrix bench_matrix)
-  target_compile_options(bench_matrix PRIVATE -O3 -march=native)
-endif()

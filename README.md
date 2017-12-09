@@ -24,9 +24,7 @@ cd satyr
 mkdir .build && cd .build
 cmake -DWITH_TBB=[ON|OFF] \
       -DWITH_JEMALLOC=[ON|OFF]  \
-      # Note: If WITH_BLAS_LAPACK is set CBLAS and LAPACKE libraries must also
-      # be linked in via CMAKE_EXE_LINKER_FLAGS.
-      -DWITH_BLAS_LAPACK=[ON|OFF] -DCMAKE_EXE_LINKER_FLAGS="<blas-lapack-libraries>" \
+      -DWITH_BLAS_LAPACK=[ON|OFF] \
       ..
 make && make install
 ```
