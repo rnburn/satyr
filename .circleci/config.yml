@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: debian:stretch
+    steps:
+      - checkout
+      - run:
+          name: Build satyr-build Docker image
+          command: docker build -t satyr-build ci
+      - run:
+          name: bazel.debug
+          command: ./ci/run_docker.sh './ci/do_ci.sh bazel.debug'
+
