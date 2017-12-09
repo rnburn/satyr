@@ -10,4 +10,3 @@ satyr_cc_library(
     deps = ["//n_array:n_array"],
     visibility = ["//visibility:public"]
 )
-

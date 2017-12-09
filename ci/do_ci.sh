@@ -16,6 +16,8 @@ export BAZEL_OPTIONS="\
 
 case "$1" in
   bazel.debug)
+    echo "Building..."
+    bazel build ${BAZEL_OPTIONS} -c dbg //...
     echo "Testing..."
     bazel test ${BAZEL_OPTIONS} -c dbg //...
     exit 0
