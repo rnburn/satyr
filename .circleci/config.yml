@@ -9,5 +9,5 @@ jobs:
           command: docker build -t satyr-build ci
       - run:
           name: bazel.debug
-          command: ./ci/run_docker.sh './ci/do_ci.sh bazel.debug'
+          command: ./ci/run_satyr_docker.sh './ci/do_ci.sh bazel.debug'
 
