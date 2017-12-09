@@ -3,6 +3,7 @@
 using satyr::index_t;
 
 int main() {
+#ifdef SATYR_WITH_BLAS_LAPACK
   // Declare some random vector and matrices.
   satyr::vector<double> v(5);
   satyr::matrix<double> A(5, 5), B(5, 5);
@@ -68,5 +69,6 @@ int main() {
   auto w = left_solve(L, v);  // calls trsv.
   std::cout << "C = " << C << "\n";
   std::cout << "w = " << w << "\n";
+#endif
   return 0;
 }

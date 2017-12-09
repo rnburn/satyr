@@ -10,12 +10,19 @@ satyr_cc_library(
         "include/satyr/*.def",
         ]) + [":include/satyr/config.h"],
     strip_include_prefix = "include",
-    deps = [
-        "//3rd_party/netlib:cblas", 
-        "@org_threadingbuildingblocks//:tbb",
-        "@org_netlib_blas//:cblas",
-        "@org_netlib_lapack//:lapacke",
-    ],
+    deps = 
+        select({
+        "//bazel:with_tbb": ["@org_threadingbuildingblocks//:tbb"],
+        "//conditions:default": [],
+        }) +
+        select({
+            "//bazel:with_blas_lapack": [
+                "//3rd_party/netlib:cblas", 
+                "@org_netlib_blas//:cblas",
+                "@org_netlib_lapack//:lapacke",
+            ],
+        "//conditions:default": [],
+        }),
     visibility = ["//visibility:public"]
 )
 

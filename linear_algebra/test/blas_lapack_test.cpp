@@ -39,6 +39,7 @@ void test_product(const A& a, const B& b) {
 }
 
 int main() {
+#ifdef SATYR_WITH_BLAS_LAPACK
   matrix<double> a = {{1, 2}, {3, 4}};
   auto sa = a(range{0, 1}, all_v);
   auto sv = a(1, all_v);
@@ -82,5 +83,6 @@ int main() {
   assert(cholesky_factorize(i));
   cholesky_invert(l);
   auto [factorization, remainder] = inplace_cholesky_factorize_until_failure(i);
+#endif
   return 0;
 }
