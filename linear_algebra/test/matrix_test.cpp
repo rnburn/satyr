@@ -2,6 +2,10 @@
 using namespace satyr;
 
 int main() {
+  satyr::vector<double> v1 = {1, 2, 3};
+  satyr::vector<double> v2 = {4, 5};
+  v1(satyr::range{1, 3}) = v2;
+
   matrix<double> m1 = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
   symmetric_matrix<double> s1(3);
   lower_triangular_matrix<double> l1(3);

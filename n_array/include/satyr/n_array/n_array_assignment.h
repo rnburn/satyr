@@ -38,6 +38,14 @@ struct n_array_const_assignment {
     auto& derived = static_cast<const Derived&>(*this); \
     apply(NAME{}, make_expression(derived), make_expression(rhs)); \
     return derived; \
+  } \
+  /* Need to add an non-const operator= to avoid ambigouous conversions. */ \
+  template <Expressible Rhs> \
+    requires is_applicable_v<NAME, Lhs, Rhs> \
+  const Derived& operator OPERATOR (const Rhs& rhs) { \
+    auto& derived = static_cast<const Derived&>(*this); \
+    apply(NAME{}, make_expression(derived), make_expression(rhs)); \
+    return derived; \
   }
 MAKE_ASSIGNMENT_OPERATOR(equals_functor, =)
 MAKE_ASSIGNMENT_OPERATOR(plus_equals_functor, +=)
