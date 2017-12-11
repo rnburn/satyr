@@ -12,7 +12,8 @@ std::array<index_t, K> get_strides(const shape<K>& shape) {
   auto& extents = shape.extents();
   std::array<index_t, K> result;
   result[0] = 1;
-  for (index_t i = 1; i < K; ++i) result[i] = result[i - 1] * extents[i - 1];
+  for (index_t i = 1; i < static_cast<index_t>(K); ++i)
+    result[i] = result[i - 1] * extents[i - 1];
   return result;
 }
 } // namespace detail

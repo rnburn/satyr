@@ -30,6 +30,7 @@ inline CBLAS_TRANSPOSE get_operation(matrix_operation_t operation) {
     case matrix_operation_t::conjugate_transpose:
       return CblasConjTrans;
   }
+  __builtin_unreachable();
 }
 }  // namespace detail
 
@@ -44,6 +45,7 @@ inline CBLAS_UPLO get_uplo(uplo_t uplo) {
     case uplo_t::lower:
       return CblasLower;
   }
+  __builtin_unreachable();
 }
 
 inline char get_uplo_char(uplo_t uplo) {
@@ -53,6 +55,7 @@ inline char get_uplo_char(uplo_t uplo) {
     case uplo_t::lower:
       return 'L';
   }
+  __builtin_unreachable();
 }
 }  // namespace detail
 
@@ -67,6 +70,7 @@ inline CBLAS_SIDE get_side(matrix_side_t side) {
     case matrix_side_t::right:
       return CblasRight;
   }
+  __builtin_unreachable();
 }
 } // namespace detail
 
@@ -83,6 +87,7 @@ inline CBLAS_DIAG get_unity_diagonal_fill(matrix_diagonal_fill_t diagonal_fill) 
     case matrix_diagonal_fill_t::null:
       std::terminate();
   }
+  __builtin_unreachable();
 }
 } // namespace detail
 

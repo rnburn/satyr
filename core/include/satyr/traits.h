@@ -477,7 +477,7 @@ struct index_functor_codomain_type;
 
 template <size_t... Indexes, class F>
 struct index_functor_codomain_type<std::index_sequence<Indexes...>, F> {
-  using type = decltype(std::declval<F>()((Indexes, index_t{0})...));
+  using type = decltype(std::declval<F>()(((void)Indexes, index_t{0})...));
 };
 } // namespace detail
 

@@ -22,6 +22,10 @@ case "$1" in
     bazel test ${BAZEL_OPTIONS} -c dbg //...
     exit 0
     ;;
+  bazel)
+    "$@"
+    exit 0
+    ;;
   *)
     echo $"Usage: $0 {bazel.debug}"
     exit 1

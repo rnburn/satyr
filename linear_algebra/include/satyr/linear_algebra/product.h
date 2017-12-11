@@ -176,9 +176,6 @@ template <TriangularOperationMatrix A, GeneralMatrix B>
            is_writable_v<B>
 auto inplace_product(value_type_t<A> alpha, const A& a, B&& b) {
   auto lda = get_leading_dimension(a);
-  auto a_uplo = matrix_operation_v<A> == matrix_operation_t::none
-                    ? structure_t<A>::uplo
-                    : flip_uplo_v<structure_t<A>::uplo>;
 
   auto [b_m, b_n] = b.shape();
   auto ldb = get_leading_dimension(b);

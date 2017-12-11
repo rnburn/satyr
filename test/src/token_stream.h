@@ -56,9 +56,8 @@ class token_stream {
     return std::get_if<T>(&tokens_[position_]);
   }
 
-  bool empty() const {
-    return position_ == tokens_.size();
-  }
+  bool empty() const { return position_ == static_cast<int>(tokens_.size()); }
+
  private:
   int position_ = 0;
   std::vector<token> tokens_;

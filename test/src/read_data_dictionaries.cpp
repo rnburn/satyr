@@ -32,8 +32,7 @@ static data_dictionary::value_type parse_value(std::string_view type,
     return std::string{token_stream.consume<std::string_view>()};
   } else if (type == "vector") {
     auto [values, dimensions] = parse_array(1, token_stream);
-    auto v = satyr::vector_view<double>{
-        values.data(), satyr::shape(static_cast<index_t>(values.size()))};
+    (void)dimensions;
     satyr::vector<double> vector = satyr::vector_view<double>{
         values.data(), satyr::shape(static_cast<index_t>(values.size()))};
     return vector;

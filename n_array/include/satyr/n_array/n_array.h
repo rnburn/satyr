@@ -57,7 +57,7 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
 
   explicit n_array_impl(index_t extent) 
     requires is_equal_dimensional_v<Structure>
-      : n_array_impl{satyr::shape<K>{(Indexes, extent)...}} {}
+      : n_array_impl{satyr::shape<K>{((void)Indexes, extent)...}} {}
 
   n_array_impl(initializer_multilist<T, K> values)
       : n_array_impl{shape<K>{detail::get_extents<T, K>(values)}} {
@@ -226,10 +226,12 @@ class n_array
   // assignment
   n_array& operator=(n_array&& other) noexcept {
     *this = static_cast<base&&>(std::move(other));
+    return *this;
   }
 
   n_array& operator=(const n_array& other) {
     *this = make_expression(other);
+    return *this;
   }
 };
 } // namespace satyr

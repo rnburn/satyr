@@ -82,7 +82,10 @@ int main() {
   // potrf
   assert(cholesky_factorize(i));
   cholesky_invert(l);
-  auto [factorization, remainder] = inplace_cholesky_factorize_until_failure(i);
+  auto [factorization, remainder] = 
+        inplace_cholesky_factorize_until_failure(i);
+  (void)factorization;
+  (void)remainder;
 #endif
   return 0;
 }

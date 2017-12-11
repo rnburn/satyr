@@ -14,10 +14,10 @@ int main() {
   u1 = u1 + 1.0;
   s1 *= 5.0;
 
-  auto expr1 = m1 + s1;
-  auto expr2 = m1 + l1;
-  auto expr3 = m1 + u1;
-  auto expr4 = u1 + l1;
+  [[maybe_unused]] auto expr1 = m1 + s1;
+  [[maybe_unused]] auto expr2 = m1 + l1;
+  [[maybe_unused]] auto expr3 = m1 + u1;
+  [[maybe_unused]] auto expr4 = u1 + l1;
 
   m1 = s1;
   m1 = l1;

@@ -76,9 +76,8 @@ class k_blocked_range {
    k_blocked_range() = default;
 
    k_blocked_range(const std::array<index_t, K>& extents, index_t grainsize) {
-     std::array<index_t, K-1> cardinalities;
      index_t cardinality = 1;
-     for (index_t i = 0; i < K; ++i) {
+     for (index_t i = 0; i < static_cast<index_t>(K); ++i) {
        ranges_[i] = blocked_range{
            0, extents[i],
            subdivide(satyr::grainsize{grainsize}, cardinality).value};

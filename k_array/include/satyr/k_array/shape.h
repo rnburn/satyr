@@ -43,7 +43,7 @@ shape(Extents...) -> shape<sizeof...(Extents)>;
 template <size_t K>
 bool is_equal_dimensional(const shape<K>& shape) {
   const auto& extents = shape.extents();
-  for (index_t i = 1; i < K; ++i)
+  for (index_t i = 1; i < static_cast<index_t>(K); ++i)
     if (extents[0] != extents[i]) return false;
   return true;
 }
@@ -89,7 +89,7 @@ template <size_t I, size_t K>
   requires I < K
 index_t get_stride(const shape<K>& shape) {
   index_t stride = 1;
-  for (index_t i=1; i<=I; ++i)
+  for (index_t i=1; i<=static_cast<index_t>(I); ++i)
     stride *= shape.extents()[i-1];
   return stride;
 }
@@ -101,7 +101,7 @@ template <size_t K>
 index_t get_num_elements(const shape<K>& shape) {
   index_t result = 1;
   const auto& extents = shape.extents();
-  for (index_t i=0; i<K; ++i)
+  for (index_t i=0; i<static_cast<index_t>(K); ++i)
     result *= extents[i];
   return result;
 }

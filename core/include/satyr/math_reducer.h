@@ -71,7 +71,6 @@ class max_reducer {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, max, value_)
      for (i = first; i < last; ++i) {
-       auto element = f(i);
        // Note: GCC won't vectorize this properly unless max is written with
        // the ?: notation. See 
        //     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81366
@@ -115,7 +114,6 @@ class min_reducer {
      index_t i;
      SATYR_PRAGMA_SIMD_LINEAR_REDUCTION(i, min, value_)
      for (i = first; i < last; ++i) {
-       auto element = f(i);
        // Note: GCC won't vectorize this properly unless min is written with
        // the ?: notation. See 
        //     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81366

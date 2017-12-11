@@ -33,8 +33,8 @@ std::array<index_t, N> get_extents(initializer_multilist<T, N> values) {
   if constexpr (N > 1) {
     for (auto value : values) {
       auto extents_rest = get_extents<T, N-1>(value);
-      for (index_t i=0; i<N-1; ++i)
-        extents[i+1] = std::max(extents[i+1], extents_rest[i]);
+      for (index_t i = 0; i < static_cast<index_t>(N) - 1; ++i)
+        extents[i + 1] = std::max(extents[i + 1], extents_rest[i]);
     }
   }
   return extents;
