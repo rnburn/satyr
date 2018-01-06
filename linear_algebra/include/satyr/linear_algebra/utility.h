@@ -55,6 +55,6 @@ auto get_diagonal(A&& a) {
   auto stride = get_stride<0>(a) + get_stride<1>(a);
   auto n = std::min(get_extent<0>(a), get_extent<1>(a));
   auto subshape = satyr::subshape<1>{{n}, {stride}};
-  return make_n_array_subview<general_structure>(a.data(), subshape);
+  return make_n_array_view<general_structure>(a.data(), subshape);
 }
 } // namespace satyr

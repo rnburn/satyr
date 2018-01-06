@@ -97,6 +97,19 @@ template <class T, size_t K>
 using k_array_cview = k_array_view<const T, K>;
 
 //------------------------------------------------------------------------------
+// make_k_array_view
+//------------------------------------------------------------------------------
+template <class T, size_t K>
+k_array_view<T, K> make_k_array_view(T* data, const shape<K>& shape) {
+  return {data, shape};
+}
+
+template <class T, size_t K>
+k_array_subview<T, K> make_k_array_view(T* data, const subshape<K>& subshape) {
+  return {data, subshape};
+}
+
+//------------------------------------------------------------------------------
 // make_view
 //------------------------------------------------------------------------------
 template <class T, size_t K>

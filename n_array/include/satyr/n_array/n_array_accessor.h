@@ -9,10 +9,10 @@
 namespace satyr {
 // fwd
 template <class>
-auto make_n_array_subview();
+auto make_n_array_view();
 
 namespace detail {
-auto deconstify_n_array_subview();
+auto deconstify_n_array_view();
 }
 
 //------------------------------------------------------------------------------
@@ -55,8 +55,8 @@ struct n_array_const_accessor_impl<std::index_sequence<Indexes...>, Derived,
   auto operator()(Slices... slices) const {
     const Derived& derived = static_cast<const Derived&>(*this);
     auto [shape_new, offset] = slice(derived.shape(), slices...);
-    return make_n_array_subview<general_structure>(derived.data() + offset,
-                                                   shape_new);
+    return make_n_array_view<general_structure>(derived.data() + offset,
+                                                shape_new);
   }
 };
 } // namespace detail
@@ -124,7 +124,7 @@ struct n_array_accessor_impl<std::index_sequence<Indexes...>, Derived,
              (is_slice_v<Slices> && ...) &&
              has_free_slices_v<Slices...>
   auto operator()(Slices... slices) {
-    return deconstify_n_array_subview(this->base::operator()(slices...));
+    return deconstify_n_array_view(this->base::operator()(slices...));
   }
 };
 } // namespace detail

@@ -69,15 +69,6 @@ template <class T, size_t K>
 using k_array_subcview = k_array_subview<const T, K>;
 
 //------------------------------------------------------------------------------
-// make_k_array_subview
-//------------------------------------------------------------------------------
-template <class T, size_t K>
-k_array_subview<T, K> make_k_array_subview(T* data,
-                                           const subshape<K>& subshape) {
-  return {data, subshape};
-}
-
-//------------------------------------------------------------------------------
 // make_view
 //------------------------------------------------------------------------------
 template <class T, size_t K>

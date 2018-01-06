@@ -9,7 +9,7 @@
 
 namespace satyr {
 // fwd
-auto make_k_array_subview();
+auto make_k_array_view();
 } // namespace satyr
 
 namespace satyr::detail {
@@ -34,7 +34,7 @@ struct k_array_const_accessor_impl<std::index_sequence<Indexes...>, Derived> {
   auto operator()(Slices... slices) const {
     const Derived& derived = static_cast<const Derived&>(*this);
     auto [shape_new, offset] = slice(derived.shape(), slices...);
-    return make_k_array_subview(derived.data() + offset, shape_new);
+    return make_k_array_view(derived.data() + offset, shape_new);
   }
 };
 
@@ -64,7 +64,7 @@ struct k_array_accessor_impl<std::index_sequence<Indexes...>, Derived> {
   auto operator()(Slices... slices) {
     Derived& derived = static_cast<Derived&>(*this);
     auto [shape_new, offset] = slice(derived.shape(), slices...);
-    return make_k_array_subview(derived.data() + offset, shape_new);
+    return make_k_array_view(derived.data() + offset, shape_new);
   }
 };
 

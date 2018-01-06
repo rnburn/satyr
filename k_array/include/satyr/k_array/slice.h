@@ -40,6 +40,77 @@ template <class... Tx>
 constexpr bool has_free_slices_v = (is_free_slice_v<Tx> || ...);
 
 //------------------------------------------------------------------------------
+// slices_as_subshape_v
+//------------------------------------------------------------------------------
+namespace detail {
+enum class slice_kind_t {
+  fixed, range, all
+};
+
+template <class T>
+constexpr slice_kind_t get_slice_kind(T) {
+  if (std::is_convertible_v<T, index_t>) 
+    return slice_kind_t::fixed;
+  if (std::is_same_v<T, range>)
+    return slice_kind_t::range;
+  if (std::is_same_v<T, all>) 
+    return slice_kind_t::all;
+}
+
+template <class... Tx>
+constexpr bool slices_as_subshape_impl(Tx... slices) {
+  std::array<slice_kind_t, sizeof...(Tx)> slice_kinds = {
+      get_slice_kind(slices)...};
+  int last_free_index = -1;
+  int num_slices = static_cast<int>(slice_kinds.size());
+  for (int i=num_slices; i-->0;) {
+    if (slice_kinds[i] != slice_kind_t::fixed) {
+      last_free_index = i;
+      break;
+    }
+  }
+  if (last_free_index == -1) return false;
+  for(int i=0; i<last_free_index; ++i) {
+    if (slice_kinds[i] == slice_kind_t::fixed)
+      return true;
+  }
+
+  int first_range_index = -1;
+  for (int i=0; i<num_slices; ++i) {
+    if (slice_kinds[i] == slice_kind_t::range) {
+      first_range_index = i;
+      break;
+    }
+  }
+  if (first_range_index == -1) return false; 
+
+  for (int i=0; i<first_range_index; ++i) {
+    if (slice_kinds[i] != slice_kind_t::all)
+      return true;
+  }
+
+  for (int i=first_range_index+1; i<num_slices; ++i) {
+    if (slice_kinds[i] != slice_kind_t::fixed)
+      return true;
+  }
+
+  return false;
+}
+} // namespace detail
+
+// slices_as_subshape_v is true if the subregion of a sliced `shape` 
+// must be indexed with a `subshape`.
+//
+// slices_as_subshape(all_v, range{1, 2}) returns false since the range can
+// be indexed with a 1-dimensional `shape`.
+//
+// slices_as_subshape(range{1, 2}, range{1, 2}) returns true since the subregion
+// must use a stride for the second index.
+template <class... Tx>
+  requires (is_slice_v<Tx> && ...) 
+constexpr bool slices_as_subshape_v = detail::slices_as_subshape_impl(Tx{}...);
+
+//------------------------------------------------------------------------------
 // slice
 //------------------------------------------------------------------------------
 namespace detail {
@@ -129,9 +200,11 @@ auto slice(const shape<K>& shape, Slices... slices) {
   index_t offset = 0;
   detail::slice_impl<0, 0>(shape.extents(), 1, extents_new,
                            strides_new, offset, slices...);
-  return std::make_tuple(
-      satyr::subshape(satyr::shape(extents_new), strides_new),
-      offset);
+  if constexpr (slices_as_subshape_v<Slices...>)
+    return std::make_tuple(
+        satyr::subshape(satyr::shape(extents_new), strides_new), offset);
+  else
+    return std::make_tuple(satyr::shape(extents_new), offset);
 }
 
 template <size_t K, class... Slices>

@@ -137,6 +137,37 @@ template <Scalar T, size_t K, Structure Structure>
 using n_array_cview = n_array_view<const T, K, Structure>;
 
 //------------------------------------------------------------------------------
+// make_n_array_view
+//------------------------------------------------------------------------------
+template <Structure Structure, class T, size_t K>
+n_array_view<T, K, Structure> make_n_array_view(T* data, const shape<K> shape) {
+  return {data, shape};
+}
+
+template <Structure Structure, class T, size_t K>
+n_array_subview<T, K, Structure> make_n_array_view(T* data,
+                                                   const subshape<K> subshape) {
+  return {data, subshape};
+}
+
+//------------------------------------------------------------------------------
+// deconstify_n_array_view
+//------------------------------------------------------------------------------
+namespace detail {
+template <Scalar T, size_t K, Structure Structure>
+n_array_view<uncvref_t<T>, K, Structure> deconstify_n_array_view(
+    const n_array_view<T, K, Structure>& array) {
+  return {const_cast<uncvref_t<T>*>(array.data()), array.shape()};
+}
+
+template <Scalar T, size_t K, Structure Structure>
+n_array_subview<uncvref_t<T>, K, Structure> deconstify_n_array_view(
+    const n_array_subview<T, K, Structure>& array) {
+  return {const_cast<uncvref_t<T>*>(array.data()), array.shape()};
+}
+} // namespace detail
+
+//------------------------------------------------------------------------------
 // make_view
 //------------------------------------------------------------------------------
 template <class T, size_t K, Structure Structure>
