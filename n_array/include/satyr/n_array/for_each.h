@@ -115,7 +115,7 @@ class for_each_evaluator
  public:
   using base::base;
 };
-} // namespaec detail
+} // namespace detail
 
 //------------------------------------------------------------------------------
 // make_for_each_evaluator
@@ -141,7 +141,7 @@ template <size_t K, FlatEvaluator Evaluator, class F>
 auto make_for_each_evaluator(const Evaluator& evaluator, F f) {
   return make_for_each_evaluator<K>(make_k_evaluator<K>(evaluator), f);
 }
-} // namesape detail
+} // namespace detail
 
 //------------------------------------------------------------------------------
 // for_each
@@ -285,7 +285,7 @@ class for_each_with_exit_evaluator
  public:
   using base::base;
 };
-} // namespaec detail
+} // namespace detail
 
 //------------------------------------------------------------------------------
 // make_for_each_evaluator
@@ -312,7 +312,7 @@ auto make_for_each_with_exit_evaluator(const Evaluator& evaluator, F f) {
   return make_for_each_with_exit_evaluator<K>(make_k_evaluator<K>(evaluator),
                                               f);
 }
-} // namesape detail
+} // namespace detail
 
 //------------------------------------------------------------------------------
 // for_each_with_exit

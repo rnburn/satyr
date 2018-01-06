@@ -302,4 +302,4 @@ class triangular_blocked_range {
     region.row_last = right.first();
   }
 };
-} // namesapce satyr
+} // namespace satyr
