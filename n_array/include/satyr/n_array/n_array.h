@@ -177,6 +177,16 @@ class n_array_impl<std::index_sequence<Indexes...>, T, K, Structure>
     static_cast<base&>(*this) = static_cast<base&>(other);
     static_cast<base&>(other) = {nullptr, shape<K>{}};
   }
+
+  template <class OtherT, class OtherShape>
+  void copy_assign(const OtherT* other_data, const OtherShape& other_shape) {
+    reshape(other_shape);
+    auto lhs = make_expression(
+        make_n_array_view<Structure>(this->data(), this->shape()));
+    auto rhs =
+        make_expression(make_n_array_view<Structure>(other_data, other_shape));
+    apply(equals_functor{}, lhs, rhs);
+  }
 };
 }
 

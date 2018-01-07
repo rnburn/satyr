@@ -19,6 +19,9 @@ int main() {
 
   n_array<double, 2> array4{array(all_v, range{1, 3})};
   assert(array4 == array(all_v, range{1,3}));
+  array4 = 0;
+  array4 = array(all_v, range{0, 2});
+  assert(array4 == array(all_v, range{0, 2}));
 
   double array_sum = 120;
   double array_sum1 = 0;

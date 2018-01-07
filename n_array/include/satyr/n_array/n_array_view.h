@@ -140,13 +140,13 @@ using n_array_cview = n_array_view<const T, K, Structure>;
 // make_n_array_view
 //------------------------------------------------------------------------------
 template <Structure Structure, class T, size_t K>
-n_array_view<T, K, Structure> make_n_array_view(T* data, const shape<K> shape) {
+n_array_view<T, K, Structure> make_n_array_view(T* data, const shape<K>& shape) {
   return {data, shape};
 }
 
 template <Structure Structure, class T, size_t K>
 n_array_subview<T, K, Structure> make_n_array_view(T* data,
-                                                   const subshape<K> subshape) {
+                                                   const subshape<K>& subshape) {
   return {data, subshape};
 }
 
