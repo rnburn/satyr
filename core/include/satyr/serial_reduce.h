@@ -36,7 +36,7 @@ void reduce_each_index(Policy policy, std::array<index_t, K> extents,
     reducer(policy, 0, extents[0], f); 
   } else {
     for_(serial_v, 0, extents[K - 1], [policy, extents, &reducer,
-                                       f](index_t i) {
+                                       f](index_t i) mutable {
       auto f_prime = [f, i](auto... indexes) { return f(indexes..., i); };
       reduce_each_index(
           policy, reinterpret_cast<const std::array<index_t, K - 1>&>(extents),
@@ -55,7 +55,7 @@ void blocked_range_reduce_each_index_impl(Policy policy,
       reducer(policy, range.template first<0>(), range.template last<0>(), f);
   } else {
     for_(serial_v, range.template first<I>(), range.template last<I>(),
-         [policy, &range, &reducer, f](index_t i) {
+         [policy, &range, &reducer, f](index_t i) mutable {
            auto f_prime = [=](auto... indexes) { return f(indexes..., i); };
            blocked_range_reduce_each_index_impl<I - 1>(policy, range, reducer, 
                                                        f_prime);
@@ -101,7 +101,7 @@ template <uplo_t Uplo, Policy Policy, IndexReducer Reducer,
                                  value_type_t<Reducer>>
 void reduce_each_index_triangular(Policy policy, index_t n, Reducer& reducer,
                                   Functor f) {
-  for_(no_policy_v, 0, n, [=](index_t j) {
+  for_(no_policy_v, 0, n, [policy, n, &reducer, f](index_t j) mutable {
     detail::reduce_each_index_triangular_impl<Uplo>(policy, j, n, reducer, f);
   });
 }
@@ -118,7 +118,7 @@ void reduce_each_index_triangular(Policy policy,
   if (range.is_column_range()) {
     auto [j_first, j_last] = range.columns();
     auto n = range.n();
-    for_(no_policy_v, j_first, j_last, [=, &reducer](index_t j) {
+    for_(no_policy_v, j_first, j_last, [=, &reducer](index_t j) mutable {
       detail::reduce_each_index_triangular_impl<Uplo>(policy, j, n, reducer, f);
     });
   } else {

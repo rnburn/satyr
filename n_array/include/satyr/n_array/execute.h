@@ -85,11 +85,11 @@ value_type_t<Reducer> execute(
   auto shape = expression.shape();
   auto evaluator = expression.evaluator();
   Reducer reducer;
-  reduce_each_index_triangular(simd_v | expression.policy(), shape.extents(),
-                               reducer,
-                               [shape, evaluator](index_t i, index_t j) {
-                                 return evaluator(shape, i, j);
-                               });
+  reduce_each_index_triangular<Structure::uplo>(
+      simd_v | expression.policy(), shape.extent(0), reducer,
+      [shape, evaluator](index_t i, index_t j) {
+        return evaluator(shape, i, j);
+      });
   return reducer.value();
 }
 
