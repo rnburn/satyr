@@ -13,3 +13,4 @@
 #include <satyr/linear_algebra/utility.h>
 #include <satyr/linear_algebra/vector.h>
 #include <satyr/linear_algebra/norm.h>
+#include <satyr/linear_algebra/math.h>

@@ -30,8 +30,7 @@ int main() {
   m1 = m1 + as_diagonal_matrix(get_diagonal(m1));
   m1 = m1 + identity_matrix(3) * 5;
 
-  symmetric_matrix<double> s2(3);
-  s2 = 1;
-  assert(sum_elements(s2) == 6);
+  symmetric_matrix<double> s2 = {{1, 2, 3}, {2, 4, 5}, {3, 5, 6}};
+  assert(sum_elements(s2) == 31);
   return 0;
 }
