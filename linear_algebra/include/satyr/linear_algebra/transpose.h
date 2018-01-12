@@ -35,7 +35,7 @@ inline subshape<2> transpose(const subshape<2>& shape) {
 
 template <GeneralMatrix Matrix>
 auto transpose(Matrix&& matrix) {
-  using T = value_type_t<Matrix>;
+  using T = std::remove_reference_t<decltype(*matrix.data())>;
   if constexpr (detail::match_n_array_subview<uncvref_t<Matrix>>) {
       auto evaluator = transpose_evaluator(n_array_subview_evaluator<T, 2>(
           matrix.data(), matrix.shape().strides()));
