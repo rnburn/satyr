@@ -44,6 +44,7 @@ log_context::log_context(log_context&& other)
 log_context& log_context::operator=(log_context&& other) {
   should_pop_ = other.should_pop_;
   other.should_pop_ = false;
+  return *this;
 }
 
 log_context::~log_context() {
