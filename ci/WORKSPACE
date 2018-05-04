@@ -1,19 +1,7 @@
 new_local_repository(
     name = "com_github_01org_tbb",
     path = "/usr",
-    build_file = "BUILD.tbb"
-)
-
-new_local_repository(
-    name = "org_netlib_blas",
-    path = "/usr",
-    build_file = "BUILD.blas"
-)
-
-new_local_repository(
-    name = "org_netlib_lapack",
-    path = "/usr",
-    build_file = "BUILD.lapack"
+    build_file = "tbb.BUILD"
 )
 
 new_local_repository(

@@ -1,9 +1,0 @@
-cc_library(
-  name = "cblas",
-  srcs = [
-    "lib/x86_64-linux-gnu/libcblas.a",
-    "lib/x86_64-linux-gnu/libatlas.a",
-  ],
-  linkopts = ["-lgfortran", "-lm"],
-  visibility = ["//visibility:public"]
-)
