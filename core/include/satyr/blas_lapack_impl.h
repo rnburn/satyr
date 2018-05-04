@@ -1,8 +1,17 @@
 #pragma once
 
-#include <satyr/cblas.h>
+#include <satyr/config.h>
 #include <satyr/index.h>
 #include <satyr/matrix.h>
+
+extern "C" {
+#ifdef SATYR_EXTERNAL_BLAS_LAPACK
+#include <netlib/cblas.h>
+#else
+#include <satyr/cblas.h>
+#endif
+}
+
 #include <stdexcept>
 
 extern "C" {

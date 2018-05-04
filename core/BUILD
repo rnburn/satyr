@@ -10,38 +10,27 @@ satyr_cc_library(
         "include/satyr/*.def",
         ]) + [":include/satyr/config.h"],
     strip_include_prefix = "include",
-    deps = 
-        select({
-        "//bazel:with_tbb": ["@org_threadingbuildingblocks//:tbb"],
-        "//conditions:default": [],
-        }) +
-        select({
-            "//bazel:with_blas_lapack": [
-                "//3rd_party/netlib:cblas", 
-                "@org_netlib_blas//:cblas",
-                "@org_netlib_lapack//:lapacke",
-            ],
-        "//conditions:default": [],
-        }),
+    deps =  [
+        "@com_github_01org_tbb//:tbb",
+        "@org_netlib//:blas",
+        "@org_netlib//:lapack",
+    ],
     visibility = ["//visibility:public"]
 )
 
 genrule(
     name = "with_tbb_h",
     outs = ["with_tbb.h"],
-    cmd = select({
-        "//bazel:with_tbb": """echo "#define SATYR_WITH_TBB" > $@""",
-        "//conditions:default": """touch $@""",
-    })
+    cmd = """echo "#define SATYR_WITH_TBB" > $@""",
 )
 
 genrule(
     name = "with_blas_lapack_h",
     outs = ["with_blas_lapack.h"],
-    cmd = select({
-        "//bazel:with_blas_lapack": """echo "#define SATYR_WITH_BLAS_LAPACK" > $@""",
-        "//conditions:default": """touch $@""",
-    })
+    cmd = """
+      echo "#define SATYR_WITH_BLAS_LAPACK" > $@
+      echo "#define SATYR_EXTERNAL_BLAS_LAPACK" >> $@
+     """,
 )
 
 genrule(

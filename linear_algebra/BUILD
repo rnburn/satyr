@@ -7,6 +7,8 @@ satyr_cc_library(
     name = "linear_algebra",
     hdrs = glob(["include/satyr/**/*.h"]),
     strip_include_prefix = "include",
-    deps = ["//n_array:n_array"],
+    deps = [
+        "//n_array:n_array",
+    ],
     visibility = ["//visibility:public"]
 )

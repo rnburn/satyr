@@ -1,5 +1,5 @@
 new_local_repository(
-    name = "org_threadingbuildingblocks",
+    name = "com_github_01org_tbb",
     path = "/usr",
     build_file = "BUILD.tbb"
 )
@@ -14,4 +14,10 @@ new_local_repository(
     name = "org_netlib_lapack",
     path = "/usr",
     build_file = "BUILD.lapack"
+)
+
+new_local_repository(
+    name = "org_netlib",
+    path = "/usr",
+    build_file = "netlib.BUILD"
 )
