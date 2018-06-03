@@ -231,7 +231,7 @@ class n_array
   }
 
   n_array(n_array&& other) noexcept
-      : n_array{static_cast<base&&>(std::move(other))} {}
+      : base{static_cast<base&&>(std::move(other))} {}
 
   // assignment
   n_array& operator=(n_array&& other) noexcept {
