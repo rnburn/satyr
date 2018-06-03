@@ -240,6 +240,7 @@ class n_array
   }
 
   n_array& operator=(const n_array& other) {
+    this->reshape(other.shape());
     *this = make_expression(other);
     return *this;
   }
