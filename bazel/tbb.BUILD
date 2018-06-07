@@ -20,6 +20,10 @@ genrule(
            COMPILER_OPT="compiler=clang"
          else
 				   COMPILER_OPT="compiler=gcc"
+
+           # Workaround for TBB bug
+           # See https://github.com/01org/tbb/issues/59
+           CXXFLAGS="$$CXXFLAGS -flifetime-dse=1"
          fi 
 
          # uses extra_inc=big_iron.inc to specify that static libraries are
