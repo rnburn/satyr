@@ -55,7 +55,7 @@ A = sqrt(abs(L)) << satyr::parallel_v << satyr::simd_v;
 A += cos(B) - as_diagonal_matrix(v) << satyr::grainsize{
          10};  // Don't create tasks with fewer than 10 iterations.
 
-// Addtionality you can declare numerical arrays of arbitrary dimension.
+// Additionally, you can declare numerical arrays of arbitrary dimension.
 satyr::n_array<float, 3> H(5, 2, 6);
 
 // And all array-like objects support indexing and slicing.
