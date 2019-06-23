@@ -12,6 +12,7 @@ template <class>
 auto make_n_array_view();
 
 namespace detail {
+template <class>
 auto deconstify_n_array_view();
 }
 
